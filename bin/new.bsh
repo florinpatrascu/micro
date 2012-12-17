@@ -1,0 +1,31 @@
+import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+print(bsh.cwd);
+Logger log = LoggerFactory.getLogger(Interpreter.class);
+CommandLineParser parser = new PosixParser();
+Options options = new Options();
+
+options.addOption("h", "help", false, "Show this help message and quit" );
+options.addOption("v", "version", false, "verbose mode" );
+options.addOption("f", "force", false, "Overwrite files that already exist" );
+// options.addOption("t", "template", false, "Use a template" );
+
+try{
+  if(bsh.args != null){
+    CommandLine line = parser.parse(options, bsh.args);
+    print(line.getArgs());
+
+    if( line.hasOption( "f" ) ) {
+      // print the value of block-size
+      System.out.println( line.getOptionValue("template"));
+    }
+  }else{
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp("micro new APP_PATH [options]", "", options, "The 'micro new' command creates a new Micro application with a default directory structure and configuration at the path you specify.");
+  }  
+}catch(ParseException exp) {
+  // oops, something went wrong
+  log.error( "Parsing failed. Reason: " + exp.getMessage() );
+}
