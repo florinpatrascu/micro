@@ -1,0 +1,17 @@
+name: blog
+
+repositories:
+  static: ../
+  content: views
+  partials: views/includes
+  templates: views/templates
+  controllers: controllers
+
+locales:
+  path: locales
+  type: properties
+
+google_analytics_code: "1111-dev"
+
+production:
+  google_analytics_code: "2222-prod"

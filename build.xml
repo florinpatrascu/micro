@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ 2007 Florin
+  ~ build file used to generate a k2 service library
+  -->
+
+<project name="Micro" default="dist">
+    <property environment="env"/>
+
+    <property file="build.properties"/>
+    <property name="skip.tests" value="true"/>
+
+    <!-- Compiler options -->
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.optimize" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.encoding" value="utf-8"/>
+    <property name="compiler.args" value=""/>
+    <property name="compiler.source" value="1.6"/>
+    <property name="compiler.target" value="1.6"/>
+
+    <!-- Compiler resources -->
+    <patternset id="compiler.resources">
+        <include name="**/?*.properties"/>
+        <include name="**/?*.xml"/>
+        <include name="**/?*.yaml"/>
+        <include name="**/?*.json"/>
+    </patternset>
+
+
+    <!-- Global Libraries -->
+
+
+    <!-- ==================================================== -->
+    <!-- Initialize Ant                                       -->
+    <!-- ==================================================== -->
+    <target name="init">
+        <tstamp/>
+    </target>
+
+
+    <!-- ====================================================================== -->
+    <!-- Compile the source code.                                               -->
+    <!-- ====================================================================== -->
+    <target name="compile" depends="init">
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.classes}"/>
+
+
+        <javac srcdir="${src.dir}"
+               destdir="${build.classes}"
+               debug="${compiler.debug}"
+               deprecation="${compiler.generate.no.warnings}"
+               encoding="utf8"
+               classpathref="build.classpath"
+               optimize="${compiler.optimize}">
+
+            <include name="**/*.java"/>
+
+            <classpath>
+                <fileset dir="${global.libraries}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+
+        <copy todir="${build.classes}">
+            <fileset dir="java/src">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+
+    </target>
+
+
+    <!-- ====================================================================== -->
+    <!-- Create the JAR archive.                                                -->
+    <!-- ====================================================================== -->
+    <target name="dist" depends="compile">
+        <mkdir dir="${build.dist}"/>
+        <jar jarfile="${build.dist}/${name}-${version}.jar"
+             basedir="${build.classes}"/>
+        <copy file="LICENSE"
+              tofile="${build.dist}/LICENSE"
+              overwrite="true"/>
+    </target>
+
+    <!-- ====================================================================== -->
+    <!-- Clean up generated stuff                                               -->
+    <!-- ====================================================================== -->
+    <target name="clean">
+        <delete dir="${build.dist}"/>
+        <delete dir="${build.dir}"/>
+    </target>
+</project>
