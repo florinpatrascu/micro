@@ -1,18 +1,29 @@
 name: blog
+description: My Blog
 
 repositories:
-  static: ../
-  content: views
-  partials: views/includes
-  templates: views/templates
-  controllers: controllers
+  static: {path: ../}
+
+  content:
+    path: views
+    cache: memCache
+
+  partials: {path: views/includes, cache: partials}
+
+  templates: {path: views/templates}
+
+  controllers: {path: controllers, cache: controllers}
 
 cache:
+  names: [memCache, partials, views, controllers]
   class: ca.simplegames.micro.cache.DefaultCache
-  names: [defaultCache, testCache]
 
 locales:
-  path: locales
+  intercept: {parameter_name: language, scope: "session, request, context"}
+  default_encoding: utf-8
+  fallbak_to_system_locale: true
+  resource_cache: 10
+  base_names: [config/locales/messages]
   type: properties
 
 google_analytics_code: "1111-dev"

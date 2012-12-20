@@ -1,7 +1,9 @@
 package ca.simplegames.micro;
 
+import bsh.BshClassManager;
 import ca.simplegames.micro.utils.ClassUtils;
 import org.apache.bsf.BSFManager;
+import org.apache.bsf.util.BSFEngineImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.*;
 import org.jrack.context.MapContext;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.util.List;
 
 /**
  * This {@link JRack} is the main entry point for requests to the Micro framework.
@@ -56,7 +59,7 @@ public class MicroFilter extends JRack {
                 StringUtils.split(userClassPaths.toString(), ",: "));
         configureBSF();
 
-        site.loadApplication(webInfPath.getAbsolutePath()+"/config");
+        site.loadApplication(webInfPath.getAbsolutePath() + "/config");
         // done with the init phase
         showBanner();
         return this;
@@ -65,6 +68,25 @@ public class MicroFilter extends JRack {
     public RackResponse call(Context<String> input) {
         input.with(Globals.MICRO_SITE, site);
         input.with(Rack.RACK_LOGGER, log);
+        List<Helper> helpers = site.getHelpers();
+
+        MicroContext context = new MicroContext<String>();
+        context.with(Globals.RACK_INPUT, input)
+                .with(Globals.MICRO_SITE, site)
+                .with(Rack.RACK_LOGGER, log);
+
+        if (!helpers.isEmpty()) {
+            for (Helper helper : helpers) {
+                try {
+
+                    helper.call(context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error(String.format("Helper: %s, error: %s", helper.getName(), e.getMessage()));
+                }
+            }
+        }
+
         return RackResponseUtils.standardHtml("Hello W⦿rld");
     }
 

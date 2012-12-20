@@ -53,7 +53,6 @@
                debug="${compiler.debug}"
                deprecation="${compiler.generate.no.warnings}"
                encoding="utf8"
-               classpathref="build.classpath"
                optimize="${compiler.optimize}">
 
             <include name="**/*.java"/>

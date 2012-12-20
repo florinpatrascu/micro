@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
@@ -93,4 +95,69 @@ public class ClassUtils {
             }
         }
     }
+
+    /**
+     * Return the default ClassLoader to use: typically the thread context
+     * ClassLoader, if available; the ClassLoader that loaded the ClassUtils
+     * class will be used as fallback.
+     * <p>Call this method if you intend to use the thread context ClassLoader
+     * in a scenario where you absolutely need a non-null ClassLoader reference:
+     * for example, for class path resource loading (but not necessarily for
+     * <code>Class.forName</code>, which accepts a <code>null</code> ClassLoader
+     * reference as well).
+     *
+     * @return the default ClassLoader (never <code>null</code>)
+     * @see java.lang.Thread#getContextClassLoader()
+     */
+    public static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) {
+            log.debug("Cannot access thread context ClassLoader - falling back to system class loader", ex);
+        }
+        if (cl == null) {
+            // No thread context class loader -> use class loader of this class.
+            cl = ClassUtils.class.getClassLoader();
+        }
+        return cl;
+    }
+
+    /**
+     * Determine whether the given class has a method with the given signature.
+     * <p>Essentially translates <code>NoSuchMethodException</code> to "false".
+     *
+     * @param clazz      the clazz to analyze
+     * @param methodName the name of the method
+     * @param paramTypes the parameter types of the method
+     * @return whether the class has a corresponding method
+     * @see java.lang.Class#getMethod
+     */
+    public static boolean hasMethod(Class clazz, String methodName, Class[] paramTypes) {
+        return (getMethodIfAvailable(clazz, methodName, paramTypes) != null);
+    }
+
+    /**
+     * Determine whether the given class has a method with the given signature,
+     * and return it if available (else return <code>null</code>).
+     * <p>Essentially translates <code>NoSuchMethodException</code> to <code>null</code>.
+     *
+     * @param clazz      the clazz to analyze
+     * @param methodName the name of the method
+     * @param paramTypes the parameter types of the method
+     * @return the method, or <code>null</code> if not found
+     * @see java.lang.Class#getMethod
+     */
+    public static Method getMethodIfAvailable(Class clazz, String methodName, Class[] paramTypes) {
+        Assert.notNull(clazz, "Class must not be null");
+        Assert.notNull(methodName, "Method name must not be null");
+        try {
+            return clazz.getMethod(methodName, paramTypes);
+        }
+        catch (NoSuchMethodException ex) {
+            return null;
+        }
+    }
+
 }

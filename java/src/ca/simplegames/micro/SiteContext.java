@@ -2,6 +2,8 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.helpers.HelperManager;
+import ca.simplegames.micro.helpers.i18n.I18NHelper;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
 import org.slf4j.Logger;
@@ -12,7 +14,6 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +26,11 @@ import java.util.Map;
  */
 public class SiteContext extends MapContext {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private List<Helper> helpers = new ArrayList<Helper>();
     private MicroCacheManager cacheManager;
     private ControllerManager controllerManager;
+    private HelperManager helperManager;
+    private Map appConfig;
+    private File webInfPath;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -47,17 +50,33 @@ public class SiteContext extends MapContext {
      */
     public SiteContext loadApplication(String configPath) throws Exception {
         File config = new File(configPath, "micro-config.yml");
+        webInfPath = (File) get(Globals.WEB_INF_PATH);
 
         if (config.exists()) {
             with(Globals.MICRO_CONFIG_PATH, config);
 
             try {
-                Map appConfig = (Map) new Yaml().load(new FileInputStream(config));
+                appConfig = (Map) new Yaml().load(new FileInputStream(config));
                 log.info(appConfig.toString());
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
                 cacheManager = new MicroCacheManager(this);
                 controllerManager = new ControllerManager(this);
-                controllerManager.execute(findApplicationScript(configPath), map);
+                helperManager = new HelperManager(this);
+
+                /**
+                 * load the default i18N support, a default Helper
+                 */
+
+                Map<String, Object> localesModel = (Map<String, Object>) appConfig.get("locales");
+                if (localesModel != null) {
+                    Helper i18N = new I18NHelper();
+                    helperManager.addHelper(i18N.init(this, localesModel));
+                }
+
+                MicroContext context = new MicroContext();
+                context.with(Globals.MICRO_SITE, this);
+                //add anything else to the context?
+                controllerManager.execute(findApplicationScript(configPath), context);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -83,7 +102,7 @@ public class SiteContext extends MapContext {
     }
 
     public List<Helper> getHelpers() {
-        return helpers;
+        return helperManager.getHelpers();
     }
 
     public Logger getLog() {
@@ -96,5 +115,17 @@ public class SiteContext extends MapContext {
 
     public ControllerManager getControllerManager() {
         return controllerManager;
+    }
+
+    public Map getAppConfig() {
+        return appConfig;
+    }
+
+    public HelperManager getHelperManager() {
+        return helperManager;
+    }
+
+    public File getWebInfPath() {
+        return webInfPath != null ? webInfPath : new File(Globals.EMPTY_STRING);
     }
 }

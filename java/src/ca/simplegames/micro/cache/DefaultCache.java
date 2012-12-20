@@ -30,13 +30,13 @@ public class DefaultCache implements MicroCache {
             cache = manager.getCache(cacheName);
 
             if (cache == null) {
-                log.warn("Could not find a valid configuration for: " + cacheName
-                        + ", using Ehcache's 'default' definition.");
+                log.info(String.format(
+                        "Cannot find a user configuration for: '%s', will use 'defaultCache' definition.",
+                        cacheName));
 
                 manager.addCache(cacheName);
                 cache = manager.getCache(cacheName);
             }
-
         } catch (CacheException e) {
             throw new MicroCacheException(e);
         }
@@ -72,7 +72,7 @@ public class DefaultCache implements MicroCache {
                 //cache.putQuiet(element);
                 cache.put(element);
             } catch (ClassCastException cce) {
-                throw new MicroCacheException("(404) ", cce);
+                throw new MicroCacheException("Class cast error: ", cce);
             } catch (IllegalArgumentException e) {
                 throw new MicroCacheException(e);
             } catch (IllegalStateException e) {
@@ -80,7 +80,7 @@ public class DefaultCache implements MicroCache {
             }
         else {
             if (log.isDebugEnabled()) {
-                log.debug("null key: " + key);
+                log.debug(String.format("null key/value: %s/%s", key, value));
             }
         }
     }

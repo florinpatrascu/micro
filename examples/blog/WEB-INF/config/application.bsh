@@ -1,4 +1,4 @@
 import ca.simplegames.micro.*;
 
-print(site);
+//print(site);
 log.info("loading the app");

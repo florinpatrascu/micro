@@ -2,6 +2,7 @@ package ca.simplegames.micro.controllers;
 
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
+import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
@@ -32,11 +33,11 @@ public class ControllerManager {
                 .getCacheWithDefault(Globals.SCRIPT_CONTROLLERS_CACHE_NAME);
     }
 
-    public Object execute(String actionName, Map context) throws Exception {
+    public Object execute(String actionName, MicroContext context) throws Exception {
         return execute(actionName, context, null);
     }
 
-    public Object execute(String controllerName, Map context, Map configuration) throws Exception {
+    public Object execute(String controllerName, MicroContext context, Map configuration) throws Exception {
         if(StringUtils.isBlank(controllerName)){
             throw new ControllerNotFoundException("Invalid controller name: "+controllerName);
         }
@@ -78,7 +79,7 @@ public class ControllerManager {
         // Checking if the controller is available via any helpers
         if (helpers != null && !helpers.isEmpty()) {
             for (Helper helper : helpers) {
-                if (helper.getControllers().containsKey(path)) {
+                if (helper.getControllers()!= null && helper.getControllers().containsKey(path)) {
                     return helper.getControllers().get(path);
                 }
             }

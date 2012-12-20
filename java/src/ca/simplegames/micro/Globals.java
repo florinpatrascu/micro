@@ -7,6 +7,7 @@ package ca.simplegames.micro;
 public class Globals {
     public static final String EMPTY_STRING = "";
     public static final String MICRO = "micro_";
+    public static final String UTF8 = "UTF-8";
 
     public static final String SERVLET_CONTEXT = MICRO + "servlet_context";
     public static final String SERVLET_PATH_NAME = MICRO + "servlet_path_name";
@@ -18,4 +19,10 @@ public class Globals {
     public static final String MICRO_SITE = MICRO + "site";
     public static final String SCRIPT_CONTROLLERS_CACHE_NAME = MICRO + "script_controllers_cache";
     public static final String MICRO_CACHE_CONFIG = MICRO_CACHE_MANAGER + "_config";
+    public static final String MICRO_HELPERS_CONFIG = "helpers";
+
+    public static final String RACK_INPUT = MICRO + "rack_input";
+    public static final String RESPONSE = MICRO + "response";
+    public static final String SCRIPT_CONTROLLER_RESPONSE = MICRO + "script_controller_response";
+    public static final String LOCALE = "locale";
 }

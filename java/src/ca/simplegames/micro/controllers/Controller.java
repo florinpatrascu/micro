@@ -1,5 +1,7 @@
 package ca.simplegames.micro.controllers;
 
+import ca.simplegames.micro.MicroContext;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -16,5 +18,5 @@ public interface Controller extends Serializable {
      * @return an Object, optional
      * @throws Exception if any problems
      */
-    public Object execute(Map context, Map configuration) throws Exception;
+    public Object execute(MicroContext context, Map configuration) throws Exception;
 }
