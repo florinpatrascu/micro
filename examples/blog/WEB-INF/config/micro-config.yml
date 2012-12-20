@@ -7,6 +7,10 @@ repositories:
   templates: views/templates
   controllers: controllers
 
+cache:
+  class: ca.simplegames.micro.cache.DefaultCache
+  names: [defaultCache, testCache]
+
 locales:
   path: locales
   type: properties

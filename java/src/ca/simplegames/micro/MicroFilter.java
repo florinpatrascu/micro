@@ -1,6 +1,7 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.utils.ClassUtils;
+import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.*;
 import org.jrack.context.MapContext;
@@ -53,7 +54,9 @@ public class MicroFilter extends JRack {
 
         ClassUtils.configureClasspath(webInfPath.toString(),
                 StringUtils.split(userClassPaths.toString(), ",: "));
+        configureBSF();
 
+        site.loadApplication(webInfPath.getAbsolutePath()+"/config");
         // done with the init phase
         showBanner();
         return this;
@@ -64,6 +67,14 @@ public class MicroFilter extends JRack {
         input.with(Rack.RACK_LOGGER, log);
         return RackResponseUtils.standardHtml("Hello W⦿rld");
     }
+
+    private void configureBSF() {
+        BSFManager.registerScriptingEngine("beanshell", "bsh.util.BeanShellBSFEngine", new String[]{"bsh"});
+        BSFManager.registerScriptingEngine("groovy", "org.codehaus.groovy.bsf.GroovyEngine",
+                new String[]{"groovy", "gy"});
+        BSFManager.registerScriptingEngine("jruby19", "org.jruby.embed.bsf.JRubyEngine", new String[]{"ruby", "rb"});
+    }
+
     private void showBanner() {
 
     }

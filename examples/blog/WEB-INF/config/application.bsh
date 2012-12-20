@@ -1,0 +1,4 @@
+import ca.simplegames.micro.*;
+
+print(site);
+log.info("loading the app");
