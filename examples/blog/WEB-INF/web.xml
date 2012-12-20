@@ -15,7 +15,7 @@
 
         <init-param>
             <param-name>ignore</param-name>
-            <param-value>js,images,styles</param-value>
+            <param-value>js,images,styles,favicon</param-value>
         </init-param>
 
         <init-param>
