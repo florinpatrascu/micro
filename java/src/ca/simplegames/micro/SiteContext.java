@@ -4,8 +4,13 @@ import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.helpers.i18n.I18NHelper;
+import ca.simplegames.micro.repositories.RepositoryManager;
+import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.utils.StringUtils;
+import ca.simplegames.micro.viewers.ViewRenderer;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
+import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -27,8 +32,10 @@ import java.util.Map;
 public class SiteContext extends MapContext {
     private Logger log = LoggerFactory.getLogger(getClass());
     private MicroCacheManager cacheManager;
+    private RepositoryManager repositoryManager;
     private ControllerManager controllerManager;
     private HelperManager helperManager;
+    private ViewRenderer renderer;
     private Map appConfig;
     private File webInfPath;
 
@@ -76,6 +83,9 @@ public class SiteContext extends MapContext {
                 MicroContext context = new MicroContext();
                 context.with(Globals.MICRO_SITE, this);
                 //add anything else to the context?
+
+                repositoryManager = new RepositoryManager(this);
+
                 controllerManager.execute(findApplicationScript(configPath), context);
 
             } catch (FileNotFoundException e) {
@@ -123,6 +133,10 @@ public class SiteContext extends MapContext {
 
     public HelperManager getHelperManager() {
         return helperManager;
+    }
+
+    public RepositoryManager getRepositoryManager() {
+        return repositoryManager;
     }
 
     public File getWebInfPath() {

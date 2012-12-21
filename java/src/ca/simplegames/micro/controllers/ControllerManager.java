@@ -10,6 +10,8 @@ import ca.simplegames.micro.cache.MicroCacheManager;
 import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.utils.ClassUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,7 +25,7 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-19 12:53 PM)
  */
 public class ControllerManager {
-
+    private Logger log = LoggerFactory.getLogger(getClass());
     private SiteContext site;
     private MicroCache cachedScriptControllers;
 
@@ -119,5 +121,9 @@ public class ControllerManager {
         } catch (Exception e) {
             throw new ControllerNotFoundException(path, e);
         }
+    }
+
+    public void executeForPath(String path, MicroContext context) {
+        log.warn("todo: implement me: ca.simplegames.micro.controllers.ControllerManager#executeForPath");
     }
 }

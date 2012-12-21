@@ -2,21 +2,25 @@ name: blog
 description: My Blog
 
 repositories:
-  static: {path: ../}
-
   content:
-    path: views
+    path: views/content
     cache: memCache
-
-  partials: {path: views/includes, cache: partials}
-
+    default: true
+  partials: {path: views/includes, cache: partials, default: false}
   templates: {path: views/templates}
 
-  controllers: {path: controllers, cache: controllers}
+controllers: {path: controllers, cache: controllers}
 
 cache:
   names: [memCache, partials, views, controllers]
   class: ca.simplegames.micro.cache.DefaultCache
+
+renderer:
+  engine: velocity
+  class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
+  resource_cache_enabled: true
+  resource_cache_interval: 15
+  global_macro_library: global_library.vm
 
 locales:
   intercept: {parameter_name: language, scope: "session, request, context"}
@@ -26,7 +30,7 @@ locales:
   base_names: [config/locales/messages]
   type: properties
 
-google_analytics_code: "1111-dev"
+google_analytics_code: "1111-dev-1111"
 
 production:
-  google_analytics_code: "2222-prod"
+  google_analytics_code: "2222-prod-2222"

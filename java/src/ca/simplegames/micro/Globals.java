@@ -25,4 +25,7 @@ public class Globals {
     public static final String RESPONSE = MICRO + "response";
     public static final String SCRIPT_CONTROLLER_RESPONSE = MICRO + "script_controller_response";
     public static final String LOCALE = "locale";
+    public static final String DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH = "ca/simplegames/micro/viewers/velocity/VM_global_library.vm";
+    public static final String MICRO_REPOSITORY_MANAGER = MICRO + "repository_manager";
+    public static final String PATH_INFO="pathInfo";
 }

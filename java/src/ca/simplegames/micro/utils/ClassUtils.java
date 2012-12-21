@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -160,4 +162,109 @@ public class ClassUtils {
         }
     }
 
+    /**
+     * Load the specified resource.  This method will first attempt to load
+     * the class using the context class loader.  If that fails due to a
+     * ClassNotFoundException or a SecurityException then the requestor's
+     * class loader is used.  If the requestor object is null then the
+     * ClassUtilities class loader is used.
+     *
+     * @param name      The resource name
+     * @param requestor The object requesting the resource or null
+     * @return The resource URL or null
+     */
+
+    public static URL getResource(String name, Object requestor) {
+        Class requestorClass = null;
+        if (requestor == null) {
+            requestorClass = ClassUtils.class;
+        } else {
+            requestorClass = requestor.getClass();
+        }
+        return getResource(name, requestorClass);
+    }
+
+    /**
+     * Load the specified resource.  This method will first attempt to load
+     * the class using the context class loader.  If that fails due to a
+     * ClassNotFoundException or a SecurityException then the requestor's
+     * class loader is used.  If the requestor object is null then the
+     * ClassUtilities class loader is used.
+     *
+     * @param name      The resource name
+     * @param requestor The class of the object requesting the resource or null
+     * @return The resource URL or null
+     */
+
+    public static URL getResource(String name, Class requestor) {
+        URL resource;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        resource = cl.getResource(name);
+        if (resource == null) {
+            cl = requestor.getClass().getClassLoader();
+            resource = cl.getResource(name);
+        }
+        return resource;
+    }
+
+    /**
+     * Load the specified resource stream.  This method will first attempt to
+     * load the class using the context class loader.  If that fails due to a
+     * ClassNotFoundException or a SecurityException then ClassUtilities class
+     * loader is used.
+     *
+     * @param name The resource name
+     * @return The resource stream or null
+     */
+
+    public static InputStream getResourceAsStream(String name) {
+        return getResourceAsStream(name, null);
+    }
+
+    /**
+     * Load the specified resource stream.  This method will first attempt to
+     * load the class using the context class loader.  If that fails due to a
+     * ClassNotFoundException or a SecurityException then the requestor's
+     * class loader is used.  If the requestor object is null then the
+     * ClassUtilities class loader is used.
+     *
+     * @param name      The class name
+     * @param requestor The object requesting the resource or null
+     * @return The resource stream or null
+     */
+
+    public static InputStream getResourceAsStream(String name,
+                                                  Object requestor) {
+        Class requestorClass = null;
+        if (requestor == null) {
+            requestorClass = ClassUtils.class;
+        } else {
+            requestorClass = requestor.getClass();
+        }
+        return getResourceAsStream(name, requestorClass);
+    }
+
+    /**
+     * Load the specified resource stream.  This method will first attempt to
+     * load the class using the context class loader.  If that fails due to a
+     * ClassNotFoundException or a SecurityException then the requestor's
+     * class loader is used.  If the requestor object is null then the
+     * ClassUtilities class loader is used.
+     *
+     * @param name      The class name
+     * @param requestor The class of the object requesting the resource or null
+     * @return The resource stream or null
+     */
+
+    public static InputStream getResourceAsStream(String name,
+                                                  Class requestor) {
+        InputStream resourceStream = null;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        resourceStream = cl.getResourceAsStream(name);
+        if (resourceStream == null) {
+            cl = requestor.getClass().getClassLoader();
+            resourceStream = cl.getResourceAsStream(name);
+        }
+        return resourceStream;
+    }
 }

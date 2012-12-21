@@ -124,8 +124,6 @@ public class I18NHelper implements Helper {
 
     public Object call(MicroContext context) throws Exception {
         Context<String> rackInput = (Context<String>) context.get(Globals.RACK_INPUT);
-
-        log.info("Executing I18N for: " + rackInput.get(Rack.PATH_INFO));
         if (messageSource != null) {
             Locale locale = new Locale(DEFAULT_LANG);
             // detect locale

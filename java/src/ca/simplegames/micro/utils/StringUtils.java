@@ -110,8 +110,9 @@ public abstract class StringUtils {
         return !hasText(str);
     }
 
-    public static String defaultString(String source, String fallback) {
-        return hasText(source) ? source : (hasText(fallback) ? fallback : null);
+    public static String defaultString(Object source, String fallback) {
+        return String.valueOf(source!= null && hasText(source.toString()) ?
+                source : (hasText(fallback) ? fallback : null));
     }
 
     /**
