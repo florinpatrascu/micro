@@ -22,7 +22,7 @@ public class RepositoryWrapper {
         try {
 
             StringWriter writer = new StringWriter();
-            repository.getSite().getControllerManager().executeForPath(path, context);
+            repository.getSite().getControllerManager().executeForPath(repository, path, context);
             repository.getRenderer().render(context, path, null, writer);
             return writer.toString();
 

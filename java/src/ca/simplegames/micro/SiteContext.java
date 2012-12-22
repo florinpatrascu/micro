@@ -5,6 +5,7 @@ import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.helpers.i18n.I18NHelper;
 import ca.simplegames.micro.repositories.RepositoryManager;
+import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewRenderer;
@@ -35,9 +36,9 @@ public class SiteContext extends MapContext {
     private RepositoryManager repositoryManager;
     private ControllerManager controllerManager;
     private HelperManager helperManager;
-    private ViewRenderer renderer;
     private Map appConfig;
     private File webInfPath;
+    private RouteManager routeManager;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -64,7 +65,6 @@ public class SiteContext extends MapContext {
 
             try {
                 appConfig = (Map) new Yaml().load(new FileInputStream(config));
-                log.info(appConfig.toString());
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
                 cacheManager = new MicroCacheManager(this);
                 controllerManager = new ControllerManager(this);
@@ -85,6 +85,12 @@ public class SiteContext extends MapContext {
                 //add anything else to the context?
 
                 repositoryManager = new RepositoryManager(this);
+
+                File routesConfig = new File(configPath, "routes.yml");
+                if (routesConfig.exists()) {
+                    routeManager = new RouteManager(this, (Map<String, Object>)
+                            new Yaml().load(new FileInputStream(routesConfig)));
+                }
 
                 controllerManager.execute(findApplicationScript(configPath), context);
 
@@ -141,5 +147,9 @@ public class SiteContext extends MapContext {
 
     public File getWebInfPath() {
         return webInfPath != null ? webInfPath : new File(Globals.EMPTY_STRING);
+    }
+
+    public RouteManager getRouteManager() {
+        return routeManager;
     }
 }

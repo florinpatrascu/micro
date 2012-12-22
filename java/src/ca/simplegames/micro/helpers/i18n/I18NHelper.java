@@ -38,6 +38,13 @@ public class I18NHelper implements Helper {
     private static final String DEFAULT_LANG = "en";
     private List<String> infoDetails = new ArrayList<String>();
 
+    public boolean isBefore() {
+        return true;
+    }
+
+    public boolean isAfter() {
+        return false;
+    }
 
     public Helper init(SiteContext site, Map<String, Object> locales) throws Exception {
         this.site = site;

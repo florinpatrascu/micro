@@ -28,6 +28,18 @@ public interface Helper {
     public String getRepositoryAddress();
 
     /**
+     *
+     * @return true if this helper must be invoked before the call
+     */
+    public boolean isBefore();
+
+    /**
+     *
+     * @return true if this helper must be invoked after the call
+     */
+    public boolean isAfter();
+
+    /**
      * If there is a path specified, the helper will execute only if
      * the request matches the path
      *

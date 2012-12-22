@@ -10,12 +10,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * A thread safe context created for every new Request. Avoid serializing its instance as it may be
+ * loaded with user stuff.
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 11:05 AM)
  */
 public class MicroContext<T> implements Context<T> {
     protected Map<String, Object> map;
     protected Context<T> rackInput;
+    private boolean halt;
 
     public MicroContext(Map<String, Object> map) {
         this.map = map;
@@ -84,11 +88,23 @@ public class MicroContext<T> implements Context<T> {
         return (HttpServletRequest) rackInput.get(Rack.REQUEST);
     }
 
-    public HttpServletResponse getResponse(){
+    public HttpServletResponse getResponse() {
         return (HttpServletResponse) map.get(Globals.RESPONSE);
     }
 
     public SiteContext getSiteContext() {
         return (SiteContext) map.get(Globals.MICRO_SITE);
+    }
+
+    public boolean isHalt() {
+        return halt;
+    }
+
+    public void halt() {
+        halt = true;
+    }
+
+    public Context<T> getRackInput() {
+        return rackInput;
     }
 }

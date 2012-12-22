@@ -1,12 +1,10 @@
 package ca.simplegames.micro.controllers;
 
-import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Helper;
-import ca.simplegames.micro.MicroContext;
-import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.*;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
 import ca.simplegames.micro.cache.MicroCacheManager;
+import ca.simplegames.micro.repositories.Repository;
 import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.utils.ClassUtilities;
@@ -17,6 +15,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +75,7 @@ public class ControllerManager {
      * @throws ControllerNotFoundException if the controller is not found
      */
 
-    public Controller findController(String path) throws ControllerNotFoundException {
+    public Controller findController(String path) throws Exception {
         List<Helper> helpers = site.getHelpers();
 
         // Checking if the controller is available via any helpers
@@ -87,43 +87,42 @@ public class ControllerManager {
             }
         }
 
-        ScriptController scriptController = null;
-        try {
-            scriptController = (ScriptController) cachedScriptControllers.get(path);
-        } catch (MicroCacheException ignored) {
-        }
-
-        if(scriptController == null){
-            File controllerFile = new File(path);
-            if(controllerFile.exists()){
-                try {
-                    scriptController = new ScriptController(site,path,
-                            IOUtils.getStringFromReader(new FileReader(controllerFile)));
-
-                    cachedScriptControllers.put(path, scriptController);
-
-                } catch (IOException e) {
-                    throw new ControllerNotFoundException(path, e);
-                } catch (MicroCacheException e) {
-                    throw new ControllerNotFoundException(path, e);
-                }
-            }
-
-            if(scriptController!= null){
-                return scriptController;
-            }
-        }else{
-            return scriptController;
-        }
 
         try {
             return (Controller) ClassUtilities.loadClass(path).newInstance();
         } catch (Exception e) {
-            throw new ControllerNotFoundException(path, e);
+            // throw new ControllerNotFoundException(path, e);
+            ScriptController scriptController = null;
+            try {
+                scriptController = (ScriptController) cachedScriptControllers.get(path);
+            } catch (MicroCacheException ignored) {
+                throw new Exception(path, e);
+            }
+
+            if(scriptController == null){
+                File controllerFile = new File(path);
+                if(controllerFile.exists()){
+                    try {
+                        scriptController = new ScriptController(site,path,
+                                IOUtils.getStringFromReader(new FileReader(controllerFile)));
+
+                        cachedScriptControllers.put(path, scriptController);
+                        return scriptController;
+
+                    } catch (Exception ex) {
+                        throw new ControllerNotFoundException(path, ex);
+                    }
+                }else{
+                    throw new ControllerNotFoundException(path, e);
+                }
+            }else{
+                return scriptController;
+            }
         }
     }
 
-    public void executeForPath(String path, MicroContext context) {
+    public void executeForPath(Repository repository, String path, MicroContext context) {
+        log.info(String.format("for repository: %s, and path: %s", StringUtils.defaultString(repository.getName()), path));
         log.warn("todo: implement me: ca.simplegames.micro.controllers.ControllerManager#executeForPath");
     }
 }

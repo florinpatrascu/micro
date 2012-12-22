@@ -1,10 +1,8 @@
 package ca.simplegames.micro;
 
-import bsh.BshClassManager;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.ClassUtils;
 import org.apache.bsf.BSFManager;
-import org.apache.bsf.util.BSFEngineImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.*;
 import org.jrack.context.MapContext;
@@ -25,10 +23,15 @@ import java.util.List;
  * @since $Revision$ (created: 2012-12-17 4:21 PM)
  */
 public class MicroFilter extends JRack {
+    public static final String DOT = ".";
+    public static final String SLASH = "/";
+    public static final String INDEX = "index";
+    public static final String HTML_EXTENSION = ".html";
     private Logger log = LoggerFactory.getLogger(getClass());
 
     FilterConfig filterConfig;
     private SiteContext site;
+    private String welcomeFile;
 
     @Override
     public Object init(Object config) throws Exception {
@@ -37,6 +40,8 @@ public class MicroFilter extends JRack {
         final String realPath = servletContext.getRealPath("/");
         final File contextPath = new File(realPath);
         final File webInfPath = new File(contextPath, "WEB-INF");
+        welcomeFile = StringUtils.defaultString(
+                filterConfig.getInitParameter("filterAddsWelcomeFile"), "false").trim();
 
         site = new SiteContext(new MapContext<String>()
                 .with(Globals.SERVLET_CONTEXT, servletContext)
@@ -68,40 +73,90 @@ public class MicroFilter extends JRack {
     }
 
     public RackResponse call(Context<String> input) {
+        MicroContext context = new MicroContext<String>();
+
         input.with(Globals.MICRO_SITE, site);
         input.with(Rack.RACK_LOGGER, log);
-        List<Helper> helpers = site.getHelpers();
 
-        MicroContext context = new MicroContext<String>();
+        String pathInfo = input.get(Rack.PATH_INFO);
         context.with(Globals.RACK_INPUT, input)
                 .with(Globals.MICRO_SITE, site)
                 .with(Rack.RACK_LOGGER, log)
-                .with(Globals.PATH_INFO, input.get(Rack.PATH_INFO));
+                .with(Globals.LOG, log)
+                .with(Globals.REQUEST, context.getRequest())
+                .with(Globals.RESPONSE, context.getResponse())
+                .with(Globals.CONTEXT, context)
+                .with(Globals.SITE, site)
+                .with(Globals.PATH_INFO, pathInfo);
 
+        String path = maybeAppendHtmlToPath(context);
+        context.with(Globals.PATH, path.replace("//", SLASH));
+        log.info(">>>> " + context.get(Globals.PATH));
+
+        for (Repository repository : site.getRepositoryManager().getRepositories()) {
+            context.with(repository.getName(), repository.getRepositoryWrapper(context));
+        }
+
+        RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK);
+        context.with(Globals.RACK_RESPONSE, response);
+
+        callHelpers(site.getHelperManager().getBeforeHelpers(), context);
+        if (!context.isHalt()) {
+            callHelpers(site.getHelperManager().getHelpers(), context);
+
+            if (!context.isHalt()) {
+                String out = site.getRepositoryManager().getTemplatesRepository()
+                        .getRepositoryWrapper(context).get("default.html");
+
+                response.withContentType("text/html;charset=utf-8")
+                        .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
+                        .withBody(out);
+            }
+
+            if (!context.isHalt()) {
+                callHelpers(site.getHelperManager().getAfterHelpers(), context);
+            } else {
+            }
+        } else {
+
+        }
+        return response;
+    }
+
+    private String maybeAppendHtmlToPath(MicroContext context) {
+        final Context rackInput = context.getRackInput();
+
+        String path = (String) rackInput.get(JRack.PATH_INFO);
+        if (StringUtils.isBlank(path)) {
+            path = (String) rackInput.get(Rack.SCRIPT_NAME);
+        }
+
+        if (isFilterAddsWelcomeFile() && !path.contains(HTML_EXTENSION)) {
+            if (path.lastIndexOf(DOT) == -1) {
+                if (!path.endsWith(SLASH)) {
+                    path = path + SLASH;
+                }
+                path = path + INDEX + HTML_EXTENSION;
+            }
+            context.with(Globals.PATH_INFO, path);
+        }
+        return path;
+    }
+
+    private void callHelpers(List<Helper> helpers, MicroContext context) {
         if (!helpers.isEmpty()) {
             for (Helper helper : helpers) {
                 try {
                     helper.call(context);
+                    if (context.isHalt()) {
+                        break;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error(String.format("Helper: %s, error: %s", helper.getName(), e.getMessage()));
                 }
             }
         }
-
-        for(Repository repository: site.getRepositoryManager().getRepositories()){
-            context.with(repository.getName(), repository.getRepositoryWrapper(context));
-        }
-
-        String out = site.getRepositoryManager().getTemplatesRepository()
-                .getRepositoryWrapper(context).get("default.html");
-
-        RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK)
-                .withContentType("text/html;charset=utf-8")
-                .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
-                .withBody(out);
-
-        return response;
     }
 
     private void configureBSF() {
@@ -113,5 +168,11 @@ public class MicroFilter extends JRack {
 
     private void showBanner() {
 
+    }
+
+
+    public boolean isFilterAddsWelcomeFile() {
+        final String aTrue = "true";
+        return welcomeFile.equalsIgnoreCase(aTrue);
     }
 }
