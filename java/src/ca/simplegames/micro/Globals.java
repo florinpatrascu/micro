@@ -1,3 +1,19 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro;
 
 /**
@@ -5,6 +21,7 @@ package ca.simplegames.micro;
  * @since $Revision$ (created: 2012-12-19 11:18 AM)
  */
 public class Globals {
+    public static final String VERSION = "0.1";
     public static final String EMPTY_STRING = "";
     public static final String MICRO = "micro_";
     public static final String UTF8 = "UTF-8";
@@ -35,4 +52,10 @@ public class Globals {
     public static final String LOG = "log";
     public static final String CONTEXT = "context";
     public static final String RACK_RESPONSE = "rack_response";
+    public static final String TEMPLATE = "template";
+    public static final String PARAMETERS="parameters";
+    public static final String VIEW = "view";
+    public static final String CONTROLLERS = "controllers";
+    public static final String YML_EXTENSION=".yml";
+    public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME="config";
 }

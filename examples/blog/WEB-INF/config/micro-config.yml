@@ -6,6 +6,7 @@ repositories:
     path: views/content
     cache: memCache
     default: true
+    config_folder_name: config
   partials: {path: views/includes, cache: partials, default: false}
   templates: {path: views/templates}
 
@@ -29,6 +30,15 @@ locales:
   resource_cache: 10
   base_names: [config/locales/messages]
   type: properties
+  proprietary: true
+
+
+helpers:
+  - before:
+      path: /^(?!\/(join|payment))/
+      controller: ca.simplegames.micro.controllers.BinaryContent
+      repository: [templates]
+      options: {file_types: [.png, .jpg, .jpeg]}
 
 google_analytics_code: "1111-dev-1111"
 

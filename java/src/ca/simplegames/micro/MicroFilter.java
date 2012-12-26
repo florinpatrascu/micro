@@ -1,11 +1,30 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.repositories.Repository;
+import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.ClassUtils;
+import ca.simplegames.micro.utils.PathUtilities;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.*;
 import org.jrack.context.MapContext;
+import org.jrack.utils.Mime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +45,7 @@ public class MicroFilter extends JRack {
     public static final String DOT = ".";
     public static final String SLASH = "/";
     public static final String INDEX = "index";
-    public static final String HTML_EXTENSION = ".html";
+    public static final String HTML = "html";
     private Logger log = LoggerFactory.getLogger(getClass());
 
     FilterConfig filterConfig;
@@ -35,6 +54,7 @@ public class MicroFilter extends JRack {
 
     @Override
     public Object init(Object config) throws Exception {
+        showBanner();
         filterConfig = (FilterConfig) config;
         final ServletContext servletContext = filterConfig.getServletContext();
         final String realPath = servletContext.getRealPath("/");
@@ -68,10 +88,15 @@ public class MicroFilter extends JRack {
 
         site.loadApplication(webInfPath.getAbsolutePath() + "/config");
         // done with the init phase
-        showBanner();
         return this;
     }
 
+    /**
+     * main entry point, this is where Micro is processing all the incoming requests
+     *
+     * @param input the Rack input object
+     * @return a Rack response see: {@link RackResponse}
+     */
     public RackResponse call(Context<String> input) {
         MicroContext context = new MicroContext<String>();
 
@@ -85,30 +110,54 @@ public class MicroFilter extends JRack {
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.RESPONSE, context.getResponse())
-                .with(Globals.CONTEXT, context)
+                // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
 
         String path = maybeAppendHtmlToPath(context);
         context.with(Globals.PATH, path.replace("//", SLASH));
-        log.info(">>>> " + context.get(Globals.PATH));
 
         for (Repository repository : site.getRepositoryManager().getRepositories()) {
             context.with(repository.getName(), repository.getRepositoryWrapper(context));
         }
 
-        RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK);
+        RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK)
+                .withContentType(Mime.mimeType(
+                        PathUtilities.extractType((String) context.get(Globals.PATH))))
+                .withContentLength(0);
+
         context.with(Globals.RACK_RESPONSE, response);
 
         callHelpers(site.getHelperManager().getBeforeHelpers(), context);
+
         if (!context.isHalt()) {
-            callHelpers(site.getHelperManager().getHelpers(), context);
+            callHelpers(site.getHelperManager().getPathHelpers(path, context), context);
 
             if (!context.isHalt()) {
-                String out = site.getRepositoryManager().getTemplatesRepository()
-                        .getRepositoryWrapper(context).get("default.html");
+                String contentType = response.get(JRack.HTTP_CONTENT_TYPE);
+                if (contentType == null) {
+                    response.withContentType(HTML);
+                }
 
-                response.withContentType("text/html;charset=utf-8")
+                String templateName = StringUtils.defaultString(context.getTemplateName(),
+                        RepositoryManager.DEFAULT_TEMPLATE_NAME);
+
+                // calculate the Template name
+                View view = (View) context.get(Globals.VIEW);
+                if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
+                    templateName = view.getTemplate();
+                }else{
+                    View contentView = site.getRepositoryManager().getDefaultRepository().getView(path);
+                    if(contentView!=null && contentView.getTemplate()!=null){
+                        view = contentView;
+                        templateName = contentView.getTemplate();
+                    }
+                }
+
+                String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context).get(
+                                templateName + PathUtilities.extractType((String) context.get(Globals.PATH)));
+
+                response //.withContentType("text/html;charset=utf-8") !!!!
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                         .withBody(out);
             }
@@ -131,12 +180,12 @@ public class MicroFilter extends JRack {
             path = (String) rackInput.get(Rack.SCRIPT_NAME);
         }
 
-        if (isFilterAddsWelcomeFile() && !path.contains(HTML_EXTENSION)) {
+        if (isFilterAddsWelcomeFile() && !path.contains(HTML)) {
             if (path.lastIndexOf(DOT) == -1) {
                 if (!path.endsWith(SLASH)) {
                     path = path + SLASH;
                 }
-                path = path + INDEX + HTML_EXTENSION;
+                path = path + INDEX + DOT + HTML;
             }
             context.with(Globals.PATH_INFO, path);
         }
@@ -167,7 +216,13 @@ public class MicroFilter extends JRack {
     }
 
     private void showBanner() {
-
+        log.info("");
+        log.info(" _ __ ___ ( ) ___ _ __ ___ ");
+        log.info("| '_ ` _ \\| |/ __| '__/ _ \\ ");
+        log.info("| | | | | | | (__| | | (_) |");
+        log.info("|_| |_| |_|_|\\___|_|  \\___/  (v" + Globals.VERSION + ")");
+        log.info("= a modular micro MVC framework for Java");
+        log.info("");
     }
 
 

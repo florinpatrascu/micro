@@ -1,3 +1,19 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro.helpers.i18n;
 
 import ca.simplegames.micro.Globals;
@@ -46,7 +62,7 @@ public class I18NHelper implements Helper {
         return false;
     }
 
-    public Helper init(SiteContext site, Map<String, Object> locales) throws Exception {
+    public Helper init(SiteContext site, Map<String, Object> locales, String type) throws Exception {
         this.site = site;
 
         if (locales != null) {
@@ -117,16 +133,16 @@ public class I18NHelper implements Helper {
         return version;
     }
 
-    public String getRepositoryAddress() {
-        return null;
+    public String getRepositoryName() {
+        return Globals.EMPTY_STRING;
     }
 
     public String getPath() {
-        return null;
+        return Globals.EMPTY_STRING;
     }
 
-    public Map<String, Controller> getControllers() {
-        return null;
+    public String getController() {
+        return Globals.EMPTY_STRING;
     }
 
     public Object call(MicroContext context) throws Exception {
@@ -173,7 +189,7 @@ public class I18NHelper implements Helper {
             System.out.println("There is no 'messageSource' defined in your application context." +
                     " Please define one.");
         }
-        return null;
+        return Globals.EMPTY_STRING;
     }
 
     @Override

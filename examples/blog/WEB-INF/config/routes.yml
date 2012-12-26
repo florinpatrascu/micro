@@ -1,17 +1,15 @@
-route:
-  path: system/info
+# validate teh YAMl structure with: http://yaml-online-parser.appspot.com/
+- route: system/info
   method: get
   controller: ca.simplegames.micro.route.stats.StatsRoute
 
-route:
-  path: system/test
+- route: system/test
   method: get
   controller: demo/Demo.bsh
   repository: content
   page: system/demo.json
   options: {foo: bar}
 
-route:
-  path: hello/{name}
+- route: hello/{name}
   method: get, post
   controller: test/Hello.bsh

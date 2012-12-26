@@ -1,3 +1,19 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
@@ -67,30 +83,33 @@ public class SiteContext extends MapContext {
                 appConfig = (Map) new Yaml().load(new FileInputStream(config));
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
                 cacheManager = new MicroCacheManager(this);
-                controllerManager = new ControllerManager(this);
-                helperManager = new HelperManager(this);
-
-                /**
-                 * load the default i18N support, a default Helper
-                 */
-
-                Map<String, Object> localesModel = (Map<String, Object>) appConfig.get("locales");
-                if (localesModel != null) {
-                    Helper i18N = new I18NHelper();
-                    helperManager.addHelper(i18N.init(this, localesModel));
-                }
-
-                MicroContext context = new MicroContext();
-                context.with(Globals.MICRO_SITE, this);
-                //add anything else to the context?
 
                 repositoryManager = new RepositoryManager(this);
 
                 File routesConfig = new File(configPath, "routes.yml");
                 if (routesConfig.exists()) {
-                    routeManager = new RouteManager(this, (Map<String, Object>)
+                    routeManager = new RouteManager(this, (List<Map<String, Object>>)
                             new Yaml().load(new FileInputStream(routesConfig)));
                 }
+
+                controllerManager = new ControllerManager(this);
+                helperManager = new HelperManager(this, appConfig.get(Globals.MICRO_HELPERS_CONFIG));
+
+                /**
+                 * load the default i18N support, a default Helper
+                 */
+                Map<String, Object> localesModel = (Map<String, Object>) appConfig.get("locales");
+                if (localesModel != null && localesModel.containsKey("proprietary")) {
+                    // temporary hacks
+                    Helper i18N = new I18NHelper();
+                    helperManager.addHelper(i18N.init(this, localesModel, HelperManager.BEFORE));
+                    helperManager.getBeforeHelpers().add(0, i18N);
+                    helperManager.getHelpersMap().put(i18N.getName(), i18N);
+                }
+
+                MicroContext context = new MicroContext();
+                context.with(Globals.MICRO_SITE, this);
+                //add anything else to the context?
 
                 controllerManager.execute(findApplicationScript(configPath), context);
 

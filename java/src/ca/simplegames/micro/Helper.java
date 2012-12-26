@@ -1,11 +1,24 @@
-package ca.simplegames.micro;
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import ca.simplegames.micro.controllers.Controller;
+package ca.simplegames.micro;
 
 import java.util.Map;
 
 /**
- *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-18 11:17 PM)
  */
@@ -14,10 +27,12 @@ public interface Helper {
     /**
      * executed only once, when the Micro framework starts up
      *
-     * @param site the Micro site object
+     * @param site   the Micro site object
+     * @param config a map containing arbitrary values
+     * @param type   one of these: before, after
      * @throws Exception
      */
-    public Helper init(SiteContext site, Map<String, Object> config) throws Exception;
+    public Helper init(SiteContext site, Map<String, Object> config, String type) throws Exception;
 
     public String getName();
 
@@ -25,16 +40,14 @@ public interface Helper {
 
     public String getVersion();
 
-    public String getRepositoryAddress();
+    public String getRepositoryName();
 
     /**
-     *
      * @return true if this helper must be invoked before the call
      */
     public boolean isBefore();
 
     /**
-     *
      * @return true if this helper must be invoked after the call
      */
     public boolean isAfter();
@@ -48,9 +61,9 @@ public interface Helper {
     public String getPath();
 
     /**
-     * @return a map containing Helper's own controllers; Name and Instance
+     * @return the name of the controller used by this Helper
      */
-    public Map<String, Controller> getControllers();
+    public String getController();
 
     /**
      * executed on every request

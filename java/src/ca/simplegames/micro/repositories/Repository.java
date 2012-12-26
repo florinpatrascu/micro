@@ -1,16 +1,35 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro.repositories;
 
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.View;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.IO;
+import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.Map;
@@ -31,9 +50,10 @@ public abstract class Repository {
     private String pathName;
     private File path;
     private ViewRenderer renderer;
+    private File config;
     private boolean isDefault;
 
-    protected Repository(String name, MicroCache cache, SiteContext site, String pathName) {
+    protected Repository(String name, MicroCache cache, SiteContext site, String pathName, String configPathName) {
         this.name = name;
         log = LoggerFactory.getLogger("Repository::" + name.toUpperCase());
 
@@ -47,6 +67,10 @@ public abstract class Repository {
         }
 
         if (path.exists()) {
+
+            if (configPathName != null) {
+                config = new File(path, configPathName);
+            }
 
             // Initialize the View renderer
             Map<String, Object> rendererConfig = (Map<String, Object>) site.getAppConfig().get("renderer");
@@ -62,6 +86,9 @@ public abstract class Repository {
                 renderer.loadConfiguration(rendererConfig);
 
                 log.info(String.format(" ... added repository: '%s' on: %s", name, path.getAbsolutePath()));
+                if (config!= null && config.exists() && config.isDirectory()) {
+                    log.info(String.format("               config: '%s'", config.getAbsolutePath()));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -133,7 +160,7 @@ public abstract class Repository {
         if (path != null) {
             final File file = pathToFile(path);
 
-            if (cache!= null) {
+            if (cache != null) {
                 content = (String) cache.get(file.getAbsolutePath());
             }
 
@@ -149,4 +176,22 @@ public abstract class Repository {
         return content;
     }
 
+    public void callControllersForPath(String path, MicroContext context) {
+
+    }
+
+    public View getView(String name) {
+        if (config != null) {
+            File view = new File(config, PathUtilities.extractViewPath(name) + Globals.YML_EXTENSION);
+            if (view.exists()) {
+                try {
+                    return new View((Map) new Yaml().load(new FileInputStream(view)));
+                } catch (FileNotFoundException e) {
+                    log.error("cannot load the configuration from: " + name);
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 }

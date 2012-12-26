@@ -1,10 +1,29 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro.controllers;
 
-import ca.simplegames.micro.*;
+import ca.simplegames.micro.Globals;
+import ca.simplegames.micro.Helper;
+import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
-import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.repositories.Repository;
+import ca.simplegames.micro.utils.CollectionUtils;
 import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.utils.ClassUtilities;
@@ -13,10 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,20 +44,22 @@ public class ControllerManager {
     private Logger log = LoggerFactory.getLogger(getClass());
     private SiteContext site;
     private MicroCache cachedScriptControllers;
+    private File pathToAppControllers;
 
     public ControllerManager(SiteContext site) {
         this.site = site;
         cachedScriptControllers = site.getCacheManager()
                 .getCacheWithDefault(Globals.SCRIPT_CONTROLLERS_CACHE_NAME);
+        pathToAppControllers = new File(site.getWebInfPath(), "controllers");
     }
 
-    public Object execute(String actionName, MicroContext context) throws Exception {
-        return execute(actionName, context, null);
+    public Object execute(String controllerName, MicroContext context) throws Exception {
+        return execute(controllerName, context, null);
     }
 
     public Object execute(String controllerName, MicroContext context, Map configuration) throws Exception {
-        if(StringUtils.isBlank(controllerName)){
-            throw new ControllerNotFoundException("Invalid controller name: "+controllerName);
+        if (StringUtils.isBlank(controllerName)) {
+            throw new ControllerNotFoundException("Invalid controller name: " + controllerName);
         }
 
         Controller controller = findController(controllerName);
@@ -50,13 +68,13 @@ public class ControllerManager {
         if (controller != null) {
             ScriptController scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
 
-            if(scriptController!= null){
-                 result =  scriptController.execute(context, configuration);
-            }else{
+            if (scriptController != null) {
+                result = scriptController.execute(context, configuration);
+            } else {
                 Class[] paramTypes = {Map.class, Map.class};
                 Object[] params = {context, configuration};
                 Method execute = controller.getClass().getMethod("execute", paramTypes);
-                result =  execute.invoke(params);
+                result = execute.invoke(params);
             }
         }
 
@@ -64,65 +82,71 @@ public class ControllerManager {
     }
 
     /**
-     * Find an action with the given name.  The name may be the name of an
-     * action registered with the ActionManager at startup, an action from a
-     * helper, a partial file path rooted in the action root directory or a
-     * fully qualified Java class.
+     * Find a controller with the given name.  The name may be the name of an
+     * action registered with the ControllerManager at startup, a file path rooted in the
+     * controller's root directory or a fully qualified Java class.
      *
-     * @param path the name of the action, can be absolute path to a scripting file or a
-     *             class reference
+     * @param name the name of the controller, can be am absolute path to a
+     *             scripting file or a class reference
      * @return the controller object.
      * @throws ControllerNotFoundException if the controller is not found
      */
 
-    public Controller findController(String path) throws Exception {
+    public Controller findController(String name) throws Exception {
         List<Helper> helpers = site.getHelpers();
 
-        // Checking if the controller is available via any helpers
-        if (helpers != null && !helpers.isEmpty()) {
-            for (Helper helper : helpers) {
-                if (helper.getControllers()!= null && helper.getControllers().containsKey(path)) {
-                    return helper.getControllers().get(path);
-                }
-            }
-        }
-
+        /** not sure yet
+         * // Checking if the controller is available via any helpers
+         * String canBeHelper = name;
+         * if (helpers != null && !helpers.isEmpty()) {
+         *  for (Helper helper : helpers) {
+         *   if (helper.getController() != null && helper.getPath().equalsIgnoreCase(name)) {
+         *       canBeHelper = helper.getController();
+         *   break;
+         *   }
+         *  }
+         * }
+         */
 
         try {
-            return (Controller) ClassUtilities.loadClass(path).newInstance();
+            return (Controller) ClassUtilities.loadClass(name).newInstance();
         } catch (Exception e) {
             // throw new ControllerNotFoundException(path, e);
-            ScriptController scriptController = null;
+            ScriptController scriptController;
             try {
-                scriptController = (ScriptController) cachedScriptControllers.get(path);
+                scriptController = (ScriptController) cachedScriptControllers.get(name);
             } catch (MicroCacheException ignored) {
-                throw new Exception(path, e);
+                throw new Exception(name, e);
             }
 
-            if(scriptController == null){
-                File controllerFile = new File(path);
-                if(controllerFile.exists()){
+            if (scriptController == null) {
+                File controllerFile = new File(name);
+                if (!controllerFile.exists()) {
+                    // maybe it exists in the app controllers?
+                    controllerFile = new File( getPathToAppControllers(), name);
+                }
+
+                if (controllerFile.exists()) {
                     try {
-                        scriptController = new ScriptController(site,path,
+                        scriptController = new ScriptController(site, name,
                                 IOUtils.getStringFromReader(new FileReader(controllerFile)));
 
-                        cachedScriptControllers.put(path, scriptController);
+                        cachedScriptControllers.put(name, scriptController);
                         return scriptController;
 
                     } catch (Exception ex) {
-                        throw new ControllerNotFoundException(path, ex);
+                        throw new ControllerNotFoundException(name, ex);
                     }
-                }else{
-                    throw new ControllerNotFoundException(path, e);
+                } else {
+                    throw new ControllerNotFoundException(name, e);
                 }
-            }else{
+            } else {
                 return scriptController;
             }
         }
     }
 
-    public void executeForPath(Repository repository, String path, MicroContext context) {
-        log.info(String.format("for repository: %s, and path: %s", StringUtils.defaultString(repository.getName()), path));
-        log.warn("todo: implement me: ca.simplegames.micro.controllers.ControllerManager#executeForPath");
+    public File getPathToAppControllers() {
+        return pathToAppControllers;
     }
 }

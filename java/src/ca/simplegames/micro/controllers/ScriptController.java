@@ -1,3 +1,19 @@
+/*
+ * Copyright (c)2012. Florin T.PATRASCU
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ca.simplegames.micro.controllers;
 
 import ca.simplegames.micro.Globals;
@@ -6,9 +22,12 @@ import ca.simplegames.micro.SiteContext;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
+import org.jrack.context.MapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -45,6 +64,10 @@ public class ScriptController implements Controller {
         // bsfManager.setClassLoader(BSFManager.class.getClassLoader());
         bsfManager.setClassLoader(this.getClass().getClassLoader());
         // bsfManager.setClassLoader(Thread.currentThread().getContextClassLoader());
+        // bsfManager.declareBean("response", context.getSiteContext(), HttpServletResponse.class);
+        // bsfManager.declareBean("request", context.getRequest(), HttpServletRequest.class);
+        bsfManager.declareBean("context", context, MicroContext.class);
+        // bsfManager.declareBean("rack_input", context.getRackInput(), MapContext.class);
         bsfManager.declareBean("site", context.getSiteContext(), SiteContext.class);
         final Logger logger = LoggerFactory.getLogger(controllerName);
         bsfManager.declareBean("log", logger, Logger.class);
@@ -64,7 +87,7 @@ public class ScriptController implements Controller {
             bsfEngine.exec(controllerName, 0, 0, script);
         } catch (Throwable e) {
             logger.error(e.getMessage());
-            throw new Exception("error while executing: "+controllerName);
+            throw new Exception("error while executing: "+controllerName+"; details: "+e.getMessage());
         }
         return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
     }
