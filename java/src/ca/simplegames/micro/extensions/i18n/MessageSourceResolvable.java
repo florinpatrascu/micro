@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ca.simplegames.micro.helpers.i18n;
+package ca.simplegames.micro.extensions.i18n;
 
 /**
  * Interface for objects that are suitable for message resolution in a

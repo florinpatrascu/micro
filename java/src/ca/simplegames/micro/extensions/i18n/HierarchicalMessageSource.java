@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ca.simplegames.micro.helpers.i18n;
+package ca.simplegames.micro.extensions.i18n;
 
 /**
  * Sub-interface of MessageSource to be implemented by objects that

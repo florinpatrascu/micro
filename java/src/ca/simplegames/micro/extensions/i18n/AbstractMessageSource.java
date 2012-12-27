@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ca.simplegames.micro.helpers.i18n;
+package ca.simplegames.micro.extensions.i18n;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

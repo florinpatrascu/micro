@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-package ca.simplegames.micro.helpers.i18n;
+package ca.simplegames.micro.extensions.i18n;
 
 import java.util.Locale;
 
 /**
- * Simple implementation of the LocaleContext interface,
- * always returning a specified Locale.
+ * Strategy interface for determining the current Locale.
+ * <p/>
+ * <p>A LocaleContext instance can be associated with a thread
+ * via the LocaleContextHolder class.
  *
  * @author Juergen Hoeller
+ * @see LocaleContextHolder
+ * @see java.util.Locale
  * @since 1.2
  */
-public class SimpleLocaleContext implements LocaleContext {
+public interface LocaleContext {
 
-	private final Locale locale;
-
-	/**
-	 * Create a new SimpleLocaleContext that exposes the specified Locale.
-	 * Every <code>getLocale()</code> will return this Locale.
-	 * @param locale the Locale to expose
-	 */
-	public SimpleLocaleContext(Locale locale) {
-		this.locale = locale;
-	}
-
-	public Locale getLocale() {
-		return locale;
-	}
+    /**
+     * Return the current Locale, which can be fixed or determined dynamically,
+     * depending on the implementation strategy.
+     */
+    Locale getLocale();
 
 }
