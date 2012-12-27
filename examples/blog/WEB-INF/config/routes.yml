@@ -1,4 +1,4 @@
-# validate teh YAMl structure with: http://yaml-online-parser.appspot.com/
+# validate the YAMl structure with: http://yaml-online-parser.appspot.com/
 - route: system/info
   method: get
   controller: ca.simplegames.micro.route.stats.StatsRoute
