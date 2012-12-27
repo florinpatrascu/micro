@@ -69,7 +69,7 @@ public class PathUtilities {
         JaxRsUriTemplateProcessor processor = new JaxRsUriTemplateProcessor(testPath);
         UriTemplateMatcher matcher = processor.matcher();
 
-        if (processor.matcher().matches(requestPath)) {
+        if (matcher.matches(requestPath)) {
             return matcher;
         } else {
             return null;

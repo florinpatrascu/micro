@@ -22,6 +22,7 @@ import ca.simplegames.micro.cache.MicroCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
@@ -35,7 +36,7 @@ public class FSRepository extends Repository {
     @Override
     public InputStream getInputStream(String name) {
         try {
-            return new ByteArrayInputStream(read(name).getBytes(Globals.UTF8));
+            return new ByteArrayInputStream(read(name).getBytes(Charset.forName(Globals.UTF8)));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

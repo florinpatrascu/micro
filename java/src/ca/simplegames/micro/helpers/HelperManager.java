@@ -16,7 +16,6 @@
 
 package ca.simplegames.micro.helpers;
 
-import bsh.StringUtil;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.MicroContext;
@@ -54,15 +53,15 @@ public class HelperManager {
         List<Map<String, Object>> helpersConfig = (List<Map<String, Object>>) config;
         if (!CollectionUtils.isEmpty(helpersConfig)) {
             //load helpers from config
-            log.warn("TODO: implement me - ca.simplegames.micro.helpers.HelperManager#HelperManager");
             for (Map<String, Object> helperConfig : helpersConfig) {
                 for (Map.Entry<String, Object> entry : helperConfig.entrySet()) {
                     try {
                         String helperType = entry.getKey();
                         Map<String, Object> helperDefinition = (Map<String, Object>) entry.getValue();
-
+                        Helper helper = createHelperFromModel(helperDefinition, helperType);
+                        addHelper(helper);
                     } catch (Exception e) {
-                        log.error("cannot load the following helper: "+helperConfig);
+                        log.error("cannot load the following helper: " + helperConfig);
                         e.printStackTrace();
                     }
 
@@ -73,28 +72,27 @@ public class HelperManager {
         }
     }
 
-    public Helper addHelper(Map<String, Object> model) {
-        if (model != null && !model.isEmpty()) {
-            Helper helper = null;
-
-            return addHelper(helper);
-        } else {
-            return null;
+    public Helper createHelperFromModel(Map<String, Object> model, String type) throws Exception {
+        Helper helper = null;
+        if (!CollectionUtils.isEmpty(model)) {
+            helper = new GenericHelper();
+            helper.init(site, model, StringUtils.defaultString(type, Globals.EMPTY_STRING).trim());
         }
+        return helper;
     }
 
     public Helper addHelper(Helper helper) {
         if (helper != null) {
             if (helper.isBefore()) {
-                    beforeHelpers.add(helper);
+                beforeHelpers.add(helper);
             } else if (helper.isAfter()) {
                 afterHelpers.add(helper);
-            } else if(StringUtils.isNotBlank(helper.getPath())) {
+            } else if (StringUtils.isNotBlank(helper.getPath())) {
                 pathHelpers.add(helper);
             } else {
                 helpers.add(helper);
             }
-            helpersMap.put(helper.getName().toLowerCase(), helper);
+            helpersMap.put(helper.getName(), helper);
         }
         return helper;
     }
@@ -118,10 +116,14 @@ public class HelperManager {
     public List<Helper> getPathHelpers(String inputPath, MicroContext context) {
         List<Helper> matchingHelpers = new ArrayList<Helper>();
 
-        for(Helper helper: pathHelpers){
+        for (Helper helper : pathHelpers) {
             UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(inputPath, helper.getPath());
-            if(templateMatcher!= null){
-                context.with(Globals.PARAMETERS, templateMatcher.getVariables());
+            if (templateMatcher != null) {
+                try {
+                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+                } catch (IllegalStateException e) {
+                    log.error(e.getMessage()); //todo: improve the error message
+                }
                 matchingHelpers.add(helper);
             }
         }

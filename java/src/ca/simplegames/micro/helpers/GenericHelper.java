@@ -21,6 +21,8 @@ import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
+import ca.simplegames.micro.utils.Assert;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
@@ -35,22 +37,22 @@ public class GenericHelper implements Helper {
     private String name;
     private String description;
     private String version;
-    private Repository repository;
     private String controllerName;
     private Boolean before;
+    private Boolean after;
     private Map<String, Object> config;
 
     public Helper init(SiteContext site, Map<String, Object> config, String type) throws Exception {
         if (type != null) {
             before = type.equalsIgnoreCase(HelperManager.BEFORE);
+            after = type.equalsIgnoreCase(HelperManager.AFTER);
         }
 
         path = (String) config.get("path");
-        name = (String) config.get("name");
+        name = StringUtils.defaultString((String) config.get("name"), Globals.EMPTY_STRING);
         description = (String) config.get("description");
         version = (String) config.get("version");
         controllerName = (String) config.get("controller");
-        repository = site.getRepositoryManager().getRepository((String) config.get("repository"));
 
         this.config = (Map<String, Object>) config.get("options");
         return null;
@@ -68,16 +70,12 @@ public class GenericHelper implements Helper {
         return version;
     }
 
-    public String getRepositoryName() {
-        return repository == null ? Globals.EMPTY_STRING : repository.getName();
-    }
-
     public boolean isBefore() {
         return before != null && before;
     }
 
     public boolean isAfter() {
-        return before != null && !before;
+        return after != null && after;
     }
 
     public String getPath() {

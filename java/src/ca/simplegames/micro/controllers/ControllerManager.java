@@ -22,8 +22,6 @@ import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
-import ca.simplegames.micro.repositories.Repository;
-import ca.simplegames.micro.utils.CollectionUtils;
 import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.utils.ClassUtilities;
@@ -41,6 +39,7 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-19 12:53 PM)
  */
 public class ControllerManager {
+    public static final String EXECUTE_METHOD = "execute";
     private Logger log = LoggerFactory.getLogger(getClass());
     private SiteContext site;
     private MicroCache cachedScriptControllers;
@@ -71,10 +70,10 @@ public class ControllerManager {
             if (scriptController != null) {
                 result = scriptController.execute(context, configuration);
             } else {
-                Class[] paramTypes = {Map.class, Map.class};
+                Class[] paramTypes = {MicroContext.class, Map.class};
                 Object[] params = {context, configuration};
-                Method execute = controller.getClass().getMethod("execute", paramTypes);
-                result = execute.invoke(params);
+                Method method = controller.getClass().getDeclaredMethod(EXECUTE_METHOD, paramTypes);
+                result = method.invoke(controller, params);
             }
         }
 
@@ -123,7 +122,7 @@ public class ControllerManager {
                 File controllerFile = new File(name);
                 if (!controllerFile.exists()) {
                     // maybe it exists in the app controllers?
-                    controllerFile = new File( getPathToAppControllers(), name);
+                    controllerFile = new File(getPathToAppControllers(), name);
                 }
 
                 if (controllerFile.exists()) {

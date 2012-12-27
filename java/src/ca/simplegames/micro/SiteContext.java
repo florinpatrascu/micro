@@ -36,6 +36,7 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -103,8 +104,9 @@ public class SiteContext extends MapContext {
                     // temporary hacks
                     Helper i18N = new I18NHelper();
                     helperManager.addHelper(i18N.init(this, localesModel, HelperManager.BEFORE));
-                    helperManager.getBeforeHelpers().add(0, i18N);
-                    helperManager.getHelpersMap().put(i18N.getName(), i18N);
+                    // now make sure the i18N filter is always first
+                    Collections.swap(helperManager.getBeforeHelpers(), 0, helperManager.getBeforeHelpers().size()-1);
+                    //helperManager.getHelpersMap().put(i18N.getName(), i18N);
                 }
 
                 MicroContext context = new MicroContext();

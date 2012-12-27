@@ -16,10 +16,9 @@
 
 package ca.simplegames.micro;
 
-import bsh.StringUtil;
-import org.apache.commons.lang.StringUtils;
 import org.jrack.Context;
 import org.jrack.Rack;
+import org.jrack.RackResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -128,5 +127,13 @@ public class MicroContext<T> implements Context<T> {
 
     public String getTemplateName() {
         return (String) get(Globals.TEMPLATE);
+    }
+
+    public RackResponse getRackResponse() {
+        return (RackResponse) get(Globals.RACK_RESPONSE);
+    }
+
+    public void setRackResponse(RackResponse response) {
+        with(Globals.RACK_RESPONSE, response);
     }
 }

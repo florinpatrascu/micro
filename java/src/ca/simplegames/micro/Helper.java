@@ -40,8 +40,6 @@ public interface Helper {
 
     public String getVersion();
 
-    public String getRepositoryName();
-
     /**
      * @return true if this helper must be invoked before the call
      */

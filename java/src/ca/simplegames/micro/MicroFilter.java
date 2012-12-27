@@ -126,7 +126,7 @@ public class MicroFilter extends JRack {
                         PathUtilities.extractType((String) context.get(Globals.PATH))))
                 .withContentLength(0);
 
-        context.with(Globals.RACK_RESPONSE, response);
+        context.setRackResponse(response);
 
         callHelpers(site.getHelperManager().getBeforeHelpers(), context);
 
