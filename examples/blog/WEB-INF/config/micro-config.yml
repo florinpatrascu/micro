@@ -46,8 +46,3 @@ helpers:
       options: {
         mime_types: { .txt: "text/plain;charset=UTF-8" }
       }
-
-google_analytics_code: "1111-dev-1111"
-
-production:
-  google_analytics_code: "2222-prod-2222"

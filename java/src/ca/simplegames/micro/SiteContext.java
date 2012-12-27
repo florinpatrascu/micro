@@ -22,12 +22,9 @@ import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.helpers.i18n.I18NHelper;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
-import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.StringUtils;
-import ca.simplegames.micro.viewers.ViewRenderer;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
-import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -105,12 +102,16 @@ public class SiteContext extends MapContext {
                     Helper i18N = new I18NHelper();
                     helperManager.addHelper(i18N.init(this, localesModel, HelperManager.BEFORE));
                     // now make sure the i18N filter is always first
-                    Collections.swap(helperManager.getBeforeHelpers(), 0, helperManager.getBeforeHelpers().size()-1);
+                    Collections.swap(helperManager.getBeforeHelpers(), 0, helperManager.getBeforeHelpers().size() - 1);
                     //helperManager.getHelpersMap().put(i18N.getName(), i18N);
                 }
 
                 MicroContext context = new MicroContext();
-                context.with(Globals.MICRO_SITE, this);
+                context.with(Globals.MICRO_SITE, this)
+                        .with(Globals.WEB_APP_NAME, StringUtils.defaultString(appConfig.get("name"), "<name your app>"))
+                        .with(Globals.WEB_APP_DESCRIPTION, StringUtils.defaultString(appConfig.get("description"),
+                                "<describe your app>"));
+
                 //add anything else to the context?
 
                 controllerManager.execute(findApplicationScript(configPath), context);

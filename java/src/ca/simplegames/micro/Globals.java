@@ -58,4 +58,6 @@ public class Globals {
     public static final String CONTROLLERS = "controllers";
     public static final String YML_EXTENSION=".yml";
     public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME="config";
+    public static String WEB_APP_NAME=MICRO+"web_app_name";
+    public static String WEB_APP_DESCRIPTION=MICRO+"web_app_description";
 }
