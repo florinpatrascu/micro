@@ -16,8 +16,13 @@
 
 package ca.simplegames.micro.route;
 
+import ca.simplegames.micro.Globals;
+import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.utils.PathUtilities;
+import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +38,50 @@ import java.util.Map;
 public class RouteManager {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<Route> routeControllers = new ArrayList<Route>();
-    private Map<String, Route> routeControllersMap = new HashMap<String, Route>();
+    private List<Route> routes = new ArrayList<Route>();
+    private Map<String, Route> routesMap = new HashMap<String, Route>();
+    //private Map<Uri, Route> compiledRoutesMap = new HashMap<String, Route>();
     private SiteContext site;
 
-    public RouteManager(SiteContext site, List<Map<String, Object>> config) {
+    public RouteManager(SiteContext site, List<Map<String, Object>> routeMaps) {
         this.site = site;
+        if (!CollectionUtils.isEmpty(routeMaps)) {
+            //load helpers from config
+            for (Map<String, Object> routeMap : routeMaps) {
+                try {
+                    String routePath = (String) routeMap.get("route");
+                    Route route = new RouteWrapper(routePath, routeMap);
+                    add(route);
+                } catch (Exception e) {
+                    log.error("cannot load the following router for: " + routeMaps);
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
 
-    public RouteManager addRouteController(Route route, Map<String, Object> config) throws Exception{
-
-        return this;
+    private void add(Route route) {
+        if(route!=null){
+            routes.add(route);
+            routesMap.put(route.getPath(), route);
+        }
     }
 
+    public void call(String path, MicroContext context) throws Exception {
+        for (Route route : routes) {
+            UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
+            if (templateMatcher != null) {
+                try {
+                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+                } catch (IllegalStateException e) {
+                    log.error(e.getMessage()); //todo: improve the error message
+                }
+                route.call(context);
+                if(context.isHalt()){
+                    break;
+                }
+            }
+        }
+    }
 }

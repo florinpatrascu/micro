@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ca.simplegames.micro.controllers;
+package ca.simplegames.micro;
 
 import ca.simplegames.micro.MicroContext;
 
@@ -31,8 +31,7 @@ public interface Controller extends Serializable {
      *
      * @param context       a Map containing input parameters
      * @param configuration an action specific configuration. Can be null
-     * @return an Object, optional
      * @throws Exception if any problems
      */
-    public Object execute(MicroContext context, Map configuration) throws Exception;
+    public void execute(MicroContext context, Map configuration) throws Exception;
 }

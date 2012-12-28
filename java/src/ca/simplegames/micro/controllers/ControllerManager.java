@@ -16,8 +16,8 @@
 
 package ca.simplegames.micro.controllers;
 
+import ca.simplegames.micro.Controller;
 import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,11 +51,11 @@ public class ControllerManager {
         pathToAppControllers = new File(site.getWebInfPath(), "controllers");
     }
 
-    public Object execute(String controllerName, MicroContext context) throws Exception {
-        return execute(controllerName, context, null);
+    public void execute(String controllerName, MicroContext context) throws Exception {
+        execute(controllerName, context, null);
     }
 
-    public Object execute(String controllerName, MicroContext context, Map configuration) throws Exception {
+    public void execute(String controllerName, MicroContext context, Map configuration) throws Exception {
         if (StringUtils.isBlank(controllerName)) {
             throw new ControllerNotFoundException("Invalid controller name: " + controllerName);
         }
@@ -68,7 +67,7 @@ public class ControllerManager {
             ScriptController scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
 
             if (scriptController != null) {
-                result = scriptController.execute(context, configuration);
+                scriptController.execute(context, configuration);
             } else {
                 Class[] paramTypes = {MicroContext.class, Map.class};
                 Object[] params = {context, configuration};
@@ -76,8 +75,6 @@ public class ControllerManager {
                 result = method.invoke(controller, params);
             }
         }
-
-        return result;
     }
 
     /**

@@ -1,2 +1,3 @@
 controllers:
-  - controller: header/main.bsh
+  - controller:
+      name: header/main.bsh

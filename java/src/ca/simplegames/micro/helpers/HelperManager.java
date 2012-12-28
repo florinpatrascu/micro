@@ -98,17 +98,7 @@ public class HelperManager {
     public List<Helper> getPathHelpers(String inputPath, MicroContext context) {
         List<Helper> matchingHelpers = new ArrayList<Helper>();
 
-//        for (Helper helper : pathHelpers) {
-//            UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(inputPath, helper.getPath());
-//            if (templateMatcher != null) {
-//                try {
-//                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
-//                } catch (IllegalStateException e) {
-//                    log.error(e.getMessage()); //todo: improve the error message
-//                }
-//                matchingHelpers.add(helper);
-//            }
-//        }
+//
 
         return matchingHelpers;
     }

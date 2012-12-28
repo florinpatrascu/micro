@@ -18,6 +18,7 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.utils.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,19 +26,28 @@ import java.util.Map;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-24 12:09 PM)
  */
+@SuppressWarnings("unchecked")
 public class View {
     private Map<String, Object> config;
+    private String repositoryName = null;
     private String template = null;
     private List<Map<String, Object>> controllers = null;
 
     public View(Map<String, Object> config) {
         if (!CollectionUtils.isEmpty(config)) {
-            this.config = config;
+            this.config = (Map<String, Object>) config.get(Globals.OPTIONS);
+
+            if (config.get(Globals.REPOSITORY) != null) {
+                repositoryName = (String) config.get(Globals.REPOSITORY);
+            }
             if (config.get(Globals.TEMPLATE) != null) {
                 template = (String) config.get(Globals.TEMPLATE);
             }
             if (config.get(Globals.CONTROLLERS) != null) {
                 controllers = (List<Map<String, Object>>) config.get(Globals.CONTROLLERS);
+            }
+            if (config.get(Globals.CONTROLLER) != null) {
+                controllers = Collections.singletonList((Map<String, Object>)config.get(Globals.CONTROLLER));
             }
         }
     }
@@ -52,5 +62,9 @@ public class View {
 
     public Map<String, Object> getConfig() {
         return config;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
     }
 }

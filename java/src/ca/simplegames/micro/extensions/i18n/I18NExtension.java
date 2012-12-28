@@ -19,11 +19,10 @@ package ca.simplegames.micro.extensions.i18n;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.extensions.Extension;
+import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.utils.Assert;
 import org.apache.commons.lang3.StringUtils;
-import org.jrack.context.MapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +34,7 @@ import java.util.*;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 10:19 PM)
  */
+@SuppressWarnings("unchecked")
 public class I18NExtension implements Extension {
     private Logger log = LoggerFactory.getLogger(getClass());
 

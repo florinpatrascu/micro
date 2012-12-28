@@ -39,7 +39,6 @@ public class Globals {
     public static final String MICRO_HELPERS_CONFIG = "helpers";
 
     public static final String RACK_INPUT = MICRO + "rack_input";
-    public static final String SCRIPT_CONTROLLER_RESPONSE = MICRO + "script_controller_response";
     public static final String LOCALE = "locale";
     public static final String DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH = "ca/simplegames/micro/viewers/velocity/VM_global_library.vm";
     public static final String MICRO_REPOSITORY_MANAGER = MICRO + "repository_manager";
@@ -54,11 +53,15 @@ public class Globals {
     public static final String CONTEXT = "context";
     public static final String RACK_RESPONSE = "rack_response";
     public static final String TEMPLATE = "template";
+    public static final String REPOSITORY = "repository";
+    public static final String CONTROLLER = "controller";
+    public static final String CONTROLLERS = CONTROLLER+"s";
     public static final String PARAMETERS="parameters";
     public static final String VIEW = "view";
-    public static final String CONTROLLERS = "controllers";
     public static final String YML_EXTENSION=".yml";
     public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME="config";
-    public static String WEB_APP_NAME=MICRO+"web_app_name";
-    public static String WEB_APP_DESCRIPTION=MICRO+"web_app_description";
+    public static final String WEB_APP_NAME=MICRO+"web_app_name";
+    public static final String WEB_APP_DESCRIPTION=MICRO+"web_app_description";
+    public static final String OPTIONS = "options";
+    public static final String NAME = "name";
 }

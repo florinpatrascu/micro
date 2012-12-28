@@ -97,7 +97,7 @@ public class MicroFilter extends JRack {
      * @param input the Rack input object
      * @return a Rack response see: {@link RackResponse}
      */
-    public RackResponse call(Context<String> input) {
+    public RackResponse call(Context<String> input) throws Exception {
         MicroContext context = new MicroContext<String>();
 
         input.with(Globals.MICRO_SITE, site);
@@ -131,7 +131,7 @@ public class MicroFilter extends JRack {
         callHelpers(site.getHelperManager().getBeforeHelpers(), context);
 
         if (!context.isHalt()) {
-            callHelpers(site.getHelperManager().getPathHelpers(path, context), context);
+            site.getRouteManager().call(path, context);
 
             if (!context.isHalt()) {
                 String contentType = response.get(JRack.HTTP_CONTENT_TYPE);

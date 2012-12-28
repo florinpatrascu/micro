@@ -1,22 +1,29 @@
 # validate the YAMl structure with: http://yaml-online-parser.appspot.com/
-#- path: "/{image_file}.{type: png|jpg|jpeg|txt}"
-#    controller: ca.simplegames.micro.controllers.BinaryContent
-#    method: get, head
-#    options: {
-#     mime_types: { .txt: "text/plain;charset=UTF-8" }
-#    }
+- route: "/{image_file}.{type: png|jpg|jpeg|txt}"
+  method: get, head
+  controller:
+    name: ca.simplegames.micro.controllers.BinaryContent
+    options: {
+      mime_types: { .txt: "text/plain;charset=UTF-8" }
+    }
 
 - route: system/info
   method: get
-  controller: ca.simplegames.micro.route.stats.StatsRoute
+  controller:
+    name: ca.simplegames.micro.route.stats.StatsRoute
 
 - route: system/test
   method: get
-  controller: demo/Demo.bsh
-  repository: content
-  page: system/demo.json
-  options: {foo: bar}
+
+  controller:
+    name: demo/Demo.bsh
+    options: {foo: bar}
+
+  view:
+    repository: content
+    page: system/demo.json
 
 - route: hello/{name}
   method: get, post
-  controller: test/Hello.bsh
+  controller:
+    name: test/Hello.bsh

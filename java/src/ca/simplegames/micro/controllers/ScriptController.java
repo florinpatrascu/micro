@@ -16,18 +16,16 @@
 
 package ca.simplegames.micro.controllers;
 
+import ca.simplegames.micro.Controller;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
-import org.jrack.context.MapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -59,7 +57,7 @@ public class ScriptController implements Controller {
         }
     }
 
-    public Object execute(MicroContext context, Map configuration) throws Exception {
+    public void execute(MicroContext context, Map configuration) throws Exception {
         BSFManager bsfManager = new BSFManager();
         // bsfManager.setClassLoader(BSFManager.class.getClassLoader());
         bsfManager.setClassLoader(this.getClass().getClassLoader());
@@ -89,6 +87,6 @@ public class ScriptController implements Controller {
             logger.error(e.getMessage());
             throw new Exception("error while executing: "+controllerName+"; details: "+e.getMessage());
         }
-        return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
+        // return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
     }
 }

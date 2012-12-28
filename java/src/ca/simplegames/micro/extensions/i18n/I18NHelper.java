@@ -36,7 +36,7 @@ public class I18NHelper implements Helper {
         this.extension = extension;
     }
 
-    public Object call(MicroContext context) throws Exception {
+    public void call(MicroContext context) throws Exception {
         //Context<String> rackInput = (Context<String>) context.get(Globals.RACK_INPUT);
         if (extension.getMessageSource() != null) {
             // detect the locale
@@ -85,7 +85,6 @@ public class I18NHelper implements Helper {
             System.out.println("There is no 'messageSource' defined in your application context." +
                     " Please define one.");
         }
-        return Globals.EMPTY_STRING;
     }
 
 

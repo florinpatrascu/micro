@@ -18,7 +18,6 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
-import ca.simplegames.micro.extensions.Extension;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
@@ -73,6 +72,7 @@ public class SiteContext extends MapContext {
      * @param configPath the absolute path to "WEB-INF/config/micro-config.yml"
      * @return itself
      */
+    @SuppressWarnings("unchecked")
     public SiteContext loadApplication(String configPath) throws Exception {
         File config = new File(configPath, "micro-config.yml");
         webInfPath = (File) get(Globals.WEB_INF_PATH);
@@ -118,7 +118,7 @@ public class SiteContext extends MapContext {
                 // - Routes
                 File routesConfig = new File(configPath, "routes.yml");
                 if (routesConfig.exists()) {
-                    routeManager = new RouteManager(this,
+                            routeManager = new RouteManager(this,
                             (List<Map<String, Object>>) new Yaml().load(new FileInputStream(routesConfig)));
                 }
 

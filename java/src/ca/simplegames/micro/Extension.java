@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package ca.simplegames.micro.extensions;
-
-import ca.simplegames.micro.SiteContext;
+package ca.simplegames.micro;
 
 import java.util.Map;
 

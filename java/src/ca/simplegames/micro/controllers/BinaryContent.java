@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro.controllers;
 
+import ca.simplegames.micro.Controller;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
@@ -39,7 +40,7 @@ public class BinaryContent implements Controller {
 
     public static final String CONFIG_ELEMENT_MIME_TYPES = "mime_types";
 
-    public Object execute(MicroContext context, Map configuration) throws Exception {
+    public void execute(MicroContext context, Map configuration) throws Exception {
         SiteContext site = context.getSiteContext();
 
         File content = site.getRepositoryManager().getDefaultRepository()
@@ -61,6 +62,5 @@ public class BinaryContent implements Controller {
             rackResponse.withHeader(Rack.HTTP_CONTENT_TYPE, Mime.mimeType(fileType));
         }
         context.halt();
-        return rackResponse; // in case anybody wants it?
     }
 }

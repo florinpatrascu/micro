@@ -16,9 +16,10 @@
 
 package ca.simplegames.micro;
 
-import ca.simplegames.micro.repositories.Repository;
+import ca.simplegames.micro.utils.CollectionUtils;
 import org.jrack.RackResponse;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,53 +31,61 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-21 2:31 PM)
  */
 public abstract class Route {
-    private String path;
-    private Repository repository;
-    private String controller;
-    private String page;
+    private String route;
+    private View view;
     private Map<String, Object> config;
+    private String method;
 
     /**
      * Constructor
      *
-     * @param path   The route path which is used for matching. (e.g. /hello, users/{name})
+     * @param route  The route route which is used for matching. (e.g. /hello, users/{name})
      * @param config a map containing nodes in a configuration loaded from an external support,
      *               an .yml file for example?!
      */
-    protected Route(String path, Map<String, Object> config) {
-        this.path = path;
-        this.config = config;
+    protected Route(String route, Map<String, Object> config) {
+        this.route = route;
+        if (!CollectionUtils.isEmpty(config)) {
+            this.config = config;
+            this.method = (String) config.get("method");
+
+            view = new View(config);
+        }
     }
 
     /**
-     * Invoked when a request is made on this route's corresponding path e.g. '/hello/{name}'
+     * Invoked when a request is made on this route's corresponding route e.g. '/hello/{name}'
      * Micro framework will stop identifying other routes and will output the response created here
      *
      * @param context The micro context created when the Rack calls
      * @return a JRack response
      */
-    public abstract RackResponse call(MicroContext context);
+    public abstract RackResponse call(MicroContext context) throws Exception;
 
-    /**
-     * Returns this route's path
-     */
+    public View getView() {
+        return view;
+    }
+
     public String getPath() {
-        return this.path;
+        return route;
     }
 
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public String getController() {
-        return controller;
-    }
-
-    public String getPage() {
-        return page;
+    public String getCompiledRoute() {
+        throw new IllegalAccessError("Not yet implemented!");
     }
 
     public Map<String, Object> getConfig() {
         return config;
+    }
+
+    public List<Map<String, Object>> getControllers(){
+        if(view != null){
+            return view.getControllers();
+        }
+        return null;
+    }
+
+    public String getMethod() {
+        return method;
     }
 }

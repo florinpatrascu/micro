@@ -51,8 +51,7 @@ public interface Helper {
      * executed on every request
      *
      * @param context the Micro context
-     * @return an optional response
      * @throws Exception
      */
-    public Object call(MicroContext context) throws Exception;
+    public void call(MicroContext context) throws Exception;
 }

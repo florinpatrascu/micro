@@ -86,10 +86,9 @@ public class GenericHelper implements Helper {
         return controllerName;
     }
 
-    public Object call(MicroContext context) throws Exception {
+    public void call(MicroContext context) throws Exception {
         if (context != null && controllerName != null) {
-            return context.getSiteContext().getControllerManager().execute(controllerName, context, config);
+            context.getSiteContext().getControllerManager().execute(controllerName, context, config);
         }
-        return null;
     }
 }

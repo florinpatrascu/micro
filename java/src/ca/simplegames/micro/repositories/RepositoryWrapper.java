@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro.repositories;
 
+import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.View;
 import ca.simplegames.micro.controllers.ControllerManager;
@@ -64,10 +65,11 @@ public class RepositoryWrapper {
         if (context != null && !CollectionUtils.isEmpty(controllers)) {
             ControllerManager controllerManager = context.getSiteContext().getControllerManager();
             for (Map<String, Object> map : controllers) {
-                String controllerName = (String) map.get("controller");
+                final Map controllerMap = (Map) map.get(Globals.CONTROLLER);
+                String controllerName = (String) controllerMap.get(Globals.NAME);
                 if (StringUtils.isNotBlank(controllerName)) {
                     context.getSiteContext().getControllerManager().execute(
-                            controllerName, context, (Map) map.get("options"));
+                            controllerName, context, (Map) controllerMap.get(Globals.OPTIONS));
                 }
             }
         }
