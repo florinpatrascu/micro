@@ -42,18 +42,14 @@ public class HelperManager {
     public static final String AFTER = "after";
 
     private SiteContext site;
-    private List<Helper> helpers = new ArrayList<Helper>();
-    private Map<String, Helper> helpersMap = new HashMap<String, Helper>();
     private List<Helper> beforeHelpers = new ArrayList<Helper>();
     private List<Helper> afterHelpers = new ArrayList<Helper>();
-    private List<Helper> pathHelpers = new ArrayList<Helper>();
 
-    public HelperManager(SiteContext site, Object config) {
+    public HelperManager(SiteContext site, List<Map<String, Object>> config) {
         this.site = site;
-        List<Map<String, Object>> helpersConfig = (List<Map<String, Object>>) config;
-        if (!CollectionUtils.isEmpty(helpersConfig)) {
+        if (!CollectionUtils.isEmpty(config)) {
             //load helpers from config
-            for (Map<String, Object> helperConfig : helpersConfig) {
+            for (Map<String, Object> helperConfig : config) {
                 for (Map.Entry<String, Object> entry : helperConfig.entrySet()) {
                     try {
                         String helperType = entry.getKey();
@@ -65,7 +61,6 @@ public class HelperManager {
                         e.printStackTrace();
                     }
 
-
                 }
             }
 
@@ -76,7 +71,7 @@ public class HelperManager {
         Helper helper = null;
         if (!CollectionUtils.isEmpty(model)) {
             helper = new GenericHelper();
-            helper.init(site, model, StringUtils.defaultString(type, Globals.EMPTY_STRING).trim());
+            //helper.init(site, model, StringUtils.defaultString(type, Globals.EMPTY_STRING).trim());
         }
         return helper;
     }
@@ -87,22 +82,9 @@ public class HelperManager {
                 beforeHelpers.add(helper);
             } else if (helper.isAfter()) {
                 afterHelpers.add(helper);
-            } else if (StringUtils.isNotBlank(helper.getPath())) {
-                pathHelpers.add(helper);
-            } else {
-                helpers.add(helper);
             }
-            helpersMap.put(helper.getName(), helper);
         }
         return helper;
-    }
-
-    public List<Helper> getHelpers() {
-        return helpers;
-    }
-
-    public Map<String, Helper> getHelpersMap() {
-        return helpersMap;
     }
 
     public List<Helper> getBeforeHelpers() {
@@ -116,17 +98,17 @@ public class HelperManager {
     public List<Helper> getPathHelpers(String inputPath, MicroContext context) {
         List<Helper> matchingHelpers = new ArrayList<Helper>();
 
-        for (Helper helper : pathHelpers) {
-            UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(inputPath, helper.getPath());
-            if (templateMatcher != null) {
-                try {
-                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
-                } catch (IllegalStateException e) {
-                    log.error(e.getMessage()); //todo: improve the error message
-                }
-                matchingHelpers.add(helper);
-            }
-        }
+//        for (Helper helper : pathHelpers) {
+//            UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(inputPath, helper.getPath());
+//            if (templateMatcher != null) {
+//                try {
+//                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+//                } catch (IllegalStateException e) {
+//                    log.error(e.getMessage()); //todo: improve the error message
+//                }
+//                matchingHelpers.add(helper);
+//            }
+//        }
 
         return matchingHelpers;
     }

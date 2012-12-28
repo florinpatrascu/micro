@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -165,9 +166,10 @@ public abstract class Repository {
             }
 
             if (content == null) {
-                final Reader reader = new InputStreamReader(new FileInputStream(file), Globals.UTF8);
-                content = IO.getString(reader);
+                final Reader reader = new InputStreamReader(new FileInputStream(file),
+                        Charset.forName(Globals.UTF8));
 
+                content = IO.getString(reader);
                 if (cache != null) {
                     cache.put(file.getAbsolutePath(), content);
                 }

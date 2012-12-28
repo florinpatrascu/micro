@@ -52,7 +52,7 @@ public class RepositoryManager {
                                     Globals.EMPTY_STRING)), site,
                             StringUtils.defaultString(repoConfig.get("path"),
                                     Globals.EMPTY_STRING),
-                            (String)repoConfig.get("config_folder_name")
+                            (String)repoConfig.get(Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME)
                     );
 
                     repository.setIsDefault(StringUtils.defaultString(repoConfig.get("default"),"false")

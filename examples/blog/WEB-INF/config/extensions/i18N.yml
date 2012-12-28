@@ -1,5 +1,6 @@
 #alias: L10n
-class:
+class: ca.simplegames.micro.extensions.i18n.I18NExtension
+intercept: {parameter_name: language, scope: "session, request, context"}
 default_encoding: utf-8
 fallbak_to_system_locale: true
 resource_cache: 10

@@ -202,7 +202,7 @@ public class MicroFilter extends JRack {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error(String.format("Helper: %s, error: %s", helper.getName(), e.getMessage()));
+                    log.error(String.format("Helper: %s, error: %s", helper, e.getMessage()));
                 }
             }
         }

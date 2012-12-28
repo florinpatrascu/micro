@@ -18,13 +18,14 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.extensions.Extension;
 import ca.simplegames.micro.helpers.HelperManager;
-import ca.simplegames.micro.helpers.i18n.I18NHelper;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.utils.StringUtils;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
+import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -33,7 +34,8 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Collections;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,7 @@ public class SiteContext extends MapContext {
     private Map appConfig;
     private File webInfPath;
     private RouteManager routeManager;
+    private List<Extension> extensions = new ArrayList<Extension>();
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -80,31 +83,45 @@ public class SiteContext extends MapContext {
             try {
                 appConfig = (Map) new Yaml().load(new FileInputStream(config));
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
+
+                // - Cache
                 cacheManager = new MicroCacheManager(this);
 
+                // - Repositories
                 repositoryManager = new RepositoryManager(this);
 
+                // - Controllers
+                controllerManager = new ControllerManager(this);
+
+                // - Helpers
+                File helpersConfig = new File(configPath, "helpers.yml");
+                if (helpersConfig.exists()) {
+                    helperManager = new HelperManager(this,
+                            (List<Map<String, Object>>) new Yaml().load(new FileInputStream(helpersConfig)));
+                }
+
+                // - Extensions
+                File extensionsDirectory = new File(configPath, "extensions");
+                if (extensionsDirectory.exists() && extensionsDirectory.isDirectory()) {
+                    // load extensions
+                    for (File file : files(extensionsDirectory, ".yml")) {
+                        Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(file));
+                        Extension extension = (Extension) ClassUtilities.loadClass((String) yaml.get("class")).newInstance();
+                        final String fileName = file.getName().replaceFirst("[.][^.]+$", "");
+                        extensions.add(extension.register(fileName, this, yaml));
+                        log.info(String.format("Extension: '%s', loaded from: %s",
+                                fileName, file.getAbsolutePath()));
+                    }
+
+                }
+
+                // - Routes
                 File routesConfig = new File(configPath, "routes.yml");
                 if (routesConfig.exists()) {
-                    routeManager = new RouteManager(this, (List<Map<String, Object>>)
-                            new Yaml().load(new FileInputStream(routesConfig)));
+                    routeManager = new RouteManager(this,
+                            (List<Map<String, Object>>) new Yaml().load(new FileInputStream(routesConfig)));
                 }
 
-                controllerManager = new ControllerManager(this);
-                helperManager = new HelperManager(this, appConfig.get(Globals.MICRO_HELPERS_CONFIG));
-
-                /**
-                 * load the default i18N support, a default Helper
-                 */
-                Map<String, Object> localesModel = (Map<String, Object>) appConfig.get("locales");
-                if (localesModel != null && localesModel.containsKey("proprietary")) {
-                    // temporary hacks
-                    Helper i18N = new I18NHelper();
-                    helperManager.addHelper(i18N.init(this, localesModel, HelperManager.BEFORE));
-                    // now make sure the i18N filter is always first
-                    Collections.swap(helperManager.getBeforeHelpers(), 0, helperManager.getBeforeHelpers().size() - 1);
-                    //helperManager.getHelpersMap().put(i18N.getName(), i18N);
-                }
 
                 MicroContext context = new MicroContext();
                 context.with(Globals.MICRO_SITE, this)
@@ -112,8 +129,7 @@ public class SiteContext extends MapContext {
                         .with(Globals.WEB_APP_DESCRIPTION, StringUtils.defaultString(appConfig.get("description"),
                                 "<describe your app>"));
 
-                //add anything else to the context?
-
+                //add anything else to the context? If no, then execute the app' startup controller:
                 controllerManager.execute(findApplicationScript(configPath), context);
 
             } catch (FileNotFoundException e) {
@@ -122,6 +138,14 @@ public class SiteContext extends MapContext {
         }
 
         return this;
+    }
+
+    public File[] files(File dir, final String withExtension) {
+        return dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String filename) {
+                return filename.endsWith(withExtension);
+            }
+        });
     }
 
     private String findApplicationScript(String configPath) {
@@ -137,10 +161,6 @@ public class SiteContext extends MapContext {
         }
 
         return actionPath;
-    }
-
-    public List<Helper> getHelpers() {
-        return helperManager.getHelpers();
     }
 
     public Logger getLog() {

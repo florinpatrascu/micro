@@ -48,6 +48,7 @@ public class Globals {
     public static final String PATH = "path";
     public static final String REQUEST = "request";
     public static final String RESPONSE = "response";
+    public static final String SESSION = "session";
     public static final String SITE = "site";
     public static final String LOG = "log";
     public static final String CONTEXT = "context";

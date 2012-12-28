@@ -6,8 +6,8 @@ repositories:
     path: views/content
     cache: memCache
     default: true
-    config_folder_name: config
-  partials: {path: views/includes, cache: partials, default: false}
+    config: config
+  partials: {path: views/partials, cache: partials, default: false, config: config}
   templates: {path: views/templates}
 
 controllers: {path: controllers, cache: controllers}
@@ -22,27 +22,3 @@ renderer:
   resource_cache_enabled: true
   resource_cache_interval: 15
   global_macro_library: global_library.vm
-
-locales:
-  intercept: {parameter_name: language, scope: "session, request, context"}
-  default_encoding: utf-8
-  fallbak_to_system_locale: true
-  resource_cache: 10
-  base_names: [config/locales/messages]
-  type: properties
-  proprietary: true
-
-
-helpers:
-  - before:
-#      path: /^(?!\/(join|payment))/
-#      controller: ca.simplegames.micro.....
-#      options: {
-#      }
-
-  - path:
-      path: "/{image_file}.{type: png|jpg|jpeg|txt}"
-      controller: ca.simplegames.micro.controllers.BinaryContent
-      options: {
-        mime_types: { .txt: "text/plain;charset=UTF-8" }
-      }

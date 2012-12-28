@@ -92,20 +92,7 @@ public class ControllerManager {
      */
 
     public Controller findController(String name) throws Exception {
-        List<Helper> helpers = site.getHelpers();
-
-        /** not sure yet
-         * // Checking if the controller is available via any helpers
-         * String canBeHelper = name;
-         * if (helpers != null && !helpers.isEmpty()) {
-         *  for (Helper helper : helpers) {
-         *   if (helper.getController() != null && helper.getPath().equalsIgnoreCase(name)) {
-         *       canBeHelper = helper.getController();
-         *   break;
-         *   }
-         *  }
-         * }
-         */
+        // todo: think if we need to check if there are any Extensions providing controllers?
 
         try {
             return (Controller) ClassUtilities.loadClass(name).newInstance();

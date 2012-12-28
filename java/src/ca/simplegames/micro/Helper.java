@@ -25,22 +25,6 @@ import java.util.Map;
 public interface Helper {
 
     /**
-     * executed only once, when the Micro framework starts up
-     *
-     * @param site   the Micro site object
-     * @param config a map containing arbitrary values
-     * @param type   one of these: before, after
-     * @throws Exception
-     */
-    public Helper init(SiteContext site, Map<String, Object> config, String type) throws Exception;
-
-    public String getName();
-
-    public String getDescription();
-
-    public String getVersion();
-
-    /**
      * @return true if this helper must be invoked before the call
      */
     public boolean isBefore();
