@@ -7,12 +7,12 @@
       mime_types: { .txt: "text/plain;charset=UTF-8" }
     }
 
-- route: system/info
+- route: /system/info
   method: get
   controller:
     name: ca.simplegames.micro.route.stats.StatsRoute
 
-- route: system/test
+- route: /system/test
   method: get
 
   controller:
@@ -23,7 +23,7 @@
     repository: content
     page: system/demo.json
 
-- route: hello/{name}
+- route: /hello/{name}
   method: get, post
   controller:
     name: test/Hello.bsh
