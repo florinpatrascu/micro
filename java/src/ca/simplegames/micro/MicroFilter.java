@@ -115,9 +115,6 @@ public class MicroFilter extends JRack {
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
 
-        String path = maybeAppendHtmlToPath(context);
-        context.with(Globals.PATH, path.replace("//", SLASH));
-
         for (Repository repository : site.getRepositoryManager().getRepositories()) {
             context.with(repository.getName(), repository.getRepositoryWrapper(context));
         }
@@ -132,9 +129,17 @@ public class MicroFilter extends JRack {
         callHelpers(site.getHelperManager().getBeforeHelpers(), context);
 
         if (!context.isHalt()) {
+            String path = input.get(JRack.PATH_INFO);
+            if (StringUtils.isBlank(path)) {
+                path = input.get(Rack.SCRIPT_NAME);
+            }
+
             site.getRouteManager().call(path, context);
 
             if (!context.isHalt()) {
+                path = maybeAppendHtmlToPath(context);
+                context.with(Globals.PATH, path.replace("//", SLASH));
+
                 String contentType = response.get(JRack.HTTP_CONTENT_TYPE);
                 if (contentType == null) {
                     response.withContentType(HTML);
