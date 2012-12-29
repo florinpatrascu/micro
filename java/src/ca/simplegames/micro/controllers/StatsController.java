@@ -21,10 +21,12 @@ import ca.simplegames.micro.MicroContext;
 import com.sun.management.OperatingSystemMXBean;
 import org.jrack.Rack;
 import org.jrack.utils.Mime;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.management.MBeanServerConnection;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
@@ -39,13 +41,18 @@ import java.util.*;
 public class StatsController implements Controller {
     private static final long MEGA_BYTE = 1048576;
 
-    public void execute(MicroContext context, Map configuration) throws Exception {
+    public void execute(MicroContext context, Map configuration) throws ControllerException {
         Map<String, Object> systemInfo = new HashMap<String, Object>();
         Map<String, Object> osMap = new HashMap<String, Object>();
         MBeanServerConnection mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-        OperatingSystemMXBean sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(mbeanServer,
-                ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, com.sun.management.OperatingSystemMXBean.class);
+        OperatingSystemMXBean sunOperatingSystemMXBean = null;
+        try {
+            sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(mbeanServer,
+                    ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+        } catch (IOException e) {
+            throw new ControllerException(e);
+        }
 
         Runtime rt = Runtime.getRuntime();
         long totalMemory = rt.totalMemory() / MEGA_BYTE;
@@ -104,8 +111,14 @@ public class StatsController implements Controller {
 
         JSONObject sysinfoJson = new JSONObject(Collections.singletonMap("systemInfo", systemInfo));
 
-        String sysinfoString = context.getRequest().getParameter("pretty") != null ?
-                sysinfoJson.toString(2) : sysinfoJson.toString();
+        String sysinfoString = null;
+        try {
+            sysinfoString = context.getRequest().getParameter("pretty") != null ?
+                    sysinfoJson.toString(2) : sysinfoJson.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new ControllerException(e);
+        }
 
         context.getRackResponse()
                 .withHeader("Content-Type", (Mime.mimeType(".json")))

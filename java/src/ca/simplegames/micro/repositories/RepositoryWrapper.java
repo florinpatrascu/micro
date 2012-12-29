@@ -19,11 +19,14 @@ package ca.simplegames.micro.repositories;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.View;
+import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.viewers.ViewException;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +44,8 @@ public class RepositoryWrapper {
         this.context = context;
     }
 
-    public String get(String path) {
-        try {
+    public String get(String path) throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
+//        try {
 
             StringWriter writer = new StringWriter();
             View view = repository.getView(path);
@@ -52,15 +55,18 @@ public class RepositoryWrapper {
             repository.getRenderer().render(context, path, null, writer);
             return writer.toString();
 
-        } catch (Exception e) {
-            String err = e.getMessage();
-            repository.getLog().error(err);
-            return String.format("Repository::%s; %s",
-                    repository.getName().toUpperCase(), e.getMessage());
-        }
+//        } catch (AbstractMethodError e) {
+//            String err = e.getMessage();
+//            repository.getLog().error(err);
+//            return String.format("Repository::%s; %s",
+//                    repository.getName().toUpperCase(), e.getMessage());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
-    private void executeViewControllers(List<Map<String, Object>> controllers, MicroContext context) throws Exception {
+    private void executeViewControllers(List<Map<String, Object>> controllers, MicroContext context)
+            throws ControllerException, ControllerNotFoundException {
 
         if (context != null && !CollectionUtils.isEmpty(controllers)) {
             ControllerManager controllerManager = context.getSiteContext().getControllerManager();
@@ -68,8 +74,7 @@ public class RepositoryWrapper {
                 final Map controllerMap = (Map) map.get(Globals.CONTROLLER);
                 String controllerName = (String) controllerMap.get(Globals.NAME);
                 if (StringUtils.isNotBlank(controllerName)) {
-                    context.getSiteContext().getControllerManager().execute(
-                            controllerName, context, (Map) controllerMap.get(Globals.OPTIONS));
+                    controllerManager.execute(controllerName, context, (Map) controllerMap.get(Globals.OPTIONS));
                 }
             }
         }

@@ -16,10 +16,13 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.controllers.ControllerException;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.ClassUtils;
 import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jrack.*;
@@ -32,6 +35,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -125,58 +129,85 @@ public class MicroFilter extends JRack {
 
         context.setRackResponse(response);
 
-        callHelpers(site.getHelperManager().getBeforeHelpers(), context);
-
-        if (!context.isHalt()) {
-            String path = input.get(JRack.PATH_INFO);
-            if (StringUtils.isBlank(path)) {
-                path = input.get(Rack.SCRIPT_NAME);
-            }
-
-            site.getRouteManager().call(path, context);
+        try {
+            callHelpers(site.getHelperManager().getBeforeHelpers(), context);
 
             if (!context.isHalt()) {
-                path = maybeAppendHtmlToPath(context);
-                context.with(Globals.PATH, path.replace("//", SLASH));
-                final String contentType = PathUtilities.extractType((String) context.get(Globals.PATH));
-
-                String templateName = StringUtils.defaultString(context.getTemplateName(),
-                        RepositoryManager.DEFAULT_TEMPLATE_NAME);
-
-                // calculate the Template name
-                View view = (View) context.get(Globals.VIEW);
-                if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
-                    templateName = view.getTemplate();
-                } else {
-                    View contentView = site.getRepositoryManager().getDefaultRepository().getView(path);
-                    if (contentView != null && contentView.getTemplate() != null) {
-                        view = contentView; // !!!!!!!!!!!!!!!! usr me << TODO
-                        templateName = contentView.getTemplate();
-                    }
+                String path = input.get(JRack.PATH_INFO);
+                if (StringUtils.isBlank(path)) {
+                    path = input.get(Rack.SCRIPT_NAME);
                 }
 
-                String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context).get(
-                        templateName + contentType);
+                site.getRouteManager().call(path, context);
 
-                response .withContentType(Mime.mimeType(contentType))
-                        .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
-                        .withBody(out);
+                if (!context.isHalt()) {
+                    path = maybeAppendHtmlToPath(context);
+                    context.with(Globals.PATH, path.replace("//", SLASH));
+                    final String contentType = PathUtilities.extractType((String) context.get(Globals.PATH));
 
-                // 404
-                //  return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
-                //          .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
-                //          .withBody(EMPTY_STRING);
+                    String templateName = StringUtils.defaultString(context.getTemplateName(),
+                            RepositoryManager.DEFAULT_TEMPLATE_NAME);
 
+                    // calculate the Template name
+                    View view = (View) context.get(Globals.VIEW);
+                    if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
+                        templateName = view.getTemplate();
+                    } else {
+                        View contentView = site.getRepositoryManager().getDefaultRepository().getView(path);
+                        if (contentView != null && contentView.getTemplate() != null) {
+                            view = contentView; // !!!!!!!!!!!!!!!! usr me << TODO
+                            templateName = contentView.getTemplate();
+                        }
+                    }
+
+                    String out = null;
+                    out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
+                            .get(templateName + contentType);
+
+                    response.withContentType(Mime.mimeType(contentType))
+                            .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
+                            .withBody(out);
+
+                    // 404
+                    //  return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
+                    //          .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
+                    //          .withBody(EMPTY_STRING);
+
+                }
+
+                if (!context.isHalt()) {
+                    callHelpers(site.getHelperManager().getAfterHelpers(), context);
+                }
             }
 
-            if (!context.isHalt()) {
-                callHelpers(site.getHelperManager().getAfterHelpers(), context);
-            } else {
-            }
-        } else {
+            return response;
 
+        } catch (ControllerNotFoundException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        } catch (ControllerException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        } catch (FileNotFoundException e) {
+            return return404(pathInfo, e);
+        } catch (ViewException e) {
+            e.printStackTrace();
+            throw new Exception(e);
         }
-        return response;
+    }
+
+    private RackResponse return500() {
+        return new RackResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .withHeader("Content-Type", (Mime.mimeType(".html")))
+                .withContentLength(0)
+                .withBody(Globals.EMPTY_STRING);
+    }
+
+    private RackResponse return404(String path, FileNotFoundException e) {
+        return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
+                .withHeader("Content-Type", (Mime.mimeType(".html")))
+                .withContentLength(0)
+                .withBody(Globals.EMPTY_STRING);
     }
 
     private String maybeAppendHtmlToPath(MicroContext context) {

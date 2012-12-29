@@ -20,11 +20,15 @@ import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.controllers.ControllerException;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.repositories.RepositoryWrapper;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.viewers.ViewException;
 import org.jrack.RackResponse;
 
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -47,7 +51,8 @@ public class RouteWrapper extends Route {
     }
 
     @Override
-    public RackResponse call(MicroContext context) throws Exception {
+    public RackResponse call(MicroContext context)
+            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
 
         if (context != null) {
             SiteContext site = context.getSiteContext();
@@ -55,7 +60,7 @@ public class RouteWrapper extends Route {
                 if (!CollectionUtils.isEmpty(getControllers())) {
                     for (int i = 0; i < getControllers().size(); i++) {
                         Map<String, Object> controllerMap = getControllers().get(i);
-                        site.getControllerManager().execute((String)controllerMap.get(Globals.NAME),
+                        site.getControllerManager().execute((String) controllerMap.get(Globals.NAME),
                                 context, (Map) controllerMap.get(Globals.OPTIONS));
                         if (context.isHalt()) return context.getRackResponse();
                     }
@@ -66,8 +71,9 @@ public class RouteWrapper extends Route {
                         site.getRepositoryManager().getDefaultRepository(), context);
 
 
-                String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context).get(
-                        getView().getTemplate() + PathUtilities.extractType((String) context.get(Globals.PATH_INFO)));
+                String out = null;
+                out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
+                        .get(getView().getTemplate() + PathUtilities.extractType((String) context.get(Globals.PATH_INFO)));
 
                 context.getRackResponse() //.withContentType("text/html;charset=utf-8") !!!!
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)

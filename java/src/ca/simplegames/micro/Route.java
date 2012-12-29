@@ -16,11 +16,15 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.controllers.ControllerException;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.controllers.StatsController;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.StringUtils;
+import ca.simplegames.micro.viewers.ViewException;
 import org.jrack.RackResponse;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +68,8 @@ public abstract class Route {
      * @param context The micro context created when the Rack calls
      * @return a JRack response
      */
-    public abstract RackResponse call(MicroContext context) throws Exception;
+    public abstract RackResponse call(MicroContext context)
+            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException;
 
     public View getView() {
         return view;

@@ -22,9 +22,11 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.utils.StringUtils;
+import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.jrack.utils.ClassUtilities;
@@ -111,31 +113,23 @@ public class VelocityViewRenderer implements ViewRenderer {
 
     }
 
-    public long render(MicroContext context, String path, Reader in, Writer out) throws Exception {
+    public long render(MicroContext context, String path, Reader in, Writer out) throws FileNotFoundException, ViewException {
 
         StringWriter writer = new StringWriter();
+        VelocityViewContext viewContext = new VelocityViewContext(context);
 
         try {
-            VelocityViewContext viewContext = new VelocityViewContext(context);
             velocityEngine.mergeTemplate(path, Globals.UTF8, viewContext, writer);
-
             return IO.copy(new StringReader(writer.toString()), out);
-
-        } catch (FileNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
-
-        } catch (IOException e) {
-            log.error(path + ", IO exception: " + e.getMessage());
-            throw e;
-
         } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new Exception(e);
+            throw new ViewException(e);
         }
     }
 
 
-    public long render(MicroContext context, String path, InputStream in, OutputStream out) throws Exception {
+    public long render(MicroContext context, String path, InputStream in, OutputStream out) throws FileNotFoundException, ViewException {
         return render(context, path, new InputStreamReader(in), new OutputStreamWriter(out));
     }
 

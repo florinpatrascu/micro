@@ -44,10 +44,10 @@ public interface ViewRenderer {
      * @param in      The InputStream to read view template from
      * @param out     The OutputStream to write the rendered view
      * @return the number of bytes rendered
-     * @throws Exception
+     * @throws ViewException
      */
     public long render(MicroContext context, String path, InputStream in,
-                       OutputStream out) throws Exception;
+                       OutputStream out) throws FileNotFoundException, ViewException;
 
     /**
      * Render the view.
@@ -57,11 +57,10 @@ public interface ViewRenderer {
      * @param in      The Reader to read view template from
      * @param out     The Writer to write the rendered view
      * @return the number of bytes rendered
-     * @throws Exception
-     * @throws java.io.IOException
+     * @throws ViewException
      */
 
-    public long render(MicroContext context, String path, Reader in, Writer out) throws Exception;
+    public long render(MicroContext context, String path, Reader in, Writer out) throws FileNotFoundException, ViewException;
 
     /**
      * Load the configuration for the view.

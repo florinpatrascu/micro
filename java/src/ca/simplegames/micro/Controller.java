@@ -17,7 +17,9 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.controllers.ControllerException;
 
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public interface Controller extends Serializable {
      *
      * @param context       a Map containing input parameters
      * @param configuration an action specific configuration. Can be null
-     * @throws Exception if any problems
+     * @throws ControllerException if any problems
      */
-    public void execute(MicroContext context, Map configuration) throws Exception;
+    public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException;
 }

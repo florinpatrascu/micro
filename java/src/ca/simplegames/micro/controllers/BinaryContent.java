@@ -28,6 +28,7 @@ import org.jrack.utils.Mime;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ public class BinaryContent implements Controller {
 
     public static final String CONFIG_ELEMENT_MIME_TYPES = "mime_types";
 
-    public void execute(MicroContext context, Map configuration) throws Exception {
+    public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
         SiteContext site = context.getSiteContext();
 
         File content = site.getRepositoryManager().getDefaultRepository()

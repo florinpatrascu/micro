@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class ControllerManager {
         execute(controllerName, context, null);
     }
 
-    public void execute(String controllerName, MicroContext context, Map configuration) throws Exception {
+    public void execute(String controllerName, MicroContext context, Map configuration) throws ControllerException, ControllerNotFoundException {
         if (StringUtils.isBlank(controllerName)) {
             throw new ControllerNotFoundException("Invalid controller name: " + controllerName);
         }
@@ -64,15 +65,25 @@ public class ControllerManager {
         Object result = null;
 
         if (controller != null) {
-            ScriptController scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
+            ScriptController scriptController = null;
+            try {
+                scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
+            } catch (MicroCacheException e) {
+                e.printStackTrace();
+            }
 
             if (scriptController != null) {
                 scriptController.execute(context, configuration);
             } else {
-                Class[] paramTypes = {MicroContext.class, Map.class};
-                Object[] params = {context, configuration};
-                Method method = controller.getClass().getDeclaredMethod(EXECUTE_METHOD, paramTypes);
-                result = method.invoke(controller, params);
+                try {
+                    Class[] paramTypes = {MicroContext.class, Map.class};
+                    Object[] params = {context, configuration};
+                    Method method = controller.getClass().getDeclaredMethod(EXECUTE_METHOD, paramTypes);
+                    // ... result =
+                    method.invoke(controller, params);
+                } catch (Exception e) {
+                    throw new ControllerException(e.getMessage());
+                }
             }
         }
     }
@@ -88,7 +99,7 @@ public class ControllerManager {
      * @throws ControllerNotFoundException if the controller is not found
      */
 
-    public Controller findController(String name) throws Exception {
+    public Controller findController(String name) throws ControllerNotFoundException {
         // todo: think if we need to check if there are any Extensions providing controllers?
 
         try {
@@ -99,7 +110,7 @@ public class ControllerManager {
             try {
                 scriptController = (ScriptController) cachedScriptControllers.get(name);
             } catch (MicroCacheException ignored) {
-                throw new Exception(name, e);
+                throw new ControllerNotFoundException(name, e);
             }
 
             if (scriptController == null) {
