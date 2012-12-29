@@ -17,6 +17,7 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.utils.StringUtils;
 import org.jrack.RackResponse;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public abstract class Route {
         this.route = route;
         if (!CollectionUtils.isEmpty(config)) {
             this.config = config;
-            this.method = (String) config.get("method");
+            this.method = StringUtils.defaultString(config.get("method"), Globals.EMPTY_STRING)
+                    .trim().toUpperCase();
 
             view = new View(config);
         }
@@ -78,13 +80,17 @@ public abstract class Route {
         return config;
     }
 
-    public List<Map<String, Object>> getControllers(){
-        if(view != null){
+    public List<Map<String, Object>> getControllers() {
+        if (view != null) {
             return view.getControllers();
         }
         return null;
     }
 
+    /**
+     * @return a string containing Request method names, all uppercase, or an empty String which matches:
+     *         any method
+     */
     public String getMethod() {
         return method;
     }

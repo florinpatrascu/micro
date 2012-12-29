@@ -20,9 +20,13 @@ import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.utils.Assert;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.utils.StringUtils;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
+import org.jrack.JRack;
+import org.jrack.Rack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,17 +73,25 @@ public class RouteManager {
     }
 
     public void call(String path, MicroContext context) throws Exception {
+        String requestedMethod = (String) context.getRackInput().get(Rack.REQUEST_METHOD);
+        Assert.notNull(requestedMethod);
+
         for (Route route : routes) {
-            UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
-            if (templateMatcher != null) {
-                try {
-                    context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
-                } catch (IllegalStateException e) {
-                    log.error(e.getMessage()); //todo: improve the error message
-                }
-                route.call(context);
-                if(context.isHalt()){
-                    break;
+            if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
+                // todo: Add support for reusing compiled templates
+                UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
+
+                if (templateMatcher != null) {
+                    try {
+                        context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+                    } catch (IllegalStateException e) {
+                        log.error(e.getMessage()); //todo: improve the error message
+                    }
+
+                    route.call(context);
+                    if(context.isHalt()){
+                        break;
+                    }
                 }
             }
         }
