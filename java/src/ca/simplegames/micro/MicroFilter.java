@@ -51,6 +51,7 @@ public class MicroFilter extends JRack {
     public static final String SLASH = "/";
     public static final String INDEX = "index";
     public static final String HTML = "html";
+    public static final String HTML_EXTENSION = ".html";
     private Logger log = LoggerFactory.getLogger(getClass());
 
     FilterConfig filterConfig;
@@ -183,24 +184,35 @@ public class MicroFilter extends JRack {
             return response;
 
         } catch (ControllerNotFoundException e) {
-            return badJuju(HttpServletResponse.SC_NO_CONTENT, pathInfo, e, e.getMessage());
+            return badJuju(context, HttpServletResponse.SC_NO_CONTENT, e);
         } catch (ControllerException e) {
             e.printStackTrace();
-            return badJuju(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, pathInfo, e, e.getMessage());
+            return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         } catch (FileNotFoundException e) {
-            return badJuju(HttpServletResponse.SC_NOT_FOUND, pathInfo, e, e.getMessage());
+            return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (ViewException e) {
-            return badJuju(HttpServletResponse.SC_NOT_FOUND, pathInfo, e, e.getMessage());
+            return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         }
     }
 
     // todo improve me, por favor
-    private RackResponse badJuju(int status, String path, Exception e, String body) {
-        String baddie = StringUtils.defaultIfBlank(body, Globals.EMPTY_STRING); // :)
-        return new RackResponse(status)
-                .withHeader("Content-Type", (Mime.mimeType(".html")))
-                .withBody(baddie)
-                .withContentLength(baddie.length());
+    private RackResponse badJuju(MicroContext context, int status, Exception e) {
+        context.with(Globals.ERROR, e);
+        try {
+            String baddie = site.getRepositoryManager().getTemplatesRepository()
+                    .getRepositoryWrapper(context)
+                    .get(status + HTML_EXTENSION);
+
+            return new RackResponse(status).withContentType(Mime.mimeType(HTML_EXTENSION))
+                    .withContentLength(baddie.getBytes(Charset.forName(Globals.UTF8)).length)
+                    .withBody(baddie);
+
+        } catch (Exception e1) {
+            return new RackResponse(status)
+                    .withHeader("Content-Type", (Mime.mimeType(".html")))
+                    .withBody(EMPTY_STRING)
+                    .withContentLength(0);
+        }
     }
 
     private String maybeAppendHtmlToPath(MicroContext context) {

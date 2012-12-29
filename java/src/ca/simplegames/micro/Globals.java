@@ -64,4 +64,5 @@ public class Globals {
     public static final String WEB_APP_DESCRIPTION=MICRO+"web_app_description";
     public static final String OPTIONS = "options";
     public static final String NAME = "name";
+    public static final String ERROR = "error";
 }
