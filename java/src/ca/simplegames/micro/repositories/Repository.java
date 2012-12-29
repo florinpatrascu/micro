@@ -84,11 +84,12 @@ public abstract class Repository {
 
                 renderer = (ViewRenderer) ClassUtilities.loadClass(rendererClass).newInstance();
                 renderer.setRepository(this);
+                rendererConfig.put("micro.site", site);
                 renderer.loadConfiguration(rendererConfig);
 
-                log.info(String.format(" ... added repository: '%s' on: %s", name, path.getAbsolutePath()));
+                log.info(String.format("aka: '%s', on: %s", name, path.getAbsolutePath()));
                 if (config!= null && config.exists() && config.isDirectory()) {
-                    log.info(String.format("               config: '%s'", config.getAbsolutePath()));
+                    log.info(String.format("config: '%s'", config.getAbsolutePath()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

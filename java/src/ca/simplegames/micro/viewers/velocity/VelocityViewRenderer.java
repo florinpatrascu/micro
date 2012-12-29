@@ -18,6 +18,7 @@ package ca.simplegames.micro.viewers.velocity;
 
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.utils.StringUtils;
@@ -30,6 +31,7 @@ import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
@@ -57,11 +59,13 @@ public class VelocityViewRenderer implements ViewRenderer {
 
     private boolean resourceCacheEnabled = false;
     private int resourceCacheInterval = 2;
+    private SiteContext site;
 
 
     public void loadConfiguration(Map<String, Object> configuration) throws Exception {
         setResourceCacheEnabled(StringUtils.defaultString(configuration.get("resource_cache_enabled"), "true"));
         setResourceCacheInterval(StringUtils.defaultString(configuration.get("resource_cache_interval"), "20"));
+        site = (SiteContext) configuration.get("micro.site");
 
         try {
             loadVelocityProperties(
@@ -98,8 +102,7 @@ public class VelocityViewRenderer implements ViewRenderer {
         velocityEngine.setExtendedProperties(eprops);
         try {
             velocityEngine.init();
-            log.warn("todo: Set servlet context");
-            //velocityEngine.setApplicationAttribute(ServletContext.class.getName(), sitelet.getServletContext());
+            velocityEngine.setApplicationAttribute(ServletContext.class.getName(), site.getServletContext());
         } catch (Exception ex) {
             log.error("Why does VelocityEngine throw a generic checked exception, after all?", ex);
             throw new VelocityException(ex.getMessage());
