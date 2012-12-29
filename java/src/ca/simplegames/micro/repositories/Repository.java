@@ -88,7 +88,7 @@ public abstract class Repository {
                 renderer.loadConfiguration(rendererConfig);
 
                 log.info(String.format("aka: '%s', on: %s", name, path.getAbsolutePath()));
-                if (config!= null && config.exists() && config.isDirectory()) {
+                if (config != null && config.exists() && config.isDirectory()) {
                     log.info(String.format("config: '%s'", config.getAbsolutePath()));
                 }
             } catch (Exception e) {
@@ -106,7 +106,7 @@ public abstract class Repository {
         return path;
     }
 
-    public abstract InputStream getInputStream(String name);
+    public abstract InputStream getInputStream(String name) throws Exception;
 
     public MicroCache getCache() {
         return cache;
@@ -167,12 +167,16 @@ public abstract class Repository {
             }
 
             if (content == null) {
-                final Reader reader = new InputStreamReader(new FileInputStream(file),
-                        Charset.forName(Globals.UTF8));
+                if (file.exists()) {
+                    final Reader reader = new InputStreamReader(new FileInputStream(file),
+                            Charset.forName(Globals.UTF8));
 
-                content = IO.getString(reader);
-                if (cache != null) {
-                    cache.put(file.getAbsolutePath(), content);
+                    content = IO.getString(reader);
+                    if (cache != null) {
+                        cache.put(file.getAbsolutePath(), content);
+                    }
+                } else {
+                    throw new FileNotFoundException(file.getAbsolutePath());
                 }
             }
         }

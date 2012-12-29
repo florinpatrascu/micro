@@ -183,31 +183,24 @@ public class MicroFilter extends JRack {
             return response;
 
         } catch (ControllerNotFoundException e) {
-            e.printStackTrace();
-            throw new Exception(e);
+            return badJuju(HttpServletResponse.SC_NO_CONTENT, pathInfo, e, e.getMessage());
         } catch (ControllerException e) {
             e.printStackTrace();
-            throw new Exception(e);
+            return badJuju(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, pathInfo, e, e.getMessage());
         } catch (FileNotFoundException e) {
-            return return404(pathInfo, e);
+            return badJuju(HttpServletResponse.SC_NOT_FOUND, pathInfo, e, e.getMessage());
         } catch (ViewException e) {
-            e.printStackTrace();
-            throw new Exception(e);
+            return badJuju(HttpServletResponse.SC_NOT_FOUND, pathInfo, e, e.getMessage());
         }
     }
 
-    private RackResponse return500() {
-        return new RackResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+    // todo improve me, por favor
+    private RackResponse badJuju(int status, String path, Exception e, String body) {
+        String baddie = StringUtils.defaultIfBlank(body, Globals.EMPTY_STRING); // :)
+        return new RackResponse(status)
                 .withHeader("Content-Type", (Mime.mimeType(".html")))
-                .withContentLength(0)
-                .withBody(Globals.EMPTY_STRING);
-    }
-
-    private RackResponse return404(String path, FileNotFoundException e) {
-        return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
-                .withHeader("Content-Type", (Mime.mimeType(".html")))
-                .withContentLength(0)
-                .withBody(Globals.EMPTY_STRING);
+                .withBody(baddie)
+                .withContentLength(baddie.length());
     }
 
     private String maybeAppendHtmlToPath(MicroContext context) {

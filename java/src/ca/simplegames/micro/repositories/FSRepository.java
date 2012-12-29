@@ -21,6 +21,7 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -34,11 +35,7 @@ public class FSRepository extends Repository {
     }
 
     @Override
-    public InputStream getInputStream(String name) {
-        try {
-            return new ByteArrayInputStream(read(name).getBytes(Charset.forName(Globals.UTF8)));
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public InputStream getInputStream(String name) throws Exception{
+       return new ByteArrayInputStream(read(name).getBytes(Charset.forName(Globals.UTF8)));
     }
 }

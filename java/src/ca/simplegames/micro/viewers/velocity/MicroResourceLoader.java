@@ -27,6 +27,7 @@ import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 /**
@@ -66,7 +67,6 @@ public class MicroResourceLoader extends ResourceLoader {
 
     /**
      * Get the InputStream for the resource.
-     * added synchronizatin for tests; Florin
      *
      * @param name The resource name
      * @return The InputStream
@@ -74,7 +74,7 @@ public class MicroResourceLoader extends ResourceLoader {
      *
      */
 
-    public synchronized InputStream getResourceStream(String name) throws ResourceNotFoundException {
+    public InputStream getResourceStream(String name) throws ResourceNotFoundException {
         if (VM_GLOBAL_LIBRARY.equals(name)) {
             try {
                 return ClassUtils.getResourceAsStream(vmGlobalLibraryPath);
@@ -93,7 +93,7 @@ public class MicroResourceLoader extends ResourceLoader {
         try {
             return repository.getInputStream(name);
         } catch (Exception e) {
-            throw new ResourceNotFoundException(name + "; cannot read.");
+            throw new ResourceNotFoundException(name);
         }
     }
 
