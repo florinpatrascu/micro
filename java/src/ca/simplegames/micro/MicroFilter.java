@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -110,7 +111,7 @@ public class MicroFilter extends JRack {
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.RESPONSE, context.getResponse())
-                // .with(Globals.CONTEXT, context) <-- don't, please!
+                        // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
 
@@ -146,16 +147,20 @@ public class MicroFilter extends JRack {
                 View view = (View) context.get(Globals.VIEW);
                 if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
                     templateName = view.getTemplate();
-                }else{
+                } else {
                     View contentView = site.getRepositoryManager().getDefaultRepository().getView(path);
-                    if(contentView!=null && contentView.getTemplate()!=null){
-                        view = contentView;
+                    if (contentView != null && contentView.getTemplate() != null) {
+                        view = contentView; // !!!!!!!!!!!!!!!! usr me << TODO
                         templateName = contentView.getTemplate();
+                    } else {  // 404
+                        return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
+                                .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
+                                .withBody(EMPTY_STRING);
                     }
                 }
 
                 String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context).get(
-                                templateName + PathUtilities.extractType((String) context.get(Globals.PATH)));
+                        templateName + PathUtilities.extractType((String) context.get(Globals.PATH)));
 
                 response //.withContentType("text/html;charset=utf-8") !!!!
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)

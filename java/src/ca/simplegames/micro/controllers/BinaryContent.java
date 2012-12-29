@@ -26,6 +26,7 @@ import org.jrack.Rack;
 import org.jrack.RackResponse;
 import org.jrack.utils.Mime;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.Map;
 
@@ -45,21 +46,27 @@ public class BinaryContent implements Controller {
 
         File content = site.getRepositoryManager().getDefaultRepository()
                 .pathToFile((String) context.get(Globals.PATH_INFO));
-
-        RackResponse rackResponse = context.getRackResponse();
-
         final String fileType = PathUtilities.extractType(content.getAbsolutePath());
-        rackResponse.withBody(content)
-                .withContentLength(content.length());
 
-        if (configuration != null) {
-            @SuppressWarnings("unchecked")
-            Map<String, String> customMimeTypes = (Map<String, String>) configuration.get(CONFIG_ELEMENT_MIME_TYPES);
-            if (!CollectionUtils.isEmpty(customMimeTypes) && customMimeTypes.containsKey(fileType)) {
-                rackResponse.withContentType(customMimeTypes.get(fileType));
+        if (content.exists()) {
+            RackResponse rackResponse = context.getRackResponse()
+                    .withBody(content).withContentLength(content.length());
+
+            if (configuration != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, String> customMimeTypes = (Map<String, String>) configuration.get(CONFIG_ELEMENT_MIME_TYPES);
+                if (!CollectionUtils.isEmpty(customMimeTypes) && customMimeTypes.containsKey(fileType)) {
+                    rackResponse.withContentType(customMimeTypes.get(fileType));
+                }
+            } else {
+                rackResponse.withHeader(Rack.HTTP_CONTENT_TYPE, Mime.mimeType(fileType));
             }
         } else {
-            rackResponse.withHeader(Rack.HTTP_CONTENT_TYPE, Mime.mimeType(fileType));
+            context.getRackResponse()
+                    .withHeader("Content-Type", (Mime.mimeType(fileType)))
+                    .withContentLength(0)
+                    .withBody(Globals.EMPTY_STRING)
+                    .with(Rack.MESSAGE_STATUS, HttpServletResponse.SC_NOT_FOUND);
         }
         context.halt();
     }
