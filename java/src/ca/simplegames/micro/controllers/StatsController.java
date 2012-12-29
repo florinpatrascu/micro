@@ -36,7 +36,7 @@ import java.util.*;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-21 5:33 PM)
  */
-public class StatsRoute implements Controller {
+public class StatsController implements Controller {
     private static final long MEGA_BYTE = 1048576;
 
     public void execute(MicroContext context, Map configuration) throws Exception {

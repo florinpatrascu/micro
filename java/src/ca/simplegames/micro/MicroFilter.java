@@ -120,8 +120,7 @@ public class MicroFilter extends JRack {
         }
 
         RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK)
-                .withContentType(Mime.mimeType(
-                        PathUtilities.extractType((String) context.get(Globals.PATH))))
+                //.withContentType(Mime.mimeType(ZZZZZZZZZZZZ))
                 .withContentLength(0);
 
         context.setRackResponse(response);
@@ -139,11 +138,7 @@ public class MicroFilter extends JRack {
             if (!context.isHalt()) {
                 path = maybeAppendHtmlToPath(context);
                 context.with(Globals.PATH, path.replace("//", SLASH));
-
-                String contentType = response.get(JRack.HTTP_CONTENT_TYPE);
-                if (contentType == null) {
-                    response.withContentType(HTML);
-                }
+                final String contentType = PathUtilities.extractType((String) context.get(Globals.PATH));
 
                 String templateName = StringUtils.defaultString(context.getTemplateName(),
                         RepositoryManager.DEFAULT_TEMPLATE_NAME);
@@ -157,19 +152,21 @@ public class MicroFilter extends JRack {
                     if (contentView != null && contentView.getTemplate() != null) {
                         view = contentView; // !!!!!!!!!!!!!!!! usr me << TODO
                         templateName = contentView.getTemplate();
-                    } else {  // 404
-                        return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
-                                .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
-                                .withBody(EMPTY_STRING);
                     }
                 }
 
                 String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context).get(
-                        templateName + PathUtilities.extractType((String) context.get(Globals.PATH)));
+                        templateName + contentType);
 
-                response //.withContentType("text/html;charset=utf-8") !!!!
+                response .withContentType(Mime.mimeType(contentType))
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                         .withBody(out);
+
+                // 404
+                //  return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
+                //          .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
+                //          .withBody(EMPTY_STRING);
+
             }
 
             if (!context.isHalt()) {

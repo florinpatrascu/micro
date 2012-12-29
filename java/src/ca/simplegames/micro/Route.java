@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.controllers.StatsController;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.StringUtils;
 import org.jrack.RackResponse;
@@ -48,9 +49,10 @@ public abstract class Route {
         this.route = route;
         if (!CollectionUtils.isEmpty(config)) {
             this.config = config;
-            this.method = StringUtils.defaultString(config.get("method"), Globals.EMPTY_STRING)
-                    .trim().toUpperCase();
-
+            this.method = Globals.EMPTY_STRING;
+            if(config.get("method") != null){
+                this.method = ((String)config.get("method")).trim().toUpperCase();
+            }
             view = new View(config);
         }
     }

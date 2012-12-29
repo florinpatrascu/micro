@@ -8,9 +8,9 @@
     }
 
 - route: /system/info
-  method: get
+  # method: get
   controller:
-    name: ca.simplegames.micro.controllers.StatsRoute
+    name: ca.simplegames.micro.controllers.StatsController
 
 - route: /system/test
   method: get
