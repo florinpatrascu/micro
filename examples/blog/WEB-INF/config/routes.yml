@@ -10,7 +10,7 @@
 - route: /system/info
   method: get
   controller:
-    name: ca.simplegames.micro.route.stats.StatsRoute
+    name: ca.simplegames.micro.controllers.StatsRoute
 
 - route: /system/test
   method: get

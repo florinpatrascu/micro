@@ -65,15 +65,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/gson-2.2.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/jrack-dev.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -167,6 +158,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/wink-common-1.2.0-incubating.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/org.json.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
