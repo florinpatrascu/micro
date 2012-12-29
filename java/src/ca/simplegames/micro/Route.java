@@ -94,4 +94,9 @@ public abstract class Route {
     public String getMethod() {
         return method;
     }
+
+    @Override
+    public String toString() {
+        return String.format("'%s'; %s", route, method);
+    }
 }
