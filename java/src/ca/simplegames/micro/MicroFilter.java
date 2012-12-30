@@ -168,12 +168,6 @@ public class MicroFilter extends JRack {
                     response.withContentType(Mime.mimeType(contentType))
                             .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                             .withBody(out);
-
-                    // 404
-                    //  return new RackResponse(HttpServletResponse.SC_NOT_FOUND)
-                    //          .withContentType(RackResponseUtils.CONTENT_TYPE_TEXT_HTML)
-                    //          .withBody(EMPTY_STRING);
-
                 }
 
                 if (!context.isHalt()) {
