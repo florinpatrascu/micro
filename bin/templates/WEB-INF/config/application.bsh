@@ -1,0 +1,8 @@
+import ca.simplegames.micro.Globals;
+
+/**
+ * This controller is executed after the Micro framework is loaded
+ */
+
+//log.info("app: "+context.get(Globals.WEB_APP_NAME)+", description: "+context.get(Globals.WEB_APP_DESCRIPTION));
+log.info("The Micro web framework is ready.");

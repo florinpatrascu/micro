@@ -1,0 +1,22 @@
+name: app_name
+description: my app description
+
+repositories:
+  content:
+    path: views/content
+    cache: views
+    default: true
+  templates: {path: views/templates}
+
+controllers: {path: controllers, cache: controllers}
+
+cache:
+  names: [views, controllers]
+  class: ca.simplegames.micro.cache.DefaultCache
+
+renderer:
+  engine: velocity
+  class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
+  resource_cache_enabled: true
+  resource_cache_interval: 15
+  global_macro_library: global_library.vm
