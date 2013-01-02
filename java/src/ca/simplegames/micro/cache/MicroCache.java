@@ -111,4 +111,10 @@ public interface MicroCache {
      * @throws MicroCacheException
      */
     public Object getStatistics() throws MicroCacheException;
+
+    /**
+     *
+     * @return the name of this cache
+     */
+    public String getName();
 }

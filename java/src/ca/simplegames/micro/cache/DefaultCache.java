@@ -39,9 +39,11 @@ public class DefaultCache implements MicroCache {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private Cache cache;
+    private String name;
     private long flushInterval;
 
-    public void addCache(String cacheName, String... config) throws MicroCacheException {
+    public void addCache(String name, String... config) throws MicroCacheException {
+        this.name = name;
         try {
 
             CacheManager manager;
@@ -58,15 +60,15 @@ public class DefaultCache implements MicroCache {
                 manager = CacheManager.getInstance();
             }
 
-            cache = manager.getCache(cacheName);
+            cache = manager.getCache(name);
 
             if (cache == null) {
                 log.info(String.format(
                         "Cannot find a user configuration for: '%s', will use 'defaultCache' definition.",
-                        cacheName));
+                        name));
 
-                manager.addCache(cacheName);
-                cache = manager.getCache(cacheName);
+                manager.addCache(name);
+                cache = manager.getCache(name);
             }
         } catch (CacheException e) {
             throw new MicroCacheException(e);
@@ -164,5 +166,9 @@ public class DefaultCache implements MicroCache {
 
     public Object getStatistics() throws MicroCacheException {
         return cache.getStatistics();
+    }
+
+    public String getName() {
+        return name;
     }
 }

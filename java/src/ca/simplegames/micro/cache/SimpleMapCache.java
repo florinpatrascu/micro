@@ -27,8 +27,10 @@ import java.util.*;
  */
 public class SimpleMapCache implements MicroCache {
     Context<String> cache = new MapContext<String>();
+    private String name = "map";
 
-    public void addCache(String cacheName, String ... config) throws MicroCacheException {
+    public void addCache(String name, String ... config) throws MicroCacheException {
+        this.name = name;
     }
 
     public Object get(Object key) throws MicroCacheException {
@@ -71,5 +73,9 @@ public class SimpleMapCache implements MicroCache {
 
     public Object getStatistics() throws MicroCacheException {
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }
