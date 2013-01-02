@@ -45,10 +45,10 @@ public class ControllerManager {
     private MicroCache cachedScriptControllers;
     private File pathToAppControllers;
 
-    public ControllerManager(SiteContext site) {
+    public ControllerManager(SiteContext site, Map<String, Object> config) {
         this.site = site;
-        cachedScriptControllers = site.getCacheManager()
-                .getCacheWithDefault(Globals.SCRIPT_CONTROLLERS_CACHE_NAME);
+        cachedScriptControllers = site.getCacheManager().getCacheWithDefault(
+                StringUtils.defaultString((String) config.get("cache"), Globals.SCRIPT_CONTROLLERS_CACHE_NAME).trim());
         pathToAppControllers = new File(site.getWebInfPath(), "controllers");
     }
 
@@ -62,10 +62,10 @@ public class ControllerManager {
         }
 
         Controller controller = findController(controllerName);
-        Object result = null;
 
         if (controller != null) {
             ScriptController scriptController = null;
+
             try {
                 scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
             } catch (MicroCacheException e) {
@@ -79,7 +79,7 @@ public class ControllerManager {
                     Class[] paramTypes = {MicroContext.class, Map.class};
                     Object[] params = {context, configuration};
                     Method method = controller.getClass().getDeclaredMethod(EXECUTE_METHOD, paramTypes);
-                    // ... result =
+                    // ... Object result =
                     method.invoke(controller, params);
                 } catch (Exception e) {
                     throw new ControllerException(e.getMessage());

@@ -91,7 +91,7 @@ public class SiteContext extends MapContext {
                 repositoryManager = new RepositoryManager(this);
 
                 // - Controllers
-                controllerManager = new ControllerManager(this);
+                controllerManager = new ControllerManager(this, (Map<String, Object>) appConfig.get("controllers"));
 
                 // - Helpers
                 File helpersConfig = new File(configPath, "helpers.yml");
