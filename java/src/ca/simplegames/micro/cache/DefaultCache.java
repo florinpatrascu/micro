@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro.cache;
 
+import ca.simplegames.micro.utils.ResourceUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -39,10 +41,23 @@ public class DefaultCache implements MicroCache {
     private Cache cache;
     private long flushInterval;
 
-    public void addCache(String cacheName) throws MicroCacheException {
+    public void addCache(String cacheName, String... config) throws MicroCacheException {
         try {
 
-            CacheManager manager = CacheManager.getInstance();
+            CacheManager manager;
+            if (config != null) {
+                try {
+                    // URL url = Micro.class.getResource(config[0]);
+                    // new File(ResourceUtils.toURI(url).getSchemeSpecificPart());
+                    URL url = ResourceUtils.getURL(config[0]);
+                    manager = CacheManager.newInstance(url);
+                } catch (Exception e) {
+                    manager = CacheManager.getInstance();
+                }
+            } else {
+                manager = CacheManager.getInstance();
+            }
+
             cache = manager.getCache(cacheName);
 
             if (cache == null) {

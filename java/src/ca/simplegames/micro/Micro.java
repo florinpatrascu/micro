@@ -78,8 +78,11 @@ public class Micro {
             cp.append(",").append(userClassPaths);
         }
 
-        ClassUtils.configureClasspath(webInfPath.toString(),
+        String resources = ClassUtils.configureClasspath(webInfPath.toString(),
                 StringUtils.split(cp.toString(), ",: "));
+        if(log.isDebugEnabled()){
+            log.info("classpath: "+resources);
+        }
         configureBSF();
 
         site.loadApplication(webInfPath.getAbsolutePath() + "/config");

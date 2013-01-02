@@ -30,9 +30,10 @@ public interface MicroCache {
      * Add or creates a new cache with a given name
      *
      * @param cacheName the name of the cache
+     * @param config the a path to a config file
      * @throws MicroCacheException
      */
-    public void addCache(String cacheName) throws MicroCacheException;
+    public void addCache(String cacheName, String... config) throws MicroCacheException;
 
 
     /**

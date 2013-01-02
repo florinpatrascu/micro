@@ -47,7 +47,7 @@ public class MicroCacheManager {
                 Class aClass = ClassUtilities.loadClass(cacheClass);
                 MicroCache microCache = (MicroCache) aClass.newInstance();
 
-                microCache.addCache(cacheName);
+                microCache.addCache(cacheName, (String) cacheConfig.get("config"));
                 microCache.setFlushInterval(0); //todo implement me
 
                 cacheImplementations.put(cacheName, microCache);

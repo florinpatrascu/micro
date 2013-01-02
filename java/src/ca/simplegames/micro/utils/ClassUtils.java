@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
@@ -70,10 +69,12 @@ public class ClassUtils {
      * @param rootPathName the root path used for calculating user class paths if
      *                     they are relative
      * @param paths        an array with paths containing Java libraries
+     * @return a String containing the file names loaded as resources
      */
-    public static void configureClasspath(String rootPathName, String[] paths) {
+    public static String configureClasspath(String rootPathName, String[] paths) {
+        StringBuilder resources = new StringBuilder();
+
         for (String path : paths) {
-            log.info("path: " + path);
             File classPath = new File(path);
 
             // check if the path is absolute
@@ -90,11 +91,14 @@ public class ClassUtils {
                     if (files != null) {
                         for (File file : files) {
                             if (file.getName().toLowerCase().endsWith(".jar") ||
-                                    file.getName().toLowerCase().endsWith(".zip")) {
+                                    file.getName().toLowerCase().endsWith(".zip") ||
+                                    file.getName().toLowerCase().endsWith(".xml")) {
+                                final String absolutePath = file.getAbsolutePath();
                                 try {
-                                    addLibraryPath(file.getAbsolutePath());
+                                    addLibraryPath(absolutePath);
+                                    resources.append(absolutePath).append(", ");
                                 } catch (Exception e) {
-                                    log.error("cannot access: " + file.getAbsolutePath());
+                                    log.error("cannot access: " + absolutePath);
                                 }
                             }
                         }
@@ -112,6 +116,7 @@ public class ClassUtils {
                 log.error("Loading classes from: " + classPath.toString() + ", failed.");
             }
         }
+        return resources.toString();
     }
 
     /**
@@ -131,8 +136,7 @@ public class ClassUtils {
         ClassLoader cl = null;
         try {
             cl = Thread.currentThread().getContextClassLoader();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             log.debug("Cannot access thread context ClassLoader - falling back to system class loader", ex);
         }
         if (cl == null) {
@@ -172,8 +176,7 @@ public class ClassUtils {
         Assert.notNull(methodName, "Method name must not be null");
         try {
             return clazz.getMethod(methodName, paramTypes);
-        }
-        catch (NoSuchMethodException ex) {
+        } catch (NoSuchMethodException ex) {
             return null;
         }
     }
