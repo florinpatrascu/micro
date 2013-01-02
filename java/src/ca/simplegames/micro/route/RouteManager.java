@@ -25,10 +25,8 @@ import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.Assert;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
-import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
-import org.jrack.JRack;
 import org.jrack.Rack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,32 +68,34 @@ public class RouteManager {
     }
 
     private void add(Route route) {
-        if(route!=null){
+        if (route != null) {
             routes.add(route);
             routesMap.put(route.getPath(), route);
         }
     }
 
-    public void call(String path, MicroContext context) throws
-            ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException{
+    public void call(String path, MicroContext context)
+            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
+
         String requestedMethod = (String) context.getRackInput().get(Rack.REQUEST_METHOD);
-        Assert.notNull(requestedMethod);
 
-        for (Route route : routes) {
-            if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
-                // todo: Add support for reusing compiled templates
-                UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
+        if (requestedMethod != null) {
+            for (Route route : routes) {
+                if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
+                    // todo: Add support for reusing compiled templates
+                    UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
 
-                if (templateMatcher != null) {
-                    try {
-                        context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
-                    } catch (IllegalStateException e) {
-                        log.error(e.getMessage()); //todo: improve the error message
-                    }
+                    if (templateMatcher != null) {
+                        try {
+                            context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+                        } catch (IllegalStateException e) {
+                            log.error(e.getMessage()); //todo: improve the error message
+                        }
 
-                    route.call(context);
-                    if(context.isHalt()){
-                        break;
+                        route.call(context);
+                        if (context.isHalt()) {
+                            break;
+                        }
                     }
                 }
             }
