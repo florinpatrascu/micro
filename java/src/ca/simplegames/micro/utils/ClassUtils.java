@@ -84,7 +84,9 @@ public class ClassUtils {
 
             // try again. Check this time if it is relative to the rootPathName
             if (classPath.exists()) {
-                log.info("Loading classes from: " + classPath.toString());
+                if (log.isDebugEnabled()) {
+                    log.info("Loading classes from: " + classPath.toString());
+                }
 
                 if (classPath.isDirectory()) {
                     File[] files = classPath.listFiles();
