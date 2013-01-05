@@ -104,6 +104,7 @@ public class Micro {
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.RESPONSE, context.getResponse())
              // .with(Globals.CONTEXT, context) <-- don't, please!
+                .with("params", context.getRequest().getParameterMap()) //<- very basic, requires some love
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
 
