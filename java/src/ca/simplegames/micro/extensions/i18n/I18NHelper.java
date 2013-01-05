@@ -19,6 +19,7 @@ package ca.simplegames.micro.extensions.i18n;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.MicroContext;
+import org.jrack.Rack;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -30,6 +31,7 @@ import java.util.Locale;
  */
 public class I18NHelper implements Helper {
 
+    public static final String BROWSER = "browser";
     private I18NExtension extension;
 
     public I18NHelper(I18NExtension extension) {
@@ -73,6 +75,15 @@ public class I18NHelper implements Helper {
                     if (attribute != null && attribute.trim().length() > 0) {
                         language = attribute;
                         break;
+                    }
+                } else if (BROWSER.equalsIgnoreCase(scope.trim())) {
+                    if (context.getRackInput() != null) {
+                        final String attribute = (String) context.getRackInput().get(Rack.RACK_BROWSER_LOCALE);
+
+                        if (attribute != null && attribute.trim().length() > 0) {
+                            language = attribute;
+                            break;
+                        }
                     }
                 }
             }
