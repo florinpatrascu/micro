@@ -1,10 +1,10 @@
 # validate the YAMl structure with: http://yaml-online-parser.appspot.com/
-- route: "/{image_file}.{type: png|jpg|jpeg|txt}"
+- route: "/{image_file}.{type: png|jpg|jpeg|text}"
   method: get, head
   controller:
     name: ca.simplegames.micro.controllers.BinaryContent
     options: {
-      mime_types: { .txt: "text/plain;charset=UTF-8" }
+      mime_types: { .text: "text/plain;charset=UTF-8" }
     }
 
 - route: /system/info

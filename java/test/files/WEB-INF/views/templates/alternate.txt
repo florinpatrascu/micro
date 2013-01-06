@@ -1,0 +1,1 @@
+TXT ALTERNATE TEMPLATE, content: $content.get($path)

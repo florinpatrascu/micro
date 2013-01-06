@@ -9,4 +9,4 @@ expression = URLDecoder.decode(context.get(Globals.PARAMS).get("exp")[0], Global
 ScriptEngineManager manager = new ScriptEngineManager();
 ScriptEngine engine = manager.getEngineByName("js");
 context.with("result", engine.eval(expression));
-print("Exp: "+expression+" = " + context.get("result"));
+log.info("Exp: "+expression+" = " + context.get("result"));

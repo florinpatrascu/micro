@@ -104,7 +104,30 @@ public class MicroGenericTest {
 
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue("Binary content rendering issues",
+        Assert.assertTrue("Can't use the request parameters",
                 RackResponse.getBodyAsString(response).contains("=4"));
+    }
+
+    /**
+     * test dynamic content produced by a controller
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTemplates() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/index.txt");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue("Wrong template",
+                RackResponse.getBodyAsString(response).contains("TXT DEFAULT TEMPLATE, content: Some text."));
+
+        input.with(Rack.PATH_INFO, "/another_text.txt");
+        response = micro.call(input);
+
+        Assert.assertTrue("Wrong Alternate template",
+                RackResponse.getBodyAsString(response)
+                        .contains("TXT ALTERNATE TEMPLATE, content: This is just another text."));
     }
 }
