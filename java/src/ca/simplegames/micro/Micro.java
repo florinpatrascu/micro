@@ -103,7 +103,7 @@ public class Micro {
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
              // .with(Globals.CONTEXT, context) <-- don't, please!
-                .with(Globals.PARAMS, context.getRequest().getParameterMap()) //<- very basic, requires some love
+                .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
 

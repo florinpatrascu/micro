@@ -22,7 +22,6 @@ import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
-import ca.simplegames.micro.utils.Assert;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.viewers.ViewException;
@@ -31,6 +30,7 @@ import org.jrack.Rack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +87,19 @@ public class RouteManager {
 
                     if (templateMatcher != null) {
                         try {
-                            context.with(Globals.PARAMETERS, templateMatcher.getVariables(true));
+                            MultivaluedMap<String, String> routeParams = templateMatcher.getVariables(true);
+                            Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
+
+                            if (CollectionUtils.isEmpty(params)) {
+                                params = new HashMap<String, String[]>();
+                                context.with(Globals.PARAMS, params);
+                            }
+
+                            for (Map.Entry<String, List<String>> param : routeParams.entrySet()) {
+                                params.put(param.getKey(),
+                                        param.getValue().toArray(new String[param.getValue().size()]));
+                            }
+
                         } catch (IllegalStateException e) {
                             log.error(e.getMessage()); //todo: improve the error message
                         }

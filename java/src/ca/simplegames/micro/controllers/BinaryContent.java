@@ -44,10 +44,10 @@ public class BinaryContent implements Controller {
 
     public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
         SiteContext site = context.getSiteContext();
-
+        Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
         File content = site.getRepositoryManager().getDefaultRepository()
-                .pathToFile((String) context.get(Globals.PATH_INFO));
-        final String fileType = PathUtilities.extractType(content.getAbsolutePath());
+                .pathToFile(String.format("%s.%s", params.get("image_file")[0], params.get("type")[0]));
+        String fileType = PathUtilities.extractType(content.getAbsolutePath());
 
         if (content.exists()) {
             RackResponse rackResponse = context.getRackResponse()
