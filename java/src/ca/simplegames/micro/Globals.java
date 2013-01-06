@@ -56,7 +56,7 @@ public class Globals {
     public static final String REPOSITORY = "repository";
     public static final String CONTROLLER = "controller";
     public static final String CONTROLLERS = CONTROLLER+"s";
-    public static final String PARAMETERS="parameters";
+    public static final String PARAMS ="params";
     public static final String VIEW = "view";
     public static final String YML_EXTENSION=".yml";
     public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME="config";
