@@ -51,7 +51,7 @@ public class MicroGenericTest {
                 .with(Rack.PATH_INFO, "/index.html");
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue(RackResponse.getBodyAsString(response).contains("hello"));
+        Assert.assertTrue(RackResponse.getBodyAsString(response).contains("Hello"));
     }
 
     /**
@@ -90,6 +90,35 @@ public class MicroGenericTest {
     }
 
     /**
+     * testing the support provided by the {@link ca.simplegames.micro.extensions.i18n.I18NHelper}, the
+     * default localization support
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testI18N() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"en"}))
+                .with(Rack.PATH_INFO, "/index.html")
+                .with(Rack.REQUEST_METHOD, "GET");
+
+        // English
+        RackResponse response = micro.call(input);
+        Assert.assertTrue("Expecting: Hello", RackResponse.getBodyAsString(response).contains("Hello"));
+
+        // Romanian
+        input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"ro"}));
+        response = micro.call(input);
+        Assert.assertTrue("Expecting: Bună!",  RackResponse.getBodyAsString(response).contains("Bună!"));
+
+        // German
+        input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"de"}));
+        response = micro.call(input);
+        Assert.assertTrue("Expecting: Grüß Gott!",  RackResponse.getBodyAsString(response).contains("Grüß Gott!"));
+
+    }
+
+    /**
      * test dynamic content produced by a controller
      *
      * @throws Exception
@@ -99,7 +128,7 @@ public class MicroGenericTest {
         Context<String> input = new MapContext<String>()
                 .with(Rack.REQUEST_METHOD, "GET")
                 .with(Rack.PATH_INFO, "/result.html")
-                .with(Globals.PARAMS, Collections.singletonMap("exp",
+                .with(Rack.PARAMS, Collections.singletonMap("exp",
                         new String[]{URLEncoder.encode("2+2", Globals.UTF8)}));
 
 

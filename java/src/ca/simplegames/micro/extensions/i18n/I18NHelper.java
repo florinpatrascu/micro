@@ -24,6 +24,7 @@ import org.jrack.Rack;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
@@ -75,6 +76,20 @@ public class I18NHelper implements Helper {
                     if (attribute != null && attribute.trim().length() > 0) {
                         language = attribute;
                         break;
+                    }
+                } else if (Globals.PARAMS.equalsIgnoreCase(scope.trim())) {
+                    if (context.get(Rack.PARAMS) != null) {
+                        @SuppressWarnings("unchecked")
+                        final Map<String, String[]> params = ((Map<String, String[]>) context.get(Rack.PARAMS));
+                        final String[] intercept = params.get(extension.getIntercept());
+
+                        if (intercept != null && intercept.length > 0) {
+                            final String attribute = params.get(extension.getIntercept())[0];
+                            if (attribute != null && attribute.trim().length() > 0) {
+                                language = attribute;
+                                break;
+                            }
+                        }
                     }
                 } else if (BROWSER.equalsIgnoreCase(scope.trim())) {
                     if (context.getRackInput() != null) {
