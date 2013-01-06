@@ -41,6 +41,7 @@ public class RepositoryManager {
     private Repository templatesRepository;
     private List<Repository> repositories = new ArrayList<Repository>();
 
+    @SuppressWarnings("unchecked")
     public RepositoryManager(SiteContext site) {
         try {
             Map<String, Object> repos = (Map<String, Object>) site.getAppConfig().get("repositories");
@@ -50,9 +51,10 @@ public class RepositoryManager {
                     Repository repository = new FSRepository(repoName,
                             site.getCacheManager().getCache(StringUtils.defaultString(repoConfig.get("cache"),
                                     Globals.EMPTY_STRING)), site,
-                            StringUtils.defaultString(repoConfig.get("path"),
-                                    Globals.EMPTY_STRING),
-                            (String)repoConfig.get(Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME)
+                            StringUtils.defaultString(repoConfig.get("path"), Globals.EMPTY_STRING),
+                            StringUtils.defaultString(
+                                    repoConfig.get(Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME),
+                                    Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME)
                     );
 
                     repository.setIsDefault(StringUtils.defaultString(repoConfig.get("default"),"false")
