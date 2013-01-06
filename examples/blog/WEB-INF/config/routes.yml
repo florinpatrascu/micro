@@ -24,6 +24,6 @@
     page: system/demo.json
 
 - route: /hello/{name}
-  method: get, post
+  method: get, post, head
   controller:
     name: test/Hello.bsh
