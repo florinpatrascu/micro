@@ -22,6 +22,8 @@ import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.utils.StringUtils;
+import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFManager;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
 import org.jrack.utils.ClassUtilities;
@@ -203,5 +205,33 @@ public class SiteContext extends MapContext {
 
     public String getMicroEnv() {
         return microEnv;
+    }
+
+    /**
+     * a simple method that can be used as an ad-hoc scripting engine.
+     * <p/>
+     * Example:
+     *   engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", bar));
+     *   engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
+     *
+     * @param language      a valid BSF language, example: 'beanshell'
+     * @param context       a MicroContext that can be used to transmit parameters
+     * @param configuration an optional Map containing configuration elements
+     * @return a new BSF Engine
+     * @throws Exception if the Engine cannot be created
+     */
+    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration) throws Exception {
+        BSFManager bsfManager = new BSFManager();
+        bsfManager.setClassLoader(this.getClass().getClassLoader());
+
+        bsfManager.declareBean("context", context, MicroContext.class);
+        bsfManager.declareBean("site", context.getSiteContext(), SiteContext.class);
+        final Logger logger = log;
+        bsfManager.declareBean("log", logger, Logger.class);
+
+        // pre-load the engine to make sure we were called right
+        org.apache.bsf.BSFEngine bsfEngine = null;
+        bsfEngine = bsfManager.loadScriptingEngine(language);
+        return bsfEngine;
     }
 }
