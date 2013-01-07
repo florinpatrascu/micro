@@ -203,16 +203,34 @@ public class SiteContext extends MapContext {
         return routeManager;
     }
 
+    /**
+     * @return one of these running modes: development, production or test
+     */
     public String getMicroEnv() {
-        return microEnv;
+        return StringUtils.defaultString(microEnv, Globals.DEVELOPMENT).trim();
+    }
+
+    // true if Micro runs in development mode
+    public boolean isDevelopment() {
+        return getMicroEnv().equalsIgnoreCase(Globals.DEVELOPMENT);
+    }
+
+    // true if Micro runs in production mode
+    public boolean isProduction() {
+        return getMicroEnv().equalsIgnoreCase(Globals.PRODUCTION);
+    }
+
+    // true if Micro runs in test mode
+    public boolean isTest() {
+        return getMicroEnv().equalsIgnoreCase(Globals.TEST);
     }
 
     /**
      * a simple method that can be used as an ad-hoc scripting engine.
      * <p/>
      * Example:
-     *   engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", bar));
-     *   engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
+     *      engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", "bar"));
+     *      engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
      *
      * @param language      a valid BSF language, example: 'beanshell'
      * @param context       a MicroContext that can be used to transmit parameters
