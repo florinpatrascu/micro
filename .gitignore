@@ -5,3 +5,6 @@ out/
 *.ipr
 *.iws
 .idea/
+.DS_Store
+.Spotlight-V100
+.Trashes
