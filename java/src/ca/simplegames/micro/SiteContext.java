@@ -55,6 +55,7 @@ public class SiteContext extends MapContext {
     private File webInfPath;
     private RouteManager routeManager;
     private List<Extension> extensions = new ArrayList<Extension>();
+    private String microEnv;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -87,6 +88,9 @@ public class SiteContext extends MapContext {
                 // - Cache
                 cacheManager = new MicroCacheManager(this);
 
+                log.info(String.format("Application name: %s", StringUtils.defaultString(appConfig.get("name"), "")));
+                log.info(String.format("     description: %s", StringUtils.defaultString(appConfig.get("description"), "")));
+                log.info("Repositories:");
                 // - Repositories
                 repositoryManager = new RepositoryManager(this);
 
@@ -94,6 +98,7 @@ public class SiteContext extends MapContext {
                 controllerManager = new ControllerManager(this, (Map<String, Object>) appConfig.get("controllers"));
 
                 // - Helpers
+                // log.info("Helpers:");
                 File helpersConfig = new File(configPath, "helpers.yml");
                 if (helpersConfig.exists()) {
                     helperManager = new HelperManager(this,
@@ -101,6 +106,7 @@ public class SiteContext extends MapContext {
                 }
 
                 // - Extensions
+                log.info("Extensions:");
                 File extensionsDirectory = new File(configPath, "extensions");
                 if (extensionsDirectory.exists() && extensionsDirectory.isDirectory()) {
                     // load extensions
@@ -109,16 +115,14 @@ public class SiteContext extends MapContext {
                         Extension extension = (Extension) ClassUtilities.loadClass((String) yaml.get("class")).newInstance();
                         final String fileName = file.getName().replaceFirst("[.][^.]+$", "");
                         extensions.add(extension.register(fileName, this, yaml));
-                        log.info(String.format("Extension: '%s', loaded from: %s",
-                                fileName, file.getAbsolutePath()));
+                        log.info(String.format("  %s: %s", extension.getName(), file.getAbsolutePath()));
                     }
-
                 }
 
                 // - Routes
                 File routesConfig = new File(configPath, "routes.yml");
                 if (routesConfig.exists()) {
-                            routeManager = new RouteManager(this,
+                    routeManager = new RouteManager(this,
                             (List<Map<String, Object>>) new Yaml().load(new FileInputStream(routesConfig)));
                 }
 
@@ -137,6 +141,8 @@ public class SiteContext extends MapContext {
             }
         }
 
+        microEnv = StringUtils.defaultString(appConfig.get(Globals.MICRO_ENV), Globals.DEVELOPMENT);
+        log.info(String.format("running in: '%s' mode", microEnv));
         return this;
     }
 
@@ -193,5 +199,9 @@ public class SiteContext extends MapContext {
 
     public RouteManager getRouteManager() {
         return routeManager;
+    }
+
+    public String getMicroEnv() {
+        return microEnv;
     }
 }

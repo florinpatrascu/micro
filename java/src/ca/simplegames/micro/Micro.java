@@ -87,6 +87,7 @@ public class Micro {
 
         site.loadApplication(webInfPath.getAbsolutePath() + "/config");
         // done with the init phase
+        log.info("⦿‿⦿\n");
     }
 
     public RackResponse call(Context<String> input) {
@@ -102,6 +103,7 @@ public class Micro {
                 .with(Rack.RACK_LOGGER, log)
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
+                .with(Globals.MICRO_ENV, site.getMicroEnv())
              // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
                 .with(Globals.SITE, site)

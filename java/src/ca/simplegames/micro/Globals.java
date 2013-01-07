@@ -65,4 +65,10 @@ public class Globals {
     public static final String OPTIONS = "options";
     public static final String NAME = "name";
     public static final String ERROR = "error";
+
+    // MICRO_ENV
+    public static final String MICRO_ENV = "MICRO_ENV";
+    public static final String DEVELOPMENT = "development";
+    public static final String PRODUCTION = "production";
+    public static final String TEST = "test";
 }

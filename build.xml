@@ -21,6 +21,10 @@
   -->
 
 <project name="Micro" default="dist">
+    <presetdef name="javac">
+        <javac includeantruntime="false"/>
+    </presetdef>
+
     <property environment="env"/>
 
     <property file="build.properties"/>
@@ -39,6 +43,7 @@
     <patternset id="compiler.resources">
         <include name="**/?*.properties"/>
         <include name="**/?*.xml"/>
+        <include name="**/?*.vm"/>
         <include name="**/?*.yaml"/>
         <include name="**/?*.json"/>
     </patternset>
@@ -108,5 +113,62 @@
     <target name="clean">
         <delete dir="${build.dist}"/>
         <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- ====================================================================== -->
+    <!-- Run the tests                                                              -->
+    <!-- ====================================================================== -->
+    <target name="test" depends="dist, compile_test">
+        <junit printsummary="yes" fork="yes" haltonfailure="yes" dir="${test.dir}">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+            <formatter type="plain"/>
+            <!--<formatter type="xml"/>-->
+
+            <classpath>
+                <fileset dir="${global.libraries}">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <path id="micro" location="${build.dist}/${name}-${version}.jar"/>
+            </classpath>
+
+            <batchtest fork="yes" todir="${build.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- ====================================================================== -->
+    <!-- Compile the test classes.                                               -->
+    <!-- ====================================================================== -->
+    <target name="compile_test" depends="dist">
+
+        <mkdir dir="${build.test.classes}"/>
+
+        <javac srcdir="${test.dir}"
+               destdir="${build.test.classes}"
+               debug="${compiler.debug}"
+               deprecation="${compiler.generate.no.warnings}"
+               encoding="utf8"
+               includeantruntime="false"
+               optimize="${compiler.optimize}">
+
+            <exclude name="${test.dir}/files/**"/>
+            <classpath>
+                <fileset dir="${global.libraries}">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <path id="micro" location="${build.dist}/${name}-${version}.jar"/>
+            </classpath>
+        </javac>
+
+        <copy todir="${build.test.classes}/files">
+            <fileset dir="${test.dir}/files">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+
     </target>
 </project>

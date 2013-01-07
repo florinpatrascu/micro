@@ -87,13 +87,13 @@ public abstract class Repository {
                 rendererConfig.put("micro.site", site);
                 renderer.loadConfiguration(rendererConfig);
 
-                log.info(String.format("name..: '%s'", name));
-                log.info(String.format("path..: '%s'", path.getAbsolutePath()));
+                site.getLog().info(String.format("  name..: '%s'", name));
+                site.getLog().info(String.format("  path..: '%s'", path.getAbsolutePath()));
                 if (cache != null) {
-                    log.info(String.format("cache.: '%s'", cache.getName()));
+                    site.getLog().info(String.format("  cache.: '%s'", cache.getName()));
                 }
                 if (config != null && config.exists() && config.isDirectory()) {
-                    log.info(String.format("config: '%s'", config.getAbsolutePath()));
+                    site.getLog().info(String.format("  config: '%s'", config.getAbsolutePath()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
