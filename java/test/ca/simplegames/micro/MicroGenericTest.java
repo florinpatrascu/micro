@@ -1,5 +1,6 @@
 package ca.simplegames.micro;
 
+import org.apache.bsf.BSFEngine;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
@@ -109,12 +110,12 @@ public class MicroGenericTest {
         // Romanian
         input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"ro"}));
         response = micro.call(input);
-        Assert.assertTrue("Expecting: Bună!",  RackResponse.getBodyAsString(response).contains("Bună!"));
+        Assert.assertTrue("Expecting: Bună!", RackResponse.getBodyAsString(response).contains("Bună!"));
 
         // German
         input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"de"}));
         response = micro.call(input);
-        Assert.assertTrue("Expecting: Grüß Gott!",  RackResponse.getBodyAsString(response).contains("Grüß Gott!"));
+        Assert.assertTrue("Expecting: Grüß Gott!", RackResponse.getBodyAsString(response).contains("Grüß Gott!"));
 
     }
 
@@ -158,5 +159,25 @@ public class MicroGenericTest {
         Assert.assertTrue("Wrong Alternate template",
                 RackResponse.getBodyAsString(response)
                         .contains("TXT ALTERNATE TEMPLATE, content: This is just another text."));
+    }
+
+    /**
+     * test the availability of the BSF Engine via "site"
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBSFEngineAvailability() throws Exception {
+        Context context = new MicroContext();
+
+
+        BSFEngine engine = micro.getSite().getBSFEngine("beanshell",
+                (MicroContext) context.with("unu", 1),
+                Collections.singletonMap("foo", "bar"));
+
+        engine.exec("complexCalculus", 0, 0,
+                "context.with(\"one\", context.get(\"unu\") * 1);" +
+                "log.info(\"One is: \" + context.get(\"one\"));"); // :P
+        Assert.assertEquals("BSFEngine failure", 1, context.get("one"));
     }
 }
