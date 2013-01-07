@@ -225,9 +225,8 @@ public class SiteContext extends MapContext {
         bsfManager.setClassLoader(this.getClass().getClassLoader());
 
         bsfManager.declareBean("context", context, MicroContext.class);
-        bsfManager.declareBean("site", context.getSiteContext(), SiteContext.class);
-        final Logger logger = log;
-        bsfManager.declareBean("log", logger, Logger.class);
+        bsfManager.declareBean("site", this, SiteContext.class);
+        bsfManager.declareBean("log", log, Logger.class);
 
         // pre-load the engine to make sure we were called right
         org.apache.bsf.BSFEngine bsfEngine = null;
