@@ -18,6 +18,7 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.utils.CollectionUtils;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-24 12:09 PM)
  */
 @SuppressWarnings("unchecked")
-public class View {
+public class View implements Serializable {
     private Map<String, Object> config;
     private String repositoryName = null;
     private String template = null;

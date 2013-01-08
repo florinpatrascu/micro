@@ -37,25 +37,29 @@ public class MicroCacheManager {
     private String cacheClass;
 
     public MicroCacheManager(SiteContext site) {
-        try {
-            Map<String, Object> cacheConfig = (Map<String, Object>) site.get(Globals.MICRO_CACHE_CONFIG);
+        if (site.isProduction()) {
+            try {
+                Map<String, Object> cacheConfig = (Map<String, Object>) site.get(Globals.MICRO_CACHE_CONFIG);
 
-            List<String> cachesNames = (List<String>) cacheConfig.get("names");
-            cacheClass = (String) cacheConfig.get("class");
+                List<String> cachesNames = (List<String>) cacheConfig.get("names");
+                cacheClass = (String) cacheConfig.get("class");
 
-            for (String cacheName : cachesNames) {
-                Class aClass = ClassUtilities.loadClass(cacheClass);
-                MicroCache microCache = (MicroCache) aClass.newInstance();
+                for (String cacheName : cachesNames) {
+                    Class aClass = ClassUtilities.loadClass(cacheClass);
+                    MicroCache microCache = (MicroCache) aClass.newInstance();
 
-                microCache.addCache(cacheName, (String) cacheConfig.get("config"));
-                microCache.setFlushInterval(0); //todo implement me
+                    microCache.addCache(cacheName, (String) cacheConfig.get("config"));
+                    microCache.setFlushInterval(0); //todo implement me
 
-                cacheImplementations.put(cacheName, microCache);
+                    cacheImplementations.put(cacheName, microCache);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("error while defining the cache system; " + e.getMessage());
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("error while defining the cache system; "+e.getMessage());
+        } else {
+            log.info(String.format("Micro running in: '%s' mode; the cache is disabled.", site.getMicroEnv()));
         }
 
         site.with(Globals.MICRO_CACHE_MANAGER, this);
@@ -73,14 +77,14 @@ public class MicroCacheManager {
             return null;
         }
 
-        return (MicroCache) cacheImplementations.get(cacheName);
+        return cacheImplementations.get(cacheName);
     }
 
     /**
      * @return the names of the cache currently instantiated
      */
     public String[] getAvailableCacheNames() {
-        return (String[]) cacheImplementations.keySet().toArray(
+        return cacheImplementations.keySet().toArray(
                 new String[cacheImplementations.keySet().size()]);
     }
 

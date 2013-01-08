@@ -21,6 +21,7 @@ import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.View;
 import ca.simplegames.micro.cache.MicroCache;
+import ca.simplegames.micro.cache.MicroCacheException;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.utils.PathUtilities;
@@ -43,6 +44,7 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-20 1:58 PM)
  */
 public abstract class Repository {
+    public static final String VIEW_CACHE_KEY_FORMAT = "%s::%s";
     private Logger log;
 
     private String name;
@@ -191,16 +193,44 @@ public abstract class Repository {
 
     }
 
+    @SuppressWarnings("unchecked")
     public View getView(String name) {
         if (config != null) {
-            File view = new File(config, PathUtilities.extractViewPath(name) + Globals.YML_EXTENSION);
-            if (view.exists()) {
+            File viewConfig = new File(config, PathUtilities.extractViewPath(name) + Globals.YML_EXTENSION);
+            String viewAbsolutePath = viewConfig.getAbsolutePath();
+            String key = String.format(VIEW_CACHE_KEY_FORMAT, getName(), name);
+
+            Map viewModel = null;
+
+            if (cache != null) {
                 try {
-                    return new View((Map) new Yaml().load(new FileInputStream(view)));
+                    viewModel = (Map) cache.get(key);
+                } catch (MicroCacheException e) {
+                    log.error(String.format("Cannot cache the view: %s", viewAbsolutePath));
+                    e.printStackTrace();
+                }
+            }
+
+            if (viewModel == null && viewConfig.exists()) {
+                try {
+                    viewModel = (Map) new Yaml().load(new FileInputStream(viewConfig));
+                    if (cache != null) {
+                        try {
+                            cache.put(key, viewModel);
+                        } catch (MicroCacheException e) {
+                            log.error(String.format("Cannot use the cache for retrieving this view: %s",
+                                    viewAbsolutePath));
+                            e.printStackTrace();
+                        }
+                    }
                 } catch (FileNotFoundException e) {
                     log.error("cannot load the configuration from: " + name);
                     e.printStackTrace();
                 }
+            }
+
+            if (viewModel != null) {
+                return new View(viewModel);
             }
         }
         return null;

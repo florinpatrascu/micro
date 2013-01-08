@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -47,8 +46,11 @@ public class ControllerManager {
 
     public ControllerManager(SiteContext site, Map<String, Object> config) {
         this.site = site;
-        cachedScriptControllers = site.getCacheManager().getCacheWithDefault(
-                StringUtils.defaultString((String) config.get("cache"), Globals.SCRIPT_CONTROLLERS_CACHE_NAME).trim());
+        if (site.isProduction()) {
+            cachedScriptControllers = site.getCacheManager().getCacheWithDefault(
+                    StringUtils.defaultString((String) config.get("cache"),
+                            Globals.SCRIPT_CONTROLLERS_CACHE_NAME).trim());
+        }
         pathToAppControllers = new File(site.getWebInfPath(), "controllers");
     }
 
@@ -66,10 +68,12 @@ public class ControllerManager {
         if (controller != null) {
             ScriptController scriptController = null;
 
-            try {
-                scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
-            } catch (MicroCacheException e) {
-                e.printStackTrace();
+            if (cachedScriptControllers != null) {
+                try {
+                    scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
+                } catch (MicroCacheException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (scriptController != null) {
@@ -106,11 +110,14 @@ public class ControllerManager {
             return (Controller) ClassUtilities.loadClass(name).newInstance();
         } catch (Exception e) {
             // throw new ControllerNotFoundException(path, e);
-            ScriptController scriptController;
-            try {
-                scriptController = (ScriptController) cachedScriptControllers.get(name);
-            } catch (MicroCacheException ignored) {
-                throw new ControllerNotFoundException(name, e);
+            ScriptController scriptController = null;
+
+            if (cachedScriptControllers != null) {
+                try {
+                    scriptController = (ScriptController) cachedScriptControllers.get(name);
+                } catch (MicroCacheException ignored) {
+                    throw new ControllerNotFoundException(name, e);
+                }
             }
 
             if (scriptController == null) {
@@ -125,7 +132,9 @@ public class ControllerManager {
                         scriptController = new ScriptController(site, name,
                                 IOUtils.getStringFromReader(new FileReader(controllerFile)));
 
-                        cachedScriptControllers.put(name, scriptController);
+                        if (cachedScriptControllers != null) {
+                            cachedScriptControllers.put(name, scriptController);
+                        }
                         return scriptController;
 
                     } catch (Exception ex) {

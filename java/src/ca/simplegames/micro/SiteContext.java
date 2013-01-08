@@ -86,6 +86,7 @@ public class SiteContext extends MapContext {
             try {
                 appConfig = (Map) new Yaml().load(new FileInputStream(config));
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
+                microEnv = StringUtils.defaultString(appConfig.get(Globals.MICRO_ENV), Globals.DEVELOPMENT);
 
                 // - Cache
                 cacheManager = new MicroCacheManager(this);
@@ -143,7 +144,6 @@ public class SiteContext extends MapContext {
             }
         }
 
-        microEnv = StringUtils.defaultString(appConfig.get(Globals.MICRO_ENV), Globals.DEVELOPMENT);
         log.info(String.format("running in: '%s' mode", microEnv));
         return this;
     }

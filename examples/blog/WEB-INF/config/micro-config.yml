@@ -22,3 +22,5 @@ renderer:
   resource_cache_enabled: true
   resource_cache_interval: 15
   global_macro_library: global_library.vm
+
+# MICRO_ENV: production
