@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2012. Florin T.PATRASCU
+ * Copyright (c)2013 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package ca.simplegames.micro.controllers;
 
 import ca.simplegames.micro.Controller;
-import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
+import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
+ * A basic wrapper around a scripting controller
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 3:50 PM)
  */
@@ -38,12 +40,11 @@ public class ScriptController implements Controller {
     private String controllerName;
 
     /**
-     * Construct a new ScriptAction for the given script.
+     * Construct a new ScriptController for a given script.
      *
      * @param site   The SiteContext
      * @param script The file representing the script
      */
-
     public ScriptController(SiteContext site, String controllerName, String script) {
 
         if (StringUtils.isNotBlank(controllerName) && StringUtils.isNotBlank(script)) {
@@ -57,24 +58,18 @@ public class ScriptController implements Controller {
         }
     }
 
+    /**
+     * instantiate a new BSF Engine and evaluate the script of the Controller
+     *
+     * @param context       a Map containing input parameters
+     * @param configuration an action specific configuration. Can be null
+     * @throws ControllerException
+     */
     public void execute(MicroContext context, Map configuration) throws ControllerException {
-        BSFManager bsfManager = new BSFManager();
-        // bsfManager.setClassLoader(BSFManager.class.getClassLoader());
-        bsfManager.setClassLoader(this.getClass().getClassLoader());
-        // bsfManager.setClassLoader(Thread.currentThread().getContextClassLoader());
-        // bsfManager.declareBean("response", context.getSiteContext(), HttpServletResponse.class);
-        // bsfManager.declareBean("request", context.getRequest(), HttpServletRequest.class);
-        // bsfManager.declareBean("rack_input", context.getRackInput(), MapContext.class);
         try {
-            bsfManager.declareBean("context", context, MicroContext.class);
-            bsfManager.declareBean("site", context.getSiteContext(), SiteContext.class);
             final Logger logger = LoggerFactory.getLogger(controllerName);
-            bsfManager.declareBean("log", logger, Logger.class);
-
             // pre-load the engine to make sure we were called right
-            org.apache.bsf.BSFEngine bsfEngine = null;
-
-            bsfEngine = bsfManager.loadScriptingEngine(language);
+            BSFEngine bsfEngine = context.getSiteContext().getBSFEngine(language, context, configuration, logger);
             // Execute with the proper language, the fileName (for error reporting),
             // the row and column to start at, and finally the contents of the script
             try {
@@ -82,11 +77,12 @@ public class ScriptController implements Controller {
                 bsfEngine.exec(controllerName, 0, 0, script);
             } catch (Throwable e) {
                 logger.error(e.getMessage());
-                throw new ControllerException("error while executing: "+controllerName+"; details: "+e.getMessage());
+                throw new ControllerException(
+                        String.format("error while executing: %s; details: %s", controllerName, e.getMessage()));
             }
             // return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
-        } catch (BSFException e) {
-            throw new ControllerException("Problems loading org.apache.bsf.BSFEngine: " + language, e);
+        } catch (Exception e) {
+            throw new ControllerException(String.format("Problems loading org.apache.bsf.BSFEngine: %s", language), e);
         }
 
     }

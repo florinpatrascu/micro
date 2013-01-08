@@ -229,19 +229,21 @@ public class SiteContext extends MapContext {
      * a simple method that can be used as an ad-hoc scripting engine.
      * <p/>
      * Example:
-     *      engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", "bar"));
-     *      engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
+     * engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", "bar"));
+     * engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
      *
      * @param language      a valid BSF language, example: 'beanshell'
      * @param context       a MicroContext that can be used to transmit parameters
      * @param configuration an optional Map containing configuration elements
+     * @param log           a logger that can be used by the client code
      * @return a new BSF Engine
      * @throws Exception if the Engine cannot be created
      */
-    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration) throws Exception {
+    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration, Logger log) throws Exception {
         BSFManager bsfManager = new BSFManager();
         bsfManager.setClassLoader(this.getClass().getClassLoader());
 
+        bsfManager.declareBean("configuration", configuration, Map.class);
         bsfManager.declareBean("context", context, MicroContext.class);
         bsfManager.declareBean("site", this, SiteContext.class);
         bsfManager.declareBean("log", log, Logger.class);
@@ -250,5 +252,19 @@ public class SiteContext extends MapContext {
         org.apache.bsf.BSFEngine bsfEngine = null;
         bsfEngine = bsfManager.loadScriptingEngine(language);
         return bsfEngine;
+    }
+
+    /**
+     * a simple method that can be used as an ad-hoc scripting engine. This varian is using the logger
+     * provided by the site.
+     *
+     * @param language      a valid BSF language, example: 'beanshell'
+     * @param context       a MicroContext that can be used to transmit parameters
+     * @param configuration an optional Map containing configuration elements
+     * @return a new BSF Engine
+     * @throws Exception if the Engine cannot be created
+     */
+    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration) throws Exception {
+        return getBSFEngine(language, context, configuration, log);
     }
 }
