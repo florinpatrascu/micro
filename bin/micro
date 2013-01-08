@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
-echo Evaluating: "bin/$1.bsh ${@: 2}"
-java -cp lib/bsh-2.0b4.jar:lib/commons-cli-1.2.jar:lib/commons-io-2.4.jar:lib/commons-lang3-3.1.jar:lib/gson-2.2.2.jar:lib/slf4j-api-1.7.2.jar:lib/slf4j-simple-1.7.2.jar bsh.Interpreter "bin/$1.bsh" "${@: 2}"
+if [[ $1 ]]; then
+  echo Evaluating: "bin/$1.bsh ${@: 2}"
+  java -cp lib/bsh-2.0b4.jar:lib/commons-cli-1.2.jar:lib/commons-io-2.4.jar:lib/commons-lang3-3.1.jar:lib/gson-2.2.2.jar:lib/slf4j-api-1.7.2.jar:lib/slf4j-simple-1.7.2.jar bsh.Interpreter "bin/$1.bsh" "${@: 2}"
+else
+  echo "Try one of these commands:"
+  echo " $ ./bin/micro new your_app"
+  echo " $ ./bin/micro delete your_app"
+fi
