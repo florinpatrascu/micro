@@ -128,7 +128,8 @@
                 <fileset dir="${global.libraries}">
                     <include name="**/*.jar"/>
                 </fileset>
-                <path id="micro" location="${build.dist}/${name}-${version}.jar"/>
+                <path id="micro"        location="${build.dist}/${name}-${version}.jar"/>
+                <path id="test_classes" location="${build.test.classes}"/>
             </classpath>
 
             <batchtest fork="yes" todir="${build.dir}">
