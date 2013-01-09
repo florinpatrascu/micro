@@ -6,6 +6,7 @@ repositories:
     path: views/content
     cache: views
     default: true
+  markdown: {path: views/markdown, cache: views}
   templates: {path: views/templates}
 
 controllers: {path: controllers, cache: controllers}

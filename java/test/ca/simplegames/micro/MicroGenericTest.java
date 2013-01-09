@@ -180,4 +180,19 @@ public class MicroGenericTest {
                 "log.info(\"One is: \" + context.get(\"one\"));"); // :P
         Assert.assertEquals("BSFEngine failure", 1, context.get("one"));
     }
+
+    /**
+     * testing if the Markdown support works well
+     * @throws Exception
+     */
+    @Test
+    public void testMarkdownViewer() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/index.md");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue(RackResponse.getBodyAsString(response).contains("This is a simple markdown document"));
+    }
+
 }
