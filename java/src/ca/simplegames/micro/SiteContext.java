@@ -21,6 +21,7 @@ import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
+import ca.simplegames.micro.templates.TemplateEnginesManager;
 import ca.simplegames.micro.utils.StringUtils;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
@@ -58,6 +59,7 @@ public class SiteContext extends MapContext {
     private RouteManager routeManager;
     private List<Extension> extensions = new ArrayList<Extension>();
     private String microEnv;
+    private TemplateEnginesManager templateEnginesManager;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -93,6 +95,10 @@ public class SiteContext extends MapContext {
 
                 log.info(String.format("Application name: %s", StringUtils.defaultString(appConfig.get("name"), "")));
                 log.info(String.format("     description: %s", StringUtils.defaultString(appConfig.get("description"), "")));
+
+                log.info("Template engines:");
+                templateEnginesManager = new TemplateEnginesManager( this, appConfig);
+
                 log.info("Repositories:");
                 // - Repositories
                 repositoryManager = new RepositoryManager(this);
@@ -266,5 +272,9 @@ public class SiteContext extends MapContext {
      */
     public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration) throws Exception {
         return getBSFEngine(language, context, configuration, log);
+    }
+
+    public TemplateEnginesManager getTemplateEnginesManager() {
+        return templateEnginesManager;
     }
 }

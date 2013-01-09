@@ -21,7 +21,6 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.cache.MicroCache;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -30,8 +29,8 @@ import java.nio.charset.Charset;
  * @since $Revision$ (created: 2012-12-20 6:42 PM)
  */
 public class FSRepository extends Repository {
-    protected FSRepository(String name, MicroCache cache, SiteContext site, String path, String configPathName) {
-        super(name, cache, site, path, configPathName);
+    protected FSRepository(String name, MicroCache cache, SiteContext site, String path, String configPathName, String engineName) {
+        super(name, cache, site, path, configPathName, engineName);
     }
 
     @Override

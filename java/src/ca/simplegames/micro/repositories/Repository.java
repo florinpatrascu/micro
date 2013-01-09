@@ -22,12 +22,10 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.View;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
-import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.templates.TemplateEnginesManager;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.utils.PathUtilities;
-import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewRenderer;
-import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -56,7 +54,17 @@ public abstract class Repository {
     private File config;
     private boolean isDefault;
 
-    protected Repository(String name, MicroCache cache, SiteContext site, String pathName, String configPathName) {
+    /**
+     * creates a new Repository object
+     *
+     * @param name           the name of the repository
+     * @param cache          a dedicated cache
+     * @param site           the SiteContext of the app
+     * @param pathName       the path to the root of the repository
+     * @param configPathName the folder name of the config folder (if any)
+     * @param engineName     the template engine name used by default when not specified by the user
+     */
+    protected Repository(String name, MicroCache cache, SiteContext site, String pathName, String configPathName, String engineName) {
         this.name = name;
         log = LoggerFactory.getLogger("Repository::" + name.toUpperCase());
 
@@ -75,31 +83,22 @@ public abstract class Repository {
                 config = new File(path, configPathName);
             }
 
-            // Initialize the View renderer
-            Map<String, Object> rendererConfig = (Map<String, Object>) site.getAppConfig().get("renderer");
-            String rendererClass = "ca.simplegames.micro.viewers.velocity.VelocityViewRenderer";
+            final TemplateEnginesManager templateEnginesManager = site.getTemplateEnginesManager();
+            renderer = engineName != null ?
+                    templateEnginesManager.getEngine(engineName) :
+                    templateEnginesManager.getDefaultEngine();
 
-            if (!CollectionUtils.isEmpty(rendererConfig)) {
-                rendererClass = StringUtils.defaultString(rendererConfig.get("class"), rendererClass);
+            site.getLog().info(String.format("  name......: '%s'", name));
+            site.getLog().info(String.format("  path......: '%s'", path.getAbsolutePath()));
+            site.getLog().info(String.format("  renderer..: '%s'", renderer.getName()));
+
+            if (cache != null) {
+                site.getLog().info(String.format("  cache.: '%s'", cache.getName()));
             }
-            try {
-
-                renderer = (ViewRenderer) ClassUtilities.loadClass(rendererClass).newInstance();
-                renderer.setRepository(this);
-                rendererConfig.put("micro.site", site);
-                renderer.loadConfiguration(rendererConfig);
-
-                site.getLog().info(String.format("  name..: '%s'", name));
-                site.getLog().info(String.format("  path..: '%s'", path.getAbsolutePath()));
-                if (cache != null) {
-                    site.getLog().info(String.format("  cache.: '%s'", cache.getName()));
-                }
-                if (config != null && config.exists() && config.isDirectory()) {
-                    site.getLog().info(String.format("  config: '%s'", config.getAbsolutePath()));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (config != null && config.exists() && config.isDirectory()) {
+                site.getLog().info(String.format("  config: '%s'", config.getAbsolutePath()));
             }
+
 
         } else {
             log.error(String.format("You defined a repository: '%s' on: %s, but there is no content at that path; %s",

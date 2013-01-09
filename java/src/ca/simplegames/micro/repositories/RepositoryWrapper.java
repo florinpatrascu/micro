@@ -24,6 +24,7 @@ import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.viewers.ViewException;
+import ca.simplegames.micro.viewers.ViewRenderer;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.FileNotFoundException;
@@ -44,25 +45,40 @@ public class RepositoryWrapper {
         this.context = context;
     }
 
+    @SuppressWarnings("unchecked")
+    public String get(String templateEngineName, String path) throws ControllerNotFoundException, ControllerException,
+            FileNotFoundException, ViewException {
+        return get(templateEngineName, path, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public String get(String templateEngineName, String path, Map<String, Object> options) throws ControllerNotFoundException, ControllerException,
+            FileNotFoundException, ViewException {
+
+        StringWriter writer = new StringWriter();
+        View view = repository.getView(path);
+        if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
+            executeViewControllers(view.getControllers(), context);
+        }
+
+        ViewRenderer engine = context.getSiteContext().getTemplateEnginesManager().getEngine(templateEngineName);
+
+        if (options != null && !options.isEmpty()) {
+            context.getMap().putAll(options);
+        }
+
+        engine.render(path, repository, context, null, writer);
+        return writer.toString();
+    }
+
     public String get(String path) throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
-//        try {
-
-            StringWriter writer = new StringWriter();
-            View view = repository.getView(path);
-            if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
-                executeViewControllers(view.getControllers(), context);
-            }
-            repository.getRenderer().render(context, path, null, writer);
-            return writer.toString();
-
-//        } catch (AbstractMethodError e) {
-//            String err = e.getMessage();
-//            repository.getLog().error(err);
-//            return String.format("Repository::%s; %s",
-//                    repository.getName().toUpperCase(), e.getMessage());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        StringWriter writer = new StringWriter();
+        View view = repository.getView(path);
+        if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
+            executeViewControllers(view.getControllers(), context);
+        }
+        repository.getRenderer().render(path, repository, context, null, writer);
+        return writer.toString();
     }
 
     private void executeViewControllers(List<Map<String, Object>> controllers, MicroContext context)

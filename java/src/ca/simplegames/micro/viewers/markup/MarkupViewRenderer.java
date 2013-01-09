@@ -1,3 +1,5 @@
+package ca.simplegames.micro.viewers.markup;
+
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
@@ -16,13 +18,9 @@ import java.util.Map;
  */
 public class MarkupViewRenderer implements ViewRenderer {
     PegDownProcessor pegDownProcessor = new PegDownProcessor();
-    Repository repository = null;
+    protected String name = "markdown";
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public long render(MicroContext context, String path, Reader in, Writer out)
+    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
             throws FileNotFoundException, ViewException {
 
         if (repository != null && out != null) {
@@ -44,8 +42,13 @@ public class MarkupViewRenderer implements ViewRenderer {
     public void loadConfiguration(Map<String, Object> configuration) throws Exception {
     }
 
-    public long render(MicroContext context, String path, InputStream in, OutputStream out)
+    public long render(String path, Repository repository, MicroContext context, InputStream in, OutputStream out)
             throws FileNotFoundException, ViewException {
-        return render(context, path, new InputStreamReader(in), new OutputStreamWriter(out));
+        return render(path, repository, context, new InputStreamReader(in), new OutputStreamWriter(out));
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

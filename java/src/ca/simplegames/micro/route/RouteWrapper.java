@@ -56,15 +56,17 @@ public class RouteWrapper extends Route {
 
         if (context != null) {
             SiteContext site = context.getSiteContext();
-            if (getView() != null) {
-                if (!CollectionUtils.isEmpty(getControllers())) {
-                    for (int i = 0; i < getControllers().size(); i++) {
-                        Map<String, Object> controllerMap = getControllers().get(i);
-                        site.getControllerManager().execute((String) controllerMap.get(Globals.NAME),
-                                context, (Map) controllerMap.get(Globals.OPTIONS));
-                        if (context.isHalt()) return context.getRackResponse();
-                    }
+
+            if (!CollectionUtils.isEmpty(getControllers())) {
+                for (int i = 0; i < getControllers().size(); i++) {
+                    Map<String, Object> controllerMap = getControllers().get(i);
+                    site.getControllerManager().execute((String) controllerMap.get(Globals.NAME),
+                            context, (Map) controllerMap.get(Globals.OPTIONS));
+                    if (context.isHalt()) return context.getRackResponse();
                 }
+            }
+
+            if (getView() != null) {
 
                 RepositoryWrapper repo = new RepositoryWrapper(getView().getRepositoryName() != null ?
                         site.getRepositoryManager().getRepository(getView().getRepositoryName()) :

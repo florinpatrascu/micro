@@ -25,7 +25,7 @@ import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -33,7 +33,6 @@ import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
@@ -55,14 +54,13 @@ public class VelocityViewRenderer implements ViewRenderer {
             "runtime.log", "file.resource.loader.path", "velocimacro.library"
     };
 
-    private Repository repository;
-    private final VelocityEngine velocityEngine = new VelocityEngine();
+    //private final VelocityEngine velocityEngine = new VelocityEngine();
     private Properties velocityProperties = new Properties();
 
     private boolean resourceCacheEnabled = false;
     private int resourceCacheInterval = 2;
     private SiteContext site;
-
+    protected String name = "velocity";
 
     public void loadConfiguration(Map<String, Object> configuration) throws Exception {
         setResourceCacheEnabled(StringUtils.defaultString(configuration.get("resource_cache_enabled"), "true"));
@@ -74,10 +72,10 @@ public class VelocityViewRenderer implements ViewRenderer {
                     ClassUtilities.getResourceAsStream(
                             "ca/simplegames/micro/viewers/velocity/velocity.properties"), configuration);
 
-            velocityEngine.setProperty("micro.VM_global_library.vm.path",
+            Velocity.setProperty("micro.VM_global_library.vm.path",
                     StringUtils.defaultString(configuration.get("global_macro_library"),
                             Globals.DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH));
-
+            //Velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM, log );
             init();
 
         } catch (IOException e) {
@@ -92,7 +90,7 @@ public class VelocityViewRenderer implements ViewRenderer {
 
         eprops.setProperty("micro.resource.loader.description", "Micro internal resource loader.");
         eprops.setProperty("micro.resource.loader.class", "ca.simplegames.micro.viewers.velocity.MicroResourceLoader");
-        eprops.setProperty("micro.resource.loader.repository", repository);
+        // eprops.setProperty("micro.resource.loader.repository", repository);
 
         if (resourceCacheEnabled) {
             eprops.setProperty("micro.resource.loader.cache", "true");
@@ -101,10 +99,10 @@ public class VelocityViewRenderer implements ViewRenderer {
         }
 
         // Apply properties to VelocityEngine.
-        velocityEngine.setExtendedProperties(eprops);
+        Velocity.setExtendedProperties(eprops);
         try {
-            velocityEngine.init();
-            velocityEngine.setApplicationAttribute(ServletContext.class.getName(), site.getServletContext());
+            Velocity.init();
+            // velocityEngine.setApplicationAttribute(ServletContext.class.getName(), site.getServletContext());
         } catch (Exception ex) {
             log.error("Why does VelocityEngine throw a generic checked exception, after all?", ex);
             throw new VelocityException(ex.getMessage());
@@ -113,14 +111,16 @@ public class VelocityViewRenderer implements ViewRenderer {
 
     }
 
-    public long render(MicroContext context, String path, Reader in, Writer out) throws FileNotFoundException, ViewException {
+    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
+            throws FileNotFoundException, ViewException {
 
         StringWriter writer = new StringWriter();
         VelocityViewContext viewContext = new VelocityViewContext(context);
 
         try {
-            velocityEngine.mergeTemplate(path, Globals.UTF8, viewContext, writer);
-            return IO.copy(new StringReader(writer.toString()), out);
+            //velocityEngine.mergeTemplate(path, Globals.UTF8, viewContext, writer);
+            Velocity.evaluate(viewContext, writer, path, repository.read(path));
+            return IO.copy(new StringReader(writer.toString()), out); // doing this just to compute the size of the result :(
         } catch (ResourceNotFoundException e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
         } catch (Exception e) {
@@ -129,8 +129,9 @@ public class VelocityViewRenderer implements ViewRenderer {
     }
 
 
-    public long render(MicroContext context, String path, InputStream in, OutputStream out) throws FileNotFoundException, ViewException {
-        return render(context, path, new InputStreamReader(in), new OutputStreamWriter(out));
+    public long render(String path, Repository repository, MicroContext context, InputStream in, OutputStream out)
+            throws FileNotFoundException, ViewException {
+        return render(path, repository, context, new InputStreamReader(in), new OutputStreamWriter(out));
     }
 
     private void loadVelocityProperties(InputStream in, Map<String, Object> configuration) throws IOException {
@@ -167,8 +168,8 @@ public class VelocityViewRenderer implements ViewRenderer {
         }
     }
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    @Override
+    public String getName() {
+        return name;
     }
-
 }

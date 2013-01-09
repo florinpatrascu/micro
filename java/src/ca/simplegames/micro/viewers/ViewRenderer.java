@@ -29,38 +29,33 @@ import java.util.Map;
 public interface ViewRenderer {
 
     /**
-     * Set the current repository
-     *
-     * @param repository the repository instance responsible with
-     *                   providing acces to local resources
-     */
-    public void setRepository(Repository repository);
-
-    /**
      * Render the view.
      *
-     * @param context The RequestContext
-     * @param path    The path to the template
-     * @param in      The InputStream to read view template from
-     * @param out     The OutputStream to write the rendered view
+     * @param path       The path to the template
+     * @param repository the repository used for extracting the resource specified by path
+     * @param context    The RequestContext
+     * @param in         The InputStream to read view template from
+     * @param out        The OutputStream to write the rendered view
      * @return the number of bytes rendered
      * @throws ViewException
      */
-    public long render(MicroContext context, String path, InputStream in,
+    public long render(String path, Repository repository, MicroContext context, InputStream in,
                        OutputStream out) throws FileNotFoundException, ViewException;
 
     /**
      * Render the view.
      *
-     * @param context The RequestContext
-     * @param path    The path to the template
-     * @param in      The Reader to read view template from
-     * @param out     The Writer to write the rendered view
+     * @param path       The path to the template
+     * @param repository the repository used for extracting the resource specified by path
+     * @param context    The RequestContext
+     * @param in         The Reader to read view template from
+     * @param out        The Writer to write the rendered view
      * @return the number of bytes rendered
      * @throws ViewException
      */
 
-    public long render(MicroContext context, String path, Reader in, Writer out) throws FileNotFoundException, ViewException;
+    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
+            throws FileNotFoundException, ViewException;
 
     /**
      * Load the configuration for the view.
@@ -69,4 +64,9 @@ public interface ViewRenderer {
      */
 
     public void loadConfiguration(Map<String, Object> configuration) throws Exception;
+
+    /**
+     * @return the name of the rendering engine
+     */
+    public String getName();
 }

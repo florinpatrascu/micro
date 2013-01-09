@@ -16,11 +16,19 @@ cache:
   names: [memCache, partials, views, controllers]
   class: ca.simplegames.micro.cache.DefaultCache
 
-renderer:
-  engine: velocity
-  class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
-  resource_cache_enabled: true
-  resource_cache_interval: 15
-  global_macro_library: global_library.vm
+
+template_engines:
+  - engine:
+      name: velocity
+      class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
+      options:
+          resource_cache_enabled: true
+          resource_cache_interval: 15
+          global_macro_library: global_library.vm
+      default: true
+
+  - engine:
+      name: markdown
+      class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
 # MICRO_ENV: production

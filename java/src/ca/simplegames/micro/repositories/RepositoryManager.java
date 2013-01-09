@@ -23,8 +23,6 @@ import ca.simplegames.micro.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,24 +45,25 @@ public class RepositoryManager {
             Map<String, Object> repos = (Map<String, Object>) site.getAppConfig().get("repositories");
             if (!CollectionUtils.isEmpty(repos)) {
                 for (String repoName : repos.keySet()) {
-                    Map<String,Object>repoConfig = (Map<String, Object>) repos.get(repoName);
+                    Map<String, Object> repoConfig = (Map<String, Object>) repos.get(repoName);
                     Repository repository = new FSRepository(repoName,
                             site.getCacheManager().getCache(StringUtils.defaultString(repoConfig.get("cache"),
                                     Globals.EMPTY_STRING)), site,
                             StringUtils.defaultString(repoConfig.get("path"), Globals.EMPTY_STRING),
                             StringUtils.defaultString(
                                     repoConfig.get(Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME),
-                                    Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME)
+                                    Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME),
+                            (String) repoConfig.get("engine")
                     );
 
-                    repository.setIsDefault(StringUtils.defaultString(repoConfig.get("default"),"false")
+                    repository.setIsDefault(StringUtils.defaultString(repoConfig.get("default"), "false")
                             .equalsIgnoreCase("true"));
 
-                    if(repository.isDefault()){
+                    if (repository.isDefault()) {
                         defaultRepository = repository;
                     }
 
-                    if(repoName.equalsIgnoreCase(TEMPLATES)){
+                    if (repoName.equalsIgnoreCase(TEMPLATES)) {
                         templatesRepository = repository;
                     }
 
@@ -93,12 +92,12 @@ public class RepositoryManager {
     }
 
     public Repository getRepository(String name) {
-        if(name!= null && !repositories.isEmpty()){
-          for(Repository repository: repositories){
-              if(repository.getName().equalsIgnoreCase(name)){
-                  return repository;
-              }
-          }
+        if (name != null && !repositories.isEmpty()) {
+            for (Repository repository : repositories) {
+                if (repository.getName().equalsIgnoreCase(name)) {
+                    return repository;
+                }
+            }
         }
         return null;
     }

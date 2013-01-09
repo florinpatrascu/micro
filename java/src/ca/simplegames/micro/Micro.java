@@ -80,14 +80,14 @@ public class Micro {
 
         String resources = ClassUtils.configureClasspath(webInfPath.toString(),
                 StringUtils.split(cp.toString(), ",: "));
-        if(log.isDebugEnabled()){
-            log.info("classpath: "+resources);
+        if (log.isDebugEnabled()) {
+            log.info("classpath: " + resources);
         }
         configureBSF();
 
         site.loadApplication(webInfPath.getAbsolutePath() + "/config");
         // done with the init phase
-        log.info("⦿‿⦿\n");
+        //log.info("⦿‿⦿\n");
     }
 
     public RackResponse call(Context<String> input) {
@@ -104,7 +104,7 @@ public class Micro {
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.MICRO_ENV, site.getMicroEnv())
-             // .with(Globals.CONTEXT, context) <-- don't, please!
+                        // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo);
@@ -257,5 +257,19 @@ public class Micro {
     public boolean isFilterAddsWelcomeFile() {
         final String aTrue = "true";
         return welcomeFile.equalsIgnoreCase(aTrue);
+    }
+
+    public static class PoweredBy {
+        public String getName() {
+            return Globals.FRAMEWORK_NAME;
+        }
+
+        public String getVersion() {
+            return Globals.VERSION;
+        }
+
+        public String toString() {
+            return String.format("%s version: %s", getName(), getVersion());
+        }
     }
 }

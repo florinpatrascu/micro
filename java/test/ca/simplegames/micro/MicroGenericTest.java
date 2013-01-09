@@ -192,7 +192,8 @@ public class MicroGenericTest {
                 .with(Rack.PATH_INFO, "/index.md");
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue(RackResponse.getBodyAsString(response).contains("This is a simple markdown document"));
+        Assert.assertTrue(RackResponse.getBodyAsString(response)
+                .contains("<h3>Markdown</h3><p>This is a simple markdown document</p>"));
     }
 
 }
