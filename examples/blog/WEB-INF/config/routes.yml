@@ -25,7 +25,7 @@
 
   view:
     repository: content
-    page: system/demo.json
+    path: system/demo.json
 
 - route: /hello/{name}
   method: get, post, head

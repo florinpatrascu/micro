@@ -7,8 +7,9 @@
     <title>untitled</title>
     <meta name="generator" content="TextMate http://macromates.com/">
     <meta name="author" content="Florin T.PATRASCU">
+    <link rel="stylesheet" href="styles/style.css" type="text/css" charset="utf-8" media="screen">
 </head>
-<body>
+<body class="github">
     $content.get("markdown", $path)
 </body>
 </html>

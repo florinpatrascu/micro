@@ -32,6 +32,7 @@ public class View implements Serializable {
     private Map<String, Object> config;
     private String repositoryName = null;
     private String template = null;
+    private String path = null;
     private List<Map<String, Object>> controllers = null;
 
     public View(Map<String, Object> config) {
@@ -43,6 +44,9 @@ public class View implements Serializable {
             }
             if (config.get(Globals.TEMPLATE) != null) {
                 template = (String) config.get(Globals.TEMPLATE);
+            }
+            if (config.get(Globals.PATH) != null) {
+                path = (String) config.get(Globals.PATH);
             }
             if (config.get(Globals.CONTROLLERS) != null) {
                 controllers = (List<Map<String, Object>>) config.get(Globals.CONTROLLERS);
@@ -67,5 +71,9 @@ public class View implements Serializable {
 
     public String getRepositoryName() {
         return repositoryName;
+    }
+
+    public String getPath() {
+        return path;
     }
 }

@@ -22,11 +22,14 @@ import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
-import ca.simplegames.micro.repositories.RepositoryWrapper;
+import ca.simplegames.micro.repositories.Repository;
+import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewException;
 import org.jrack.RackResponse;
+import org.jrack.utils.Mime;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
@@ -50,6 +53,16 @@ public class RouteWrapper extends Route {
         super(route, config);
     }
 
+    /**
+     * the View support is not yet finalized; work in progress
+     *
+     * @param context The micro context created when the Rack calls
+     * @return
+     * @throws ControllerNotFoundException
+     * @throws ControllerException
+     * @throws FileNotFoundException
+     * @throws ViewException
+     */
     @Override
     public RackResponse call(MicroContext context)
             throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
@@ -66,17 +79,32 @@ public class RouteWrapper extends Route {
                 }
             }
 
-            if (getView() != null && getView().getRepositoryName() != null) {
+            if (getView() != null && getView().getPath() != null) {
+                RackResponse response = context.getRackResponse();
+                RepositoryManager repositoryManager = site.getRepositoryManager();
+                String repositoryName = StringUtils.defaultString(getView().getRepositoryName(),
+                        repositoryManager.getDefaultRepository().getName());
 
-                RepositoryWrapper repo = new RepositoryWrapper(getView().getRepositoryName() != null ?
-                        site.getRepositoryManager().getRepository(getView().getRepositoryName()) :
-                        site.getRepositoryManager().getDefaultRepository(), context);
+                String path = getView().getPath();
 
-                // todo: refactor the logic of the route.view.template.page!
-                String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
-                        .get(getView().getTemplate() + PathUtilities.extractType((String) context.get(Globals.PATH_INFO)));
+                context.with(Globals.PATH, path);
 
-                context.getRackResponse() //.withContentType("text/html;charset=utf-8") !!!!
+                String out;
+                if (getView().getTemplate() != null) {
+                    out = repositoryManager.getTemplatesRepository().getRepositoryWrapper(context)
+                            .get(getView().getTemplate() + PathUtilities.extractType(path));
+                } else {
+                    Repository repository = repositoryManager.getRepository(repositoryName);
+                    out = repository.getRepositoryWrapper(context).get(getView().getPath());
+                }
+
+                String contentType = Mime.mimeType(PathUtilities.extractType(path));
+
+                if (response.getHeaders().get(Globals.HEADERS_CONTENT_TYPE) != null) {
+                    contentType = response.getHeaders().get(Globals.HEADERS_CONTENT_TYPE);
+                }
+
+                response.withContentType(contentType)
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                         .withBody(out);
             }
