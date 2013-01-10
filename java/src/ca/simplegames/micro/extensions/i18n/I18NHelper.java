@@ -62,12 +62,15 @@ public class I18NHelper implements Helper {
                     }
                 } else if (Globals.SESSION.equalsIgnoreCase(scope.trim())) {
                     if (context.getRequest() != null) {
-                        HttpSession session = context.getRequest().getSession();
-                        final String attribute = (String) session.getAttribute(extension.getIntercept());
+                        // make sure we're not creating new sessions
+                        HttpSession session = context.getRequest().getSession(false);
+                        if (session != null) {
+                            final String attribute = (String) session.getAttribute(extension.getIntercept());
 
-                        if (attribute != null && attribute.trim().length() > 0) {
-                            language = attribute;
-                            break;
+                            if (attribute != null && attribute.trim().length() > 0) {
+                                language = attribute;
+                                break;
+                            }
                         }
                     }
                 } else if (Globals.CONTEXT.equalsIgnoreCase(scope.trim())) {
