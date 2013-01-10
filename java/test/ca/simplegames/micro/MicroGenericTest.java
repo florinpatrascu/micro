@@ -167,7 +167,7 @@ public class MicroGenericTest {
      * @throws Exception
      */
     @Test
-    public void testBSFEngineAvailability() throws Exception {
+    public void testBSFEngineIntegration() throws Exception {
         Context context = new MicroContext();
 
 
