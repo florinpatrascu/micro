@@ -67,9 +67,12 @@ public class Globals {
     public static final String NAME = "name";
     public static final String ERROR = "error";
 
+    public static final String HEADERS_CONTENT_TYPE = "Content-Type";
+
     // MICRO_ENV
     public static final String MICRO_ENV = "MICRO_ENV";
     public static final String DEVELOPMENT = "development";
     public static final String PRODUCTION = "production";
     public static final String TEST = "test";
+    public static final String CHARSET = "charset";
 }

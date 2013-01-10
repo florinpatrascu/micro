@@ -66,15 +66,14 @@ public class RouteWrapper extends Route {
                 }
             }
 
-            if (getView() != null) {
+            if (getView() != null && getView().getRepositoryName() != null) {
 
                 RepositoryWrapper repo = new RepositoryWrapper(getView().getRepositoryName() != null ?
                         site.getRepositoryManager().getRepository(getView().getRepositoryName()) :
                         site.getRepositoryManager().getDefaultRepository(), context);
 
-
-                String out = null;
-                out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
+                // todo: refactor the logic of the route.view.template.page!
+                String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
                         .get(getView().getTemplate() + PathUtilities.extractType((String) context.get(Globals.PATH_INFO)));
 
                 context.getRackResponse() //.withContentType("text/html;charset=utf-8") !!!!

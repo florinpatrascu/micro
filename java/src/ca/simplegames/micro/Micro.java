@@ -21,6 +21,7 @@ import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.ClassUtils;
+import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
@@ -36,7 +37,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A micro MVC implementation for Java web applications
@@ -51,6 +54,7 @@ public class Micro {
     public static final String INDEX = "index";
     public static final String HTML = "html";
     public static final String HTML_EXTENSION = DOT + HTML;
+    public static final String DEFAULT_CONTENT_TYPE = Mime.mimeType(HTML_EXTENSION);
 
     private SiteContext site;
     private String welcomeFile;
@@ -114,8 +118,8 @@ public class Micro {
         }
 
         RackResponse response = new RackResponse(RackResponseUtils.ReturnCode.OK)
-                //.withContentType(Mime.mimeType(ZZZZZZZZZZZZ))
-                .withContentLength(0);
+                .withContentType(null)
+                .withContentLength(0);  // a la Sinatra, they're doing it right
 
         context.setRackResponse(response);
 
@@ -133,7 +137,7 @@ public class Micro {
                 if (!context.isHalt()) {
                     path = maybeAppendHtmlToPath(context);
                     context.with(Globals.PATH, path.replace("//", SLASH));
-                    final String contentType = PathUtilities.extractType((String) context.get(Globals.PATH));
+                    final String pathBasedContentType = PathUtilities.extractType((String) context.get(Globals.PATH));
 
                     String templateName = StringUtils.defaultString(context.getTemplateName(),
                             RepositoryManager.DEFAULT_TEMPLATE_NAME);
@@ -152,10 +156,9 @@ public class Micro {
 
                     String out = null;
                     out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
-                            .get(templateName + contentType);
+                            .get(templateName + pathBasedContentType);
 
-                    response.withContentType(Mime.mimeType(contentType))
-                            .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
+                    response.withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                             .withBody(out);
                 }
 
@@ -163,7 +166,8 @@ public class Micro {
                     callHelpers(site.getHelperManager().getAfterHelpers(), context);
                 }
             }
-            return context.getRackResponse();
+
+            return context.getRackResponse().withContentType(getContentType(context));
 
         } catch (ControllerNotFoundException e) {
             return badJuju(context, HttpServletResponse.SC_NO_CONTENT, e);
@@ -175,6 +179,26 @@ public class Micro {
         } catch (ViewException e) {
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getContentType(MicroContext context) {
+        RackResponse response = context.getRackResponse();
+        String responseContentType = response.getHeaders().get(Globals.HEADERS_CONTENT_TYPE);
+        String contentType = Mime.mimeType(PathUtilities.extractType((String) context.get(Globals.PATH)));
+
+        if (responseContentType != null) {
+            contentType = responseContentType;
+        }
+
+        // verify the charset
+        Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
+        if (!CollectionUtils.isEmpty(params) && params.get(Globals.CHARSET) != null
+                && !contentType.contains(Globals.CHARSET)) {
+            contentType = String.format("%s;%s", contentType, Arrays.toString(params.get(Globals.CHARSET)));
+        }
+
+        return contentType;
     }
 
     private void configureBSF() {

@@ -12,6 +12,10 @@
   controller:
     name: ca.simplegames.micro.controllers.StatsController
 
+- route: /{file}.md
+  controller:
+    name: test/MD.bsh
+
 - route: /system/test
   method: get
 
