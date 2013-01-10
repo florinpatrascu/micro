@@ -181,21 +181,35 @@ public class Micro {
         }
     }
 
+    /**
+     * This method will do the following:
+     * - extract the resource file extension for the given path
+     * - check if there are any user defined mime types and use those otherwise
+     * will use the default Mime detection mechanism {@see Mime.mimeType}
+     * - if the response however has the Content-type defined already then the
+     * resulting content type is the one in the response.
+     *
+     * @param context the current context
+     * @return a String representing the content type value
+     */
     @SuppressWarnings("unchecked")
     private String getContentType(MicroContext context) {
         RackResponse response = context.getRackResponse();
         String responseContentType = response.getHeaders().get(Globals.HEADERS_CONTENT_TYPE);
-        String contentType = Mime.mimeType(PathUtilities.extractType((String) context.get(Globals.PATH)));
+        final String ext = PathUtilities.extractType((String) context.get(Globals.PATH));
+        String contentType = Mime.mimeType(ext);
 
         if (responseContentType != null) {
             contentType = responseContentType;
+        } else if (site.getUserMimeTypes() != null && site.getUserMimeTypes().containsKey(ext)) {
+            contentType = site.getUserMimeTypes().get(ext);
         }
 
         // verify the charset
         Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
         if (!CollectionUtils.isEmpty(params) && params.get(Globals.CHARSET) != null
                 && !contentType.contains(Globals.CHARSET)) {
-            contentType = String.format("%s;%s", contentType, Arrays.toString(params.get(Globals.CHARSET)));
+            contentType = String.format("%s;%s", contentType, params.get(Globals.CHARSET)[0]);
         }
 
         return contentType;

@@ -32,3 +32,7 @@ template_engines:
       class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
 # MICRO_ENV: production
+
+# optional mime types to overwrite the default
+mime_types:
+  .md: text/html; charset=utf8

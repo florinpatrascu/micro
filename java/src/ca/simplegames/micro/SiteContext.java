@@ -60,6 +60,7 @@ public class SiteContext extends MapContext {
     private List<Extension> extensions = new ArrayList<Extension>();
     private String microEnv;
     private TemplateEnginesManager templateEnginesManager;
+    private Map<String, String> userMimeTypes = null;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -97,7 +98,7 @@ public class SiteContext extends MapContext {
                 log.info(String.format("     description: %s", StringUtils.defaultString(appConfig.get("description"), "")));
 
                 log.info("Template engines:");
-                templateEnginesManager = new TemplateEnginesManager( this, appConfig);
+                templateEnginesManager = new TemplateEnginesManager(this, appConfig);
 
                 log.info("Repositories:");
                 // - Repositories
@@ -141,6 +142,9 @@ public class SiteContext extends MapContext {
                         .with(Globals.WEB_APP_NAME, StringUtils.defaultString(appConfig.get("name"), "<name your app>"))
                         .with(Globals.WEB_APP_DESCRIPTION, StringUtils.defaultString(appConfig.get("description"),
                                 "<describe your app>"));
+
+                // load the user mime types, if any
+                userMimeTypes = (Map<String, String>) appConfig.get("mime_types");
 
                 //add anything else to the context? If no, then execute the app' startup controller:
                 controllerManager.execute(findApplicationScript(configPath), context);
@@ -238,6 +242,9 @@ public class SiteContext extends MapContext {
      * engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", "bar"));
      * engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
      *
+     * Check this discussion: http://goo.gl/D8m9g, about the execution scope and if the BSFEngine can be
+     * reused.
+     *
      * @param language      a valid BSF language, example: 'beanshell'
      * @param context       a MicroContext that can be used to transmit parameters
      * @param configuration an optional Map containing configuration elements
@@ -276,5 +283,15 @@ public class SiteContext extends MapContext {
 
     public TemplateEnginesManager getTemplateEnginesManager() {
         return templateEnginesManager;
+    }
+
+    /**
+     * It is about the user defined mime types. If not null, Micro will check first against this model every time it
+     * has to decide about the response Content-Type
+     *
+     * @return A map containing user defined mime types
+     */
+    public Map<String, String> getUserMimeTypes() {
+        return userMimeTypes;
     }
 }
