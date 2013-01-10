@@ -16,10 +16,10 @@
 
 package ca.simplegames.micro.extensions.i18n;
 
+import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.utils.Assert;
 import org.apache.commons.lang3.StringUtils;
@@ -65,8 +65,9 @@ public class I18NExtension implements Extension {
             }
 
             defaultEncoding = StringUtils.defaultString((String) locales.get("default_encoding"), Globals.UTF8);
-            fallbackToSystemLocale = StringUtils.defaultString((String) locales.get("fallback_to_system_locale"),
-                    "true").equalsIgnoreCase("true");
+            fallbackToSystemLocale = locales.get("fallback_to_system_locale") != null ?
+                    (Boolean) locales.get("fallback_to_system_locale") : true;
+
             resourceCacheRefreshInterval = Integer.parseInt(
                     StringUtils.defaultString((locales.get("resource_cache")).toString(), "10"));
 
