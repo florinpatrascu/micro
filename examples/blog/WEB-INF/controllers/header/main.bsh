@@ -1,1 +1,1 @@
-print("header's main controller.");
+context.with("time", new Date());
