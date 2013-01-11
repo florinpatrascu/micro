@@ -20,7 +20,19 @@ public class MarkupViewRenderer implements ViewRenderer {
     PegDownProcessor pegDownProcessor = new PegDownProcessor();
     protected String name = "markdown";
 
-    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
+    /**
+     * this Viewer requires synchronization, otherwise the PEG processor is spitting errors under stress
+     *
+     * @param path       The path to the template
+     * @param repository the repository used for extracting the resource specified by path
+     * @param context    The RequestContext
+     * @param in         The Reader to read view template from
+     * @param out        The Writer to write the rendered view
+     * @return
+     * @throws FileNotFoundException
+     * @throws ViewException
+     */
+    public synchronized long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
             throws FileNotFoundException, ViewException {
 
         if (repository != null && out != null) {
