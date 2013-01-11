@@ -84,6 +84,10 @@ public class MicroContext<T> implements Context<T> {
         return map;
     }
 
+    public Context<T> put(String key, Object value) {
+        return with(key, value);
+    }
+
     @Override
     public String toString() {
         return map.toString();
