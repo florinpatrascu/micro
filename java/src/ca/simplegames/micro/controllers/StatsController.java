@@ -40,6 +40,7 @@ import java.util.*;
  */
 public class StatsController implements Controller {
     private static final long MEGA_BYTE = 1048576;
+    public static final String JSON_TYPE = ".json";
 
     public void execute(MicroContext context, Map configuration) throws ControllerException {
         Map<String, Object> systemInfo = new HashMap<String, Object>();
@@ -48,8 +49,8 @@ public class StatsController implements Controller {
 
         OperatingSystemMXBean sunOperatingSystemMXBean = null;
         try {
-            sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(mbeanServer,
-                    ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+            sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(
+                    mbeanServer, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
         } catch (IOException e) {
             throw new ControllerException(e);
         }
@@ -64,52 +65,52 @@ public class StatsController implements Controller {
         Map<String, Long> memInfo = new HashMap<String, Long>();
 
         memInfo.put("total", totalMemory);
-        memInfo.put("free", freeMemory);
         memInfo.put("used", usedMemory);
-        memInfo.put("percentFree", p100);
+        memInfo.put("free", freeMemory);
+        memInfo.put("free_percent", p100);
 
         systemInfo.put("memory", memInfo);
 
         //cpu usage in milli secs
         long currentCpuUsage = sunOperatingSystemMXBean.getProcessCpuTime() / 1000000;
-        osMap.put("CPU_Usage", currentCpuUsage);
-        osMap.put("AvailableProcessors", sunOperatingSystemMXBean.getAvailableProcessors());
-        osMap.put("SystemLoadAverage", sunOperatingSystemMXBean.getSystemLoadAverage());
-        osMap.put("CommittedVirtualMemorySize", sunOperatingSystemMXBean.getCommittedVirtualMemorySize());
-        osMap.put("FreePhysicalMemorySize", sunOperatingSystemMXBean.getFreePhysicalMemorySize());
-        osMap.put("TotalPhysicalMemorySize", sunOperatingSystemMXBean.getTotalPhysicalMemorySize());
-        osMap.put("FreeSwapSpaceSize", sunOperatingSystemMXBean.getFreeSwapSpaceSize());
-        osMap.put("TotalSwapSpaceSize", sunOperatingSystemMXBean.getTotalSwapSpaceSize());
+        osMap.put("cpu_usage", currentCpuUsage);
+        osMap.put("available_processors", sunOperatingSystemMXBean.getAvailableProcessors());
+        osMap.put("system_load_average", sunOperatingSystemMXBean.getSystemLoadAverage());
+        osMap.put("committed_virtual_memory_size", sunOperatingSystemMXBean.getCommittedVirtualMemorySize());
+        osMap.put("free_physical_memory_size", sunOperatingSystemMXBean.getFreePhysicalMemorySize());
+        osMap.put("total_physical_memory_size", sunOperatingSystemMXBean.getTotalPhysicalMemorySize());
+        osMap.put("free_swap_space_size", sunOperatingSystemMXBean.getFreeSwapSpaceSize());
+        osMap.put("total_swap_space_size", sunOperatingSystemMXBean.getTotalSwapSpaceSize());
 
 
-        systemInfo.put("OS", osMap);
+        systemInfo.put("os", osMap);
 
         List<GarbageCollectorMXBean> gc = ManagementFactory.getGarbageCollectorMXBeans();
         List<Map> gcInfo = new ArrayList<Map>();
 
         for (GarbageCollectorMXBean aGc : gc) {
-
             Map<String, Object> gcMap = new HashMap<String, Object>();
-            gcMap.put("Name", aGc.getName());
-            gcMap.put("CollectionCount", aGc.getCollectionCount());
-            gcMap.put("CollectionTime", aGc.getCollectionTime());
+            gcMap.put("name", aGc.getName());
+            gcMap.put("collection_count", aGc.getCollectionCount());
+            gcMap.put("collection_time", aGc.getCollectionTime());
 
             gcInfo.add(gcMap);
         }
 
-        systemInfo.put("GC", gcInfo);
+        systemInfo.put("gc", gcInfo);
 
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         Map<String, Object> threadInfoMap = new HashMap<String, Object>(); // more to come ;)
-        threadInfoMap.put("PeakThreadCount", threadMXBean.getPeakThreadCount());
-        threadInfoMap.put("ThreadCount", threadMXBean.getThreadCount());
-        threadInfoMap.put("TotalStartedThreadCount", threadMXBean.getTotalStartedThreadCount());
+        threadInfoMap.put("peak_thread_count", threadMXBean.getPeakThreadCount());
+        threadInfoMap.put("thread_count", threadMXBean.getThreadCount());
+        threadInfoMap.put("total_started_thread_count", threadMXBean.getTotalStartedThreadCount());
+
         long[] deadlockedThreads = threadMXBean.findMonitorDeadlockedThreads();
-        threadInfoMap.put("DeadlockedThreadsCount", deadlockedThreads != null ? deadlockedThreads.length : 0);
-        systemInfo.put("ThreadInfo", threadInfoMap);
+        threadInfoMap.put("dead_locked_thread_count", deadlockedThreads != null ? deadlockedThreads.length : 0);
+        systemInfo.put("thread_info", threadInfoMap);
 
 
-        JSONObject sysinfoJson = new JSONObject(Collections.singletonMap("systemInfo", systemInfo));
+        JSONObject sysinfoJson = new JSONObject(Collections.singletonMap("system_info", systemInfo));
 
         String sysinfoString = null;
         try {
@@ -121,10 +122,11 @@ public class StatsController implements Controller {
         }
 
         context.getRackResponse()
-                .withHeader("Content-Type", (Mime.mimeType(".json")))
-                .withContentLength(sysinfoString.length())
+                .withContentType(Mime.mimeType(JSON_TYPE))
                 .withBody(sysinfoString)
+                .withContentLength(sysinfoString.length())
                 .with(Rack.MESSAGE_STATUS, HttpServletResponse.SC_OK);
+
         context.halt();
     }
 }
