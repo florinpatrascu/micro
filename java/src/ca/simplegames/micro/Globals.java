@@ -34,7 +34,6 @@ public class Globals {
     public static final String MICRO_CONFIG_PATH = MICRO + "config_path";
     public static final String MICRO_CACHE_MANAGER = MICRO + "cache_manager";
 
-    public static final String MICRO_SITE = MICRO + "site";
     public static final String SCRIPT_CONTROLLERS_CACHE_NAME = MICRO + "script_controllers_cache";
     public static final String MICRO_CACHE_CONFIG = MICRO_CACHE_MANAGER + "_config";
     public static final String MICRO_HELPERS_CONFIG = "helpers";
@@ -75,4 +74,6 @@ public class Globals {
     public static final String PRODUCTION = "production";
     public static final String TEST = "test";
     public static final String CHARSET = "charset";
+    public static final String CLOSEABLE_BSF_MANAGER = "closeable_bsf_manager";
+    public static final String CONFIGURATION = "configuration";
 }

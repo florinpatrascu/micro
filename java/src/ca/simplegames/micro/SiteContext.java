@@ -22,6 +22,7 @@ import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.templates.TemplateEnginesManager;
+import ca.simplegames.micro.utils.CloseableThreadLocal;
 import ca.simplegames.micro.utils.StringUtils;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
@@ -138,7 +139,7 @@ public class SiteContext extends MapContext {
 
 
                 MicroContext context = new MicroContext();
-                context.with(Globals.MICRO_SITE, this)
+                context.with(Globals.SITE, this)
                         .with(Globals.WEB_APP_NAME, StringUtils.defaultString(appConfig.get("name"), "<name your app>"))
                         .with(Globals.WEB_APP_DESCRIPTION, StringUtils.defaultString(appConfig.get("description"),
                                 "<describe your app>"));
@@ -148,6 +149,9 @@ public class SiteContext extends MapContext {
 
                 //add anything else to the context? If no, then execute the app' startup controller:
                 controllerManager.execute(findApplicationScript(configPath), context);
+                if (context.get(Globals.CLOSEABLE_BSF_MANAGER) != null) {
+                    ((CloseableThreadLocal) context.get(Globals.CLOSEABLE_BSF_MANAGER)).close();
+                }
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -241,7 +245,7 @@ public class SiteContext extends MapContext {
      * Example:
      * engine = site.getBSFEngine("beanshell", context, Collections.singletonMap("foo", "bar"));
      * engine.exec("complexCalculus", 0, 0, "one = 1 * 1;"); // :P
-     *
+     * <p/>
      * Check this discussion: http://goo.gl/D8m9g, about the execution scope and if the BSFEngine can be
      * reused.
      *
@@ -253,13 +257,30 @@ public class SiteContext extends MapContext {
      * @throws Exception if the Engine cannot be created
      */
     public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration, Logger log) throws Exception {
-        BSFManager bsfManager = new BSFManager();
-        bsfManager.setClassLoader(this.getClass().getClassLoader());
+        //@SuppressWarnings("unchecked")
+        //CloseableThreadLocal<BSFManager> bsfManagerTL = (CloseableThreadLocal<BSFManager>)
+        //        context.get(Globals.CLOSEABLE_BSF_MANAGER);
 
-        bsfManager.declareBean("configuration", configuration, Map.class);
-        bsfManager.declareBean("context", context, MicroContext.class);
-        bsfManager.declareBean("site", this, SiteContext.class);
-        bsfManager.declareBean("log", log, Logger.class);
+        BSFManager bsfManager;
+
+        // if (bsfManagerTL == null) {
+        //     bsfManagerTL = new CloseableThreadLocal<BSFManager>();
+        //     bsfManager = new BSFManager();
+        //     bsfManagerTL.set(bsfManager);
+        //     bsfManager.setClassLoader(this.getClass().getClassLoader());
+        //     bsfManager.declareBean(Globals.SITE, this, SiteContext.class);
+        //     context.with(Globals.CLOSEABLE_BSF_MANAGER, bsfManagerTL);
+        // } else {
+        //     bsfManager = bsfManagerTL.get();
+        // }
+
+
+        bsfManager = new BSFManager();
+        bsfManager.setClassLoader(this.getClass().getClassLoader());
+        bsfManager.declareBean(Globals.SITE, this, SiteContext.class);
+        bsfManager.declareBean(Globals.LOG, log, Logger.class);
+        bsfManager.declareBean(Globals.CONFIGURATION, configuration, Map.class);
+        bsfManager.declareBean(Globals.CONTEXT, context, MicroContext.class);
 
         // pre-load the engine to make sure we were called right
         org.apache.bsf.BSFEngine bsfEngine = null;

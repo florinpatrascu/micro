@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -98,12 +97,13 @@ public class Micro {
 
         MicroContext context = new MicroContext<String>();
 
-        input.with(Globals.MICRO_SITE, site);
+        //try {
+        input.with(Globals.SITE, site);
         input.with(Rack.RACK_LOGGER, log);
 
         String pathInfo = input.get(Rack.PATH_INFO);
         context.with(Globals.RACK_INPUT, input)
-                .with(Globals.MICRO_SITE, site)
+                .with(Globals.SITE, site)
                 .with(Rack.RACK_LOGGER, log)
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
@@ -179,6 +179,17 @@ public class Micro {
         } catch (ViewException e) {
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         }
+        // Experimental!!!!!!
+        //        } finally {
+        //            // this is an experimental trick that will save some processing time required by BSF to load
+        //            // various engines.
+        //            @SuppressWarnings("unchecked")
+        //            CloseableThreadLocal<BSFManager> closeableBsfManager = (CloseableThreadLocal<BSFManager>)
+        //                    context.get(Globals.CLOSEABLE_BSF_MANAGER);
+        //            if(closeableBsfManager!=null){
+        //                closeableBsfManager.close();
+        //            }
+        //    }
     }
 
     /**

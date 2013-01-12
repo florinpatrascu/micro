@@ -19,6 +19,7 @@ package ca.simplegames.micro;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
+import org.slf4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,7 +115,7 @@ public class MicroContext<T> implements Context<T> {
     }
 
     public SiteContext getSiteContext() {
-        return (SiteContext) map.get(Globals.MICRO_SITE);
+        return (SiteContext) map.get(Globals.SITE);
     }
 
     public boolean isHalt() {
@@ -139,5 +140,9 @@ public class MicroContext<T> implements Context<T> {
 
     public void setRackResponse(RackResponse response) {
         with(Globals.RACK_RESPONSE, response);
+    }
+
+    public Logger getLog(){
+        return (Logger) get(Globals.LOG);
     }
 }

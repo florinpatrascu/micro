@@ -1,6 +1,8 @@
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.utils.CloseableThreadLocal;
 import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFManager;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
@@ -8,6 +10,7 @@ import org.jrack.context.MapContext;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -177,12 +180,13 @@ public class MicroGenericTest {
 
         engine.exec("complexCalculus", 0, 0,
                 "context.with(\"one\", context.get(\"unu\") * 1);" +
-                "log.info(\"One is: \" + context.get(\"one\"));"); // :P
+                        "log.info(\"One is: \" + context.get(\"one\"));"); // :P
         Assert.assertEquals("BSFEngine failure", 1, context.get("one"));
     }
 
     /**
      * testing if the Markdown support works well
+     *
      * @throws Exception
      */
     @Test
@@ -196,4 +200,27 @@ public class MicroGenericTest {
                 .contains("<h3>Markdown</h3><p>This is a simple markdown document</p>"));
     }
 
+    /**
+     * this is an important test to check if the multiple actions can safely use
+     * their own configuration object and use it in a shared context
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCloseableBSF() throws Exception {
+        final SiteContext site = micro.getSite();
+
+        Context context = new MicroContext<String>()
+                .with(Globals.LOG, site.getLog())
+                .with(Globals.SITE, site);
+
+        site.getControllerManager().execute("Foo.bsh", (MicroContext) context, Collections.singletonMap("foo", "bar"));
+        Assert.assertTrue("Foo is not Bar, broken configuration",
+                ((String) context.get("foo")).equalsIgnoreCase("bar"));
+
+        site.getControllerManager().execute("Bat.bsh", (MicroContext) context, Collections.singletonMap("Bat", "Man"));
+        Assert.assertTrue("Bat is not the Man, c'mon man",
+                ((String) context.get("Bat")).equalsIgnoreCase("Man"));
+
+    }
 }

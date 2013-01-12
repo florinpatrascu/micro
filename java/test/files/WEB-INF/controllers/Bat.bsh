@@ -1,0 +1,4 @@
+// used for testing purposes.
+context.Log.info(configuration.toString());
+log.info(configuration.toString());
+context.put("Bat", configuration.get("Bat"));

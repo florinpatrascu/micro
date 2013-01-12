@@ -29,11 +29,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
+ * The ControllerManager - responsible for finding, caching, instantiating and executing Micro controllers
+ * <p/>
+ * Only the Scripting is cached and only if Micro runs in 'production' mode.
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 12:53 PM)
  */
@@ -63,21 +68,16 @@ public class ControllerManager {
             throw new ControllerNotFoundException("Invalid controller name: " + controllerName);
         }
 
+        final String controllerNotFoundMessage = String.format("%s, not found!", controllerName);
         Controller controller = findController(controllerName);
 
         if (controller != null) {
-            ScriptController scriptController = null;
-
-            if (cachedScriptControllers != null) {
+            if (controller instanceof ScriptController) {
                 try {
-                    scriptController = (ScriptController) cachedScriptControllers.get(controllerName);
-                } catch (MicroCacheException e) {
-                    e.printStackTrace();
+                    controller.execute(context, configuration);
+                } catch (FileNotFoundException e) {
+                    throw new ControllerException(controllerNotFoundMessage);
                 }
-            }
-
-            if (scriptController != null) {
-                scriptController.execute(context, configuration);
             } else {
                 try {
                     Class[] paramTypes = {MicroContext.class, Map.class};
@@ -86,9 +86,14 @@ public class ControllerManager {
                     // ... Object result =
                     method.invoke(controller, params);
                 } catch (Exception e) {
+                    log.error(String.format("%s, error: %s", controllerName, e.getMessage()));
+                    e.printStackTrace();
                     throw new ControllerException(e.getMessage());
                 }
+
             }
+        } else {
+            throw new ControllerException(controllerNotFoundMessage);
         }
     }
 

@@ -66,23 +66,24 @@ public class ScriptController implements Controller {
      * @throws ControllerException
      */
     public void execute(MicroContext context, Map configuration) throws ControllerException {
+        final Logger logger = LoggerFactory.getLogger(controllerName);
         try {
-            final Logger logger = LoggerFactory.getLogger(controllerName);
             // pre-load the engine to make sure we were called right
-            BSFEngine bsfEngine = context.getSiteContext().getBSFEngine(language, context, configuration, logger);
-            // Execute with the proper language, the fileName (for error reporting),
-            // the row and column to start at, and finally the contents of the script
-            try {
+            final SiteContext site = context.getSiteContext();
+            if (site != null) {
+                BSFEngine bsfEngine = site.getBSFEngine(language, context, configuration, logger);
+                // Execute with the proper language, the fileName (for error reporting),
+                // the row and column to start at, and finally the contents of the script
                 // some examples: http://massapi.com/class/bs/BSFManager.html
                 bsfEngine.exec(controllerName, 0, 0, script);
-            } catch (Throwable e) {
-                logger.error(e.getMessage());
-                throw new ControllerException(
-                        String.format("error while executing: %s; details: %s", controllerName, e.getMessage()));
+
+            } else {
+                throw new ControllerException("Micro site is not in the current context, please review");
             }
             // return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
         } catch (Exception e) {
-            throw new ControllerException(String.format("Problems loading org.apache.bsf.BSFEngine: %s", language), e);
+            throw new ControllerException(
+                    String.format("error while executing: %s; details: %s", controllerName, e.getMessage()));
         }
 
     }
