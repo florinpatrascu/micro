@@ -209,6 +209,7 @@ public class MicroGenericTest {
     @Test
     public void testCloseableBSF() throws Exception {
         final SiteContext site = micro.getSite();
+        final String canonicalName = TestController.class.getCanonicalName();
 
         Context context = new MicroContext<String>()
                 .with(Globals.LOG, site.getLog())
@@ -222,5 +223,9 @@ public class MicroGenericTest {
         Assert.assertTrue("Bat is not the Man, c'mon man",
                 ((String) context.get("Bat")).equalsIgnoreCase("Man"));
 
+        site.getControllerManager().execute("ca.simplegames.micro.TestController",
+                (MicroContext) context, Collections.singletonMap("class", canonicalName));
+        Assert.assertTrue("Can't execute Java class",
+                ((String) context.get("class")).equalsIgnoreCase(canonicalName));
     }
 }
