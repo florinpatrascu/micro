@@ -1,7 +1,6 @@
 dist/
 build/
 out/
-*.iml
 *.ipr
 *.iws
 .idea/
@@ -9,4 +8,4 @@ out/
 .Spotlight-V100
 .Trashes
 *.tmproj
-micro.iml
+*.iml

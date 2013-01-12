@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# A very simple script that can be used to run Micro with the embedded Jetty server.
+# This is not for running a production web site tho it can handle a decent amount of load :)
+
+
+# Any other options? Example:
+# export OPT=' -Dlog4j.debug -Dlog4j.configuration=lib/log4j.properties '
+# export OPT=' -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 '
+
+java $OPT -cp $( echo lib/*.jar dist/*.jar lib/*.properties . | sed 's/ /:/g') ca.simplegames.micro.WebServer $1 $2 $3 $4 $5 $6
