@@ -153,10 +153,10 @@ public class Micro {
                         }
                     }
 
-                    // Render the Default Template. The template will pull the View, the result being sent out as
-                    // the Template code merged with the View's own content. Controllers are executed *before*
-                    // rendering the Template *and* *before* rendering the View, but only if the View or the Template
-                    // have any Controllers associated.
+                    // Render the Default Template. The template will pull out the View, the result being sent out as
+                    // the Template body merged with the View's own content. Controllers are executed *before*
+                    // rendering the Template *and before* rendering the View, but only if there are any View or Template
+                    // Controllers defined by the user.
                     String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
                             .get(templateName + pathBasedContentType);
 
