@@ -113,8 +113,7 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
 
     }
 
-    // Warning the in parameter is ignored here, we're using the Repository's own cached content for efficiency
-    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
+    public long render(String path, Repository repository, MicroContext context, Writer out)
             throws FileNotFoundException, ViewException {
 
         StringWriter writer = new StringWriter();

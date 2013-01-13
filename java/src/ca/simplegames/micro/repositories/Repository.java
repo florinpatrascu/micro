@@ -187,20 +187,30 @@ public abstract class Repository {
         return content;
     }
 
-    public Reader getReader(String path) throws Exception {
+    /**
+     * obtain a Reader from the path.
+     * Mr. Developer - please don't forget to close it if you're using it.
+     * You can use {@link IO}.close, for example
+     *
+     * @param path the path to a resource in this repository
+     * @return the Reader or null if the path is null
+     * @throws Exception a File not found exception if there is no such a resource
+     */
+    public Reader getReader(String path, Charset encoding) throws Exception {
 
         if (path != null) {
             final File file = pathToFile(path);
             if (file.exists()) {
-                return new InputStreamReader(new FileInputStream(file),
-                        Charset.forName(Globals.UTF8));
+                return new InputStreamReader(new FileInputStream(file), encoding);
+            } else {
+                throw new FileNotFoundException(file.getAbsolutePath());
             }
         }
         return null;
     }
 
-    public void callControllersForPath(String path, MicroContext context) {
-
+    public Reader getReader(String path) throws Exception {
+        return getReader(path, Charset.forName(Globals.UTF8));
     }
 
     @SuppressWarnings("unchecked")

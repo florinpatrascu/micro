@@ -68,7 +68,7 @@ public class RepositoryWrapper {
         }
 
         try {
-            engine.render(path, repository, context, repository.getReader(path), writer);
+            engine.render(path, repository, context, writer);
         } catch (Exception e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
         }
@@ -81,7 +81,7 @@ public class RepositoryWrapper {
         if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
             executeViewControllers(view.getControllers(), context);
         }
-        repository.getRenderer().render(path, repository, context, null, writer);
+        repository.getRenderer().render(path, repository, context, writer);
         return writer.toString();
     }
 

@@ -16,6 +16,8 @@
 
 package ca.simplegames.micro.viewers.freemarker;
 
+import ca.simplegames.micro.Globals;
+import ca.simplegames.micro.Micro;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
@@ -38,34 +40,38 @@ import java.util.Map;
  */
 public class FreemarkerViewRenderer implements ViewRenderer {
     private static final Logger log = LoggerFactory.getLogger(FreemarkerViewRenderer.class);
-    private Configuration fmConfig = new Configuration();
     protected String name = "freemarker";
 
     @Override
     public void loadConfiguration(Map<String, Object> configuration) throws Exception {
-        // todo: implement more, allow the user to initialize FM from Micro's config file
-        fmConfig.setLocalizedLookup(false);
     }
 
     @Override
-    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out) throws FileNotFoundException, ViewException {
+    public long render(String path, Repository repository, MicroContext context, Writer out)
+            throws FileNotFoundException, ViewException {
 
-        final String fileNotFoundMessage = String.format("%s not found.", path);
         try {
-            if (in == null) {
-                throw new FileNotFoundException(fileNotFoundMessage);
-            }
+
+            Configuration fmConfig = new Configuration();
+            fmConfig.setTemplateLoader(new MicroTemplateLoader(repository));
+            fmConfig.setLocalizedLookup(false);
+            fmConfig.setWhitespaceStripping(context.getSiteContext().isProduction());
+            // NOT! fmConfig.setClassForTemplateLoading(Micro.class, Globals.EMPTY_STRING);
 
             StringWriter writer = new StringWriter();
-            // todo: implement a cache, maybe?!
-            Template template = new Template(path, in, fmConfig);
+
+            Template template = fmConfig.getTemplate(path, Globals.UTF8);
             template.process(context, out);
+
             return IO.copy(new StringReader(writer.toString()), out);
 
         } catch (TemplateException e) {
             throw new ViewException(e);
         } catch (IOException e) {
-            throw new FileNotFoundException(fileNotFoundMessage);
+            throw new FileNotFoundException(String.format("%s not found.", path));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ViewException(e.getMessage()); // generic??
         }
     }
 

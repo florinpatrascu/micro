@@ -2,13 +2,9 @@ name: blog
 description: My Blog
 
 repositories:
-  content:
-    path: views/content
-    cache: memCache
-    default: true
-    config: config
-  partials: {path: views/partials, cache: partials, default: false, config: config}
-  templates: {path: views/templates}
+  content: {path: views/content, cache: memCache, config: config, default: true}
+  partials: {path: views/partials, cache: partials, config: config}
+  templates: {path: views/templates, cache: memCache}
 
 controllers: {path: controllers, cache: controllers}
 

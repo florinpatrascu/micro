@@ -34,13 +34,12 @@ public interface ViewRenderer {
      * @param path       The path to the template
      * @param repository the repository used for extracting the resource specified by path
      * @param context    The RequestContext
-     * @param in         The Reader to read view template from
      * @param out        The Writer to write the rendered view
      * @return the number of bytes rendered
      * @throws ViewException
      */
 
-    public long render(String path, Repository repository, MicroContext context, Reader in, Writer out)
+    public long render(String path, Repository repository, MicroContext context, Writer out)
             throws FileNotFoundException, ViewException;
 
     /**
