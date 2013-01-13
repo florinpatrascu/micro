@@ -48,11 +48,6 @@ public class FreemarkerViewRenderer implements ViewRenderer {
     }
 
     @Override
-    public long render(String path, Repository repository, MicroContext context, InputStream in, OutputStream out) throws FileNotFoundException, ViewException {
-        return render(path, repository, context, new InputStreamReader(in), new OutputStreamWriter(out));
-    }
-
-    @Override
     public long render(String path, Repository repository, MicroContext context, Reader in, Writer out) throws FileNotFoundException, ViewException {
 
         final String fileNotFoundMessage = String.format("%s not found.", path);

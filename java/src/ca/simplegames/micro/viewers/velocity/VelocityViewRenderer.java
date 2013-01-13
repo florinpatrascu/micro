@@ -132,11 +132,6 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
     }
 
 
-    public long render(String path, Repository repository, MicroContext context, InputStream in, OutputStream out)
-            throws FileNotFoundException, ViewException {
-        return render(path, repository, context, new InputStreamReader(in), new OutputStreamWriter(out));
-    }
-
     private void loadVelocityProperties(InputStream in, Map<String, Object> configuration) throws IOException {
         try {
             velocityProperties.load(in);
