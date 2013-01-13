@@ -280,7 +280,8 @@ public class Micro {
                 if (!path.endsWith(SLASH)) {
                     path = path + SLASH;
                 }
-                path = path + INDEX + DOT + HTML;
+                String welcomeFile = StringUtils.defaultString(site.getWelcomeFile(), INDEX + DOT + HTML);
+                path = path + welcomeFile;
             }
             context.with(Globals.PATH_INFO, path);
         }

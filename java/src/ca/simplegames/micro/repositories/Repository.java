@@ -88,9 +88,9 @@ public abstract class Repository {
                     templateEnginesManager.getEngine(engineName) :
                     templateEnginesManager.getDefaultEngine();
 
-            site.getLog().info(String.format("  name......: '%s'", name));
-            site.getLog().info(String.format("  path......: '%s'", path.getAbsolutePath()));
-            site.getLog().info(String.format("  renderer..: '%s'", renderer.getName()));
+            site.getLog().info(String.format(" ** '%s'", name));
+            site.getLog().info(String.format("   - path....: '%s'", path.getAbsolutePath()));
+            site.getLog().info(String.format("   - renderer: '%s'", renderer.getName()));
 
             if (cache != null) {
                 site.getLog().info(String.format("  cache.: '%s'", cache.getName()));

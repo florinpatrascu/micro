@@ -62,6 +62,7 @@ public class SiteContext extends MapContext {
     private String microEnv;
     private TemplateEnginesManager templateEnginesManager;
     private Map<String, String> userMimeTypes = null;
+    private String welcomeFile;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -157,7 +158,7 @@ public class SiteContext extends MapContext {
                 e.printStackTrace();
             }
         }
-
+        welcomeFile = StringUtils.defaultString(appConfig.get("welcome_file"), "index.html");
         log.info(String.format("running in: '%s' mode", microEnv));
         return this;
     }
@@ -314,5 +315,12 @@ public class SiteContext extends MapContext {
      */
     public Map<String, String> getUserMimeTypes() {
         return userMimeTypes;
+    }
+
+    /**
+     * @return a user defined welcome file or "index.html"
+     */
+    public String getWelcomeFile() {
+        return welcomeFile;
     }
 }

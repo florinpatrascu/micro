@@ -19,16 +19,12 @@ import java.util.Map;
  */
 public class TemplateEnginesManager {
     Map<String, ViewRenderer> engines = new HashMap<String, ViewRenderer>();
-    private SiteContext site;
-    private Map<String, Object> config;
     private ViewRenderer defaultEngine = null;
 
     @SuppressWarnings("unchecked")
     public TemplateEnginesManager(SiteContext site, Map<String, Object> config) throws Exception {
-        this.site = site;
-        this.config = config;
-
         // Initialize a repository specific View renderer
+
         List<Map<String, Object>> templateEngines = (List<Map<String, Object>>) site.getAppConfig().get("template_engines");
         if (templateEngines != null) {
             for (Map templateEngine : templateEngines) {
@@ -49,6 +45,10 @@ public class TemplateEnginesManager {
                 }
                 site.getLog().info(String.format(" engine: %s, class: %s%s",
                         name, klass, isDefaultEngine ? ", default." : Globals.EMPTY_STRING));
+            }
+
+            if (defaultEngine == null && !engines.isEmpty()) {
+                defaultEngine = engines.entrySet().iterator().next().getValue();
             }
 
         } else {
