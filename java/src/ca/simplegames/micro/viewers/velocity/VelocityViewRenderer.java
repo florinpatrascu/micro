@@ -29,6 +29,8 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.log.LogChute;
 import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,7 @@ import java.util.Properties;
  * @since 2.0
  */
 
-public class VelocityViewRenderer implements ViewRenderer {
+public class VelocityViewRenderer implements ViewRenderer, LogChute {
     private Logger log = LoggerFactory.getLogger(getClass());
     private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/velocity.properties";
 
@@ -171,5 +173,55 @@ public class VelocityViewRenderer implements ViewRenderer {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void init(RuntimeServices runtimeServices) throws Exception {
+        log.info("Initializing Micro Velocity Engine ...");
+    }
+
+    @Override
+    public void log(int level, String s) {
+        log(level, s, null);
+    }
+
+    @Override
+    public void log(int level, String message, Throwable throwable) {
+        switch (level) {
+            case LogChute.DEBUG_ID:
+                log.debug(message);
+                break;
+            case LogChute.ERROR_ID:
+                log.error(message);
+                break;
+            case LogChute.INFO_ID:
+                log.info(message);
+                break;
+            case LogChute.TRACE_ID:
+                log.trace(message);
+                break;
+            case LogChute.WARN_ID:
+                log.warn(message);
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public boolean isLevelEnabled(int level) {
+        switch (level) {
+            case LogChute.DEBUG_ID:
+                return log.isDebugEnabled();
+            case LogChute.ERROR_ID:
+                return log.isErrorEnabled();
+            case LogChute.INFO_ID:
+                return log.isInfoEnabled();
+            case LogChute.TRACE_ID:
+                return log.isTraceEnabled();
+            case LogChute.WARN_ID:
+                return log.isWarnEnabled();
+            default:
+                return false;
+        }
     }
 }

@@ -179,7 +179,7 @@ public class Micro {
         } catch (FileNotFoundException e) {
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (ViewException e) {
-            return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
+            return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
         // Experimental!!!!!!
         //        } finally {
