@@ -12,6 +12,11 @@
 <body>
     $partials.get("header.html")
     #i18N("hello")<br />
+
     $content.get($path)
+
+    ## testing Freemarker
+    #set( $copyright = "Copyright (c) 2⦿12-2⦿13 ...")
+    $partials.get("freemarker", "footer.ftl")
 </body>
 </html>

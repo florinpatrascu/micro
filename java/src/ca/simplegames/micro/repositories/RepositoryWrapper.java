@@ -67,7 +67,11 @@ public class RepositoryWrapper {
             context.getMap().putAll(options);
         }
 
-        engine.render(path, repository, context, null, writer);
+        try {
+            engine.render(path, repository, context, repository.getReader(path), writer);
+        } catch (Exception e) {
+            throw new FileNotFoundException(String.format("%s not found.", path));
+        }
         return writer.toString();
     }
 

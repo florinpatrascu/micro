@@ -173,8 +173,7 @@ public abstract class Repository {
 
             if (content == null) {
                 if (file.exists()) {
-                    final Reader reader = new InputStreamReader(new FileInputStream(file),
-                            Charset.forName(Globals.UTF8));
+                    final Reader reader = getReader(path);
 
                     content = IO.getString(reader);
                     if (cache != null) {
@@ -186,6 +185,18 @@ public abstract class Repository {
             }
         }
         return content;
+    }
+
+    public Reader getReader(String path) throws Exception {
+
+        if (path != null) {
+            final File file = pathToFile(path);
+            if (file.exists()) {
+                return new InputStreamReader(new FileInputStream(file),
+                        Charset.forName(Globals.UTF8));
+            }
+        }
+        return null;
     }
 
     public void callControllersForPath(String path, MicroContext context) {
