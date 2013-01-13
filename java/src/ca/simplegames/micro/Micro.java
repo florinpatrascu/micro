@@ -147,15 +147,17 @@ public class Micro {
                     if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
                         templateName = view.getTemplate();
                     } else {
-                        View contentView = site.getRepositoryManager().getDefaultRepository().getView(path);
-                        if (contentView != null && contentView.getTemplate() != null) {
-                            view = contentView; // !!!!!!!!!!!!!!!! usr me << TODO
-                            templateName = contentView.getTemplate();
+                        view = site.getRepositoryManager().getDefaultRepository().getView(path);
+                        if (view != null && view.getTemplate() != null) {
+                            templateName = view.getTemplate();
                         }
                     }
 
-                    String out = null;
-                    out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
+                    // Render the Default Template. The template will pull the View, the result being sent out as
+                    // the Template code merged with the View's own content. Controllers are executed *before*
+                    // rendering the Template *and* *before* rendering the View, but only if the View or the Template
+                    // have any Controllers associated.
+                    String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
                             .get(templateName + pathBasedContentType);
 
                     response.withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
