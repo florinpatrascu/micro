@@ -26,6 +26,7 @@ public class Globals {
     public static final String EMPTY_STRING = "";
     public static final String MICRO = "micro_";
     public static final String UTF8 = "UTF-8";
+    public static final String FILE_EXTENSION_MATCHER = "[.][^.]+$";
 
     public static final String SERVLET_CONTEXT = MICRO + "servlet_context";
     public static final String SERVLET_PATH_NAME = MICRO + "servlet_path_name";

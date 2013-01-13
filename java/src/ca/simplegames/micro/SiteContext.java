@@ -23,6 +23,7 @@ import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.templates.TemplateEnginesManager;
 import ca.simplegames.micro.utils.CloseableThreadLocal;
+import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.utils.StringUtils;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
@@ -125,7 +126,7 @@ public class SiteContext extends MapContext {
                     for (File file : files(extensionsDirectory, ".yml")) {
                         Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(file));
                         Extension extension = (Extension) ClassUtilities.loadClass((String) yaml.get("class")).newInstance();
-                        final String fileName = file.getName().replaceFirst("[.][^.]+$", "");
+                        final String fileName = PathUtilities.extractName(file);
                         extensions.add(extension.register(fileName, this, yaml));
                         log.info(String.format("  %s: %s", extension.getName(), file.getAbsolutePath()));
                     }

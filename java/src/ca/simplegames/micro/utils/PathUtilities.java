@@ -27,7 +27,7 @@ import java.io.File;
  *
  * @author Anthony Eden
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
- * @since $Revision$ (created: 2012-12-22 5:30 PM)
+ * @since $Revision$ (created: 2013.01.13 5:30 PM)
  */
 public class PathUtilities {
     private static final String WILDCARD = "*";
@@ -78,36 +78,41 @@ public class PathUtilities {
 
     /**
      * Extract the page name from the given path.  The page name is the
-     * name of the file in the path without its suffix.
+     * name of the file in the path without its extension.
      *
      * @param path The request path
-     * @return The page name
+     * @return The view name
      */
 
     public static String extractName(String path) {
-        if (path == null) {
-            return Globals.EMPTY_STRING;
-        }
-
-        File file = new File(path);
-        String fileName = file.getName();
-        int dotIndex = fileName.lastIndexOf(DOT);
-
-        if (dotIndex < 0) {
-            return null;
-        }
-
-        return fileName.substring(0, dotIndex);
+        return path != null? extractName(new File(path)) : Globals.EMPTY_STRING;
     }
 
+    /**
+     * Extract the page name from the given file.  The page name is the
+     * name of the file in the path without its extension.
+     *
+     * @param file a file
+     * @return The view name
+     */
+
+    public static String extractName(File file) {
+        String name = Globals.EMPTY_STRING;
+
+        if (file != null) {
+            name = file.getName().replaceFirst(Globals.FILE_EXTENSION_MATCHER, Globals.EMPTY_STRING);
+        }
+
+        return name;
+    }
 
     /**
      * Return the page type extracting it from the path.  For example:
      * index.html would return ".html" as the page type.  If the type
      * cannot be determined then this method returns null.
      *
-     * @param path The path
-     * @return The page type
+     * @param path the path
+     * @return the view type
      */
 
     public static String extractType(String path) {
