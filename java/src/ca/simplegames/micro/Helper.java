@@ -16,11 +16,16 @@
 
 package ca.simplegames.micro;
 
-import java.util.Map;
-
 /**
+ * A Helper will be invoked every time Micro is receiving a call from Rack
+ * The Helper can also be mapped on a specific route.
+ * <p/>
+ * There are two types of Helpers:
+ * - before: acting before any other Micro Controllers can act
+ * - after: acting after Micro finished processing the response
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
- * @since $Revision$ (created: 2012-12-18 11:17 PM)
+ * @since $Revision$ (created: 2013.01.13 11:17 PM)
  */
 public interface Helper {
 
