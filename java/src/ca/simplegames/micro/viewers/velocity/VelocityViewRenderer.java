@@ -48,7 +48,7 @@ import java.util.Properties;
  */
 
 public class VelocityViewRenderer implements ViewRenderer, LogChute {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(VelocityViewRenderer.class);
     private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/velocity.properties";
 
     // Here are the names of Velocity 1.x properties that can contains paths.
