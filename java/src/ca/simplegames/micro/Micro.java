@@ -55,6 +55,11 @@ public class Micro {
     public static final String HTML_EXTENSION = DOT + HTML;
     public static final String DEFAULT_CONTENT_TYPE = Mime.mimeType(HTML_EXTENSION);
 
+    public static final String TOOLS = "Tools";
+    public static Context tools = new MicroContext()
+            .with("PathUtilities", new PathUtilities())
+            .with("StringUtils", new StringUtils());
+
     private SiteContext site;
     private String welcomeFile;
 
@@ -111,7 +116,8 @@ public class Micro {
                         // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
                 .with(Globals.SITE, site)
-                .with(Globals.PATH_INFO, pathInfo);
+                .with(Globals.PATH_INFO, pathInfo)
+                .with(TOOLS, tools);
 
         for (Repository repository : site.getRepositoryManager().getRepositories()) {
             context.with(repository.getName(), repository.getRepositoryWrapper(context));

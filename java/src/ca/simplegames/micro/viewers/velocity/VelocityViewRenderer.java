@@ -46,7 +46,7 @@ import java.util.Properties;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since 2.0
  */
-
+@SuppressWarnings("unchecked")
 public class VelocityViewRenderer implements ViewRenderer, LogChute {
     private static final Logger log = LoggerFactory.getLogger(VelocityViewRenderer.class);
     private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/velocity.properties";
