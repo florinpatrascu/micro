@@ -17,7 +17,6 @@
 package ca.simplegames.micro.viewers.freemarker;
 
 import ca.simplegames.micro.repositories.Repository;
-import ca.simplegames.micro.utils.IO;
 import freemarker.cache.TemplateLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,26 +59,23 @@ public class MicroTemplateLoader implements TemplateLoader {
 
     @Override
     public Reader getReader(Object templateSource, String encoding) throws IOException {
-        final StringReader stringReader = new StringReader((String) templateSource);
+        StringReader stringReader = new StringReader((String) templateSource);
 
-        try {
-            if (encoding == null) {
-                return stringReader;
-            } else {
-                try {
-                    return new StringReader(new String(((String) templateSource).getBytes(), encoding));
-                } catch (UnsupportedEncodingException e) {
-                    log.warn("Unsupported encoding " + encoding + "; using default encoding");
-                    return stringReader;
-                }
+        if (encoding != null) {
+            try {
+                stringReader = new StringReader(new String(((String) templateSource).getBytes(), encoding));
+            } catch (UnsupportedEncodingException e) {
+                log.warn("Unsupported encoding " + encoding + "; using default encoding");
             }
-        } finally {
-            IO.close(stringReader);
         }
+
+        return stringReader;
+
     }
 
     @Override
     public void closeTemplateSource(Object templateSource) throws IOException {
-        // no needed, the StringReader was closed
+        // not needed, we're using the StringReader
+        // example: http://stackoverflow.com/questions/6122013/should-i-close-a-stringreader
     }
 }
