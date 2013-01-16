@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2012. Florin T.PATRASCU
+ * Copyright (c) 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,47 +16,39 @@
 
 package ca.simplegames.micro;
 
+import java.util.Map;
+
 /**
- * A Helper will be invoked every time Micro is receiving a call from Rack
- * The Helper can also be mapped on a specific route.
- * <p/>
- * There are two types of Helpers:
- * - before: acting before any other Micro Controllers can act
- * - after: acting after Micro finished processing the response
+ * The Helper interface
  *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
- * @since $Revision$ (created: 2013.01.13 11:17 PM)
+ * @since $Revision$ (created: 2013-01-15 11:08 PM)
  */
 public interface Helper {
-
     /**
-     * @return true if this helper must be invoked before the call
-     */
-    public boolean isBefore();
-
-    /**
-     * @return true if this helper must be invoked after the call
-     */
-    public boolean isAfter();
-
-    /**
-     * If there is a path specified, the helper will execute only if
-     * the request matches the path
+     * The Micro framework calls this method at startup right after the repositories were defined.
      *
-     * @return the path this helper is answering on
+     * @param name          the name of the file this extension was loaded from, it is later used by Micro to make this
+     *                      helper visible in the context.
+     * @param site          the Micro "site" instance, see: {@link ca.simplegames.micro.SiteContext}
+     * @param configuration a Map containing a keys and objects useful to initialize this object
+     * @return self
+     * @throws Exception in case something wrong happens
      */
-    public String getPath();
+    public Extension register(String name, SiteContext site, Map<String, Object> configuration) throws Exception;
 
     /**
-     * @return the name of the controller used by this Helper
+     * @return the name of this helper
      */
-    public String getController();
+    public String getName();
 
     /**
-     * executed on every request
-     *
-     * @param context the Micro context
-     * @throws Exception
+     * @return the description of this helper
      */
-    public void call(MicroContext context) throws Exception;
+    public String getDescription();
+
+    /**
+     * @return the configuration object received at registration
+     */
+    public String getConfiguration();
 }

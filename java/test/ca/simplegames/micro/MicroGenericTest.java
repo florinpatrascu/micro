@@ -1,8 +1,6 @@
 package ca.simplegames.micro;
 
-import ca.simplegames.micro.utils.CloseableThreadLocal;
 import org.apache.bsf.BSFEngine;
-import org.apache.bsf.BSFManager;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
@@ -10,7 +8,6 @@ import org.jrack.context.MapContext;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import java.net.URLEncoder;
 import java.util.Collections;
@@ -94,7 +91,7 @@ public class MicroGenericTest {
     }
 
     /**
-     * testing the support provided by the {@link ca.simplegames.micro.extensions.i18n.I18NHelper}, the
+     * testing the support provided by the {@link ca.simplegames.micro.extensions.i18n.I18NFilter}, the
      * default localization support
      *
      * @throws Exception

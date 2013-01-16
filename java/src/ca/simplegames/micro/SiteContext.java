@@ -18,6 +18,7 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.filters.FilterManager;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
@@ -55,7 +56,7 @@ public class SiteContext extends MapContext {
     private MicroCacheManager cacheManager;
     private RepositoryManager repositoryManager;
     private ControllerManager controllerManager;
-    private HelperManager helperManager;
+    private FilterManager filterManager;
     private Map appConfig;
     private File webInfPath;
     private RouteManager routeManager;
@@ -64,6 +65,7 @@ public class SiteContext extends MapContext {
     private TemplateEnginesManager templateEnginesManager;
     private Map<String, String> userMimeTypes = null;
     private String welcomeFile;
+    private HelperManager helperManager;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -112,9 +114,9 @@ public class SiteContext extends MapContext {
 
                 // - Helpers
                 // log.info("Helpers:");
-                File helpersConfig = new File(configPath, "helpers.yml");
+                File helpersConfig = new File(configPath, "filters.yml");
                 if (helpersConfig.exists()) {
-                    helperManager = new HelperManager(this,
+                    filterManager = new FilterManager(this,
                             (List<Map<String, Object>>) new Yaml().load(new FileInputStream(helpersConfig)));
                 }
 
@@ -203,8 +205,8 @@ public class SiteContext extends MapContext {
         return appConfig;
     }
 
-    public HelperManager getHelperManager() {
-        return helperManager;
+    public FilterManager getFilterManager() {
+        return filterManager;
     }
 
     public RepositoryManager getRepositoryManager() {
@@ -323,5 +325,9 @@ public class SiteContext extends MapContext {
      */
     public String getWelcomeFile() {
         return welcomeFile;
+    }
+
+    public HelperManager getHelperManager() {
+        return helperManager;
     }
 }

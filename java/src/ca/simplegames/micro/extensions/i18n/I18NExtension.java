@@ -18,9 +18,9 @@ package ca.simplegames.micro.extensions.i18n;
 
 import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Helper;
+import ca.simplegames.micro.Filter;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.helpers.HelperManager;
+import ca.simplegames.micro.filters.FilterManager;
 import ca.simplegames.micro.utils.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -101,12 +101,12 @@ public class I18NExtension implements Extension {
             messageSource.setCacheSeconds(resourceCacheRefreshInterval);
             messageSource.setBasenames(resourceBasePaths);
 
-            Helper i18N = new I18NHelper(this);
-            final HelperManager helperManager = site.getHelperManager();
+            Filter i18N = new I18NFilter(this);
+            final FilterManager filterManager = site.getFilterManager();
 
-            helperManager.addHelper(i18N);
+            filterManager.addFilter(i18N);
             // now make sure the i18N filter is always first (if present)
-            Collections.swap(helperManager.getBeforeHelpers(), 0, helperManager.getBeforeHelpers().size() - 1);
+            Collections.swap(filterManager.getBeforeFilters(), 0, filterManager.getBeforeFilters().size() - 1);
 
             infoDetails.add(String.format("  default encoding ........: %s", defaultEncoding));
             infoDetails.add(String.format("  fallback to system locale: %s", fallbackToSystemLocale));

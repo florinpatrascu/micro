@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package ca.simplegames.micro.helpers;
+package ca.simplegames.micro.filters;
 
+import ca.simplegames.micro.Filter;
 import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.repositories.Repository;
-import ca.simplegames.micro.utils.Assert;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
 /**
- * This is a generic helper that can be used to create a helper instance from a simple Helper definition
+ * This is a generic helper that can be used to create a helper instance from a simple Filter definition
  *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-22 9:41 PM)
  */
-public class GenericHelper implements Helper {
+public class GenericFilter implements Filter {
     private String path;
     private String name;
     private String description;
@@ -43,10 +41,10 @@ public class GenericHelper implements Helper {
     private Map<String, Object> config;
 
     @SuppressWarnings("unchecked")
-    public Helper init(SiteContext site, Map<String, Object> config, String type) throws Exception {
+    public Filter init(SiteContext site, Map<String, Object> config, String type) throws Exception {
         if (type != null) {
-            before = type.equalsIgnoreCase(HelperManager.BEFORE);
-            after = type.equalsIgnoreCase(HelperManager.AFTER);
+            before = type.equalsIgnoreCase(FilterManager.BEFORE);
+            after = type.equalsIgnoreCase(FilterManager.AFTER);
         }
 
         path = (String) config.get("path");

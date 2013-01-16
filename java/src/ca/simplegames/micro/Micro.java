@@ -130,7 +130,15 @@ public class Micro {
         context.setRackResponse(response);
 
         try {
-            callHelpers(site.getHelperManager().getBeforeHelpers(), context);
+            // inject the Helpers into the current context
+            List<Helper> helpers = site.getHelperManager().getHelpers();
+            for (Helper helper : helpers) {
+                if (helper!= null) {
+                    context.with(helper.getName(), helper);
+                }
+            }
+
+            callFilters(site.getFilterManager().getBeforeFilters(), context);
 
             if (!context.isHalt()) {
                 String path = input.get(JRack.PATH_INFO);
@@ -171,7 +179,7 @@ public class Micro {
                 }
 
                 if (!context.isHalt()) {
-                    callHelpers(site.getHelperManager().getAfterHelpers(), context);
+                    callFilters(site.getFilterManager().getAfterFilters(), context);
                 }
             }
 
@@ -296,17 +304,17 @@ public class Micro {
         return path;
     }
 
-    private void callHelpers(List<Helper> helpers, MicroContext context) {
-        if (!helpers.isEmpty()) {
-            for (Helper helper : helpers) {
+    private void callFilters(List<Filter> filters, MicroContext context) {
+        if (!filters.isEmpty()) {
+            for (Filter filter : filters) {
                 try {
-                    helper.call(context);
+                    filter.call(context);
                     if (context.isHalt()) {
                         break;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error(String.format("Helper: %s, error: %s", helper, e.getMessage()));
+                    log.error(String.format("Filter: %s, error: %s", filter, e.getMessage()));
                 }
             }
         }

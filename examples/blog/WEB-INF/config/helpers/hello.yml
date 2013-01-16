@@ -1,0 +1,6 @@
+name: Hello
+description: It makes Boo in the context
+class: ca.simplegames.micro.helpers.HelloHelper
+
+options:
+  name: Huston

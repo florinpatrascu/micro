@@ -52,7 +52,7 @@ public class RouteManager {
     public RouteManager(SiteContext site, List<Map<String, Object>> routeMaps) {
         this.site = site;
         if (!CollectionUtils.isEmpty(routeMaps)) {
-            //load helpers from config
+            //load filters from config
             for (Map<String, Object> routeMap : routeMaps) {
                 try {
                     String routePath = (String) routeMap.get("route");

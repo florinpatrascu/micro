@@ -17,7 +17,7 @@
 package ca.simplegames.micro.utils;
 
 /**
- * Helper class for implementing exception classes which are capable of
+ * Filter class for implementing exception classes which are capable of
  * holding nested exceptions. Necessary because we can't share a base
  * class among different exception types.
  *

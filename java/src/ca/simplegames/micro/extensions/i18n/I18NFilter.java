@@ -17,7 +17,7 @@
 package ca.simplegames.micro.extensions.i18n;
 
 import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Helper;
+import ca.simplegames.micro.Filter;
 import ca.simplegames.micro.MicroContext;
 import org.jrack.Rack;
 
@@ -30,12 +30,12 @@ import java.util.Map;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-27 5:52 PM)
  */
-public class I18NHelper implements Helper {
+public class I18NFilter implements Filter {
 
     public static final String BROWSER = "browser";
     private I18NExtension extension;
 
-    public I18NHelper(I18NExtension extension) {
+    public I18NFilter(I18NExtension extension) {
         this.extension = extension;
     }
 
