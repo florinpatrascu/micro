@@ -290,7 +290,9 @@ public class SiteContext extends MapContext {
         bsfManager.setClassLoader(this.getClass().getClassLoader());
         bsfManager.declareBean(Globals.SITE, this, SiteContext.class);
         bsfManager.declareBean(Globals.LOG, log, Logger.class);
-        bsfManager.declareBean(Globals.CONFIGURATION, configuration, Map.class);
+        if (configuration != null) {
+            bsfManager.declareBean(Globals.CONFIGURATION, configuration, Map.class);
+        }
         bsfManager.declareBean(Globals.CONTEXT, context, MicroContext.class);
 
         // pre-load the engine to make sure we were called right
