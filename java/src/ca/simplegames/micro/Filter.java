@@ -40,19 +40,6 @@ public interface Filter {
     public boolean isAfter();
 
     /**
-     * If there is a path specified, the filter will execute only if
-     * the request matches the path
-     *
-     * @return the path this filter is answering on
-     */
-    public String getPath();
-
-    /**
-     * @return the name of the controller used by this Filter
-     */
-    public String getController();
-
-    /**
      * executed on every request
      *
      * @param context the Micro context

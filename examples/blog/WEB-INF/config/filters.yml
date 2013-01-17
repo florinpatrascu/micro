@@ -1,5 +1,7 @@
-- before:
-#      path: /^(?!\/(join|payment))/
-#      controller: ca.simplegames.micro.....
+#- before:
+#    path: "/{image_file}.{type: png|jpg|jpeg|txt}"
+#    controller:
+#      name: ca.simplegames.micro.controllers.BinaryContent
 #      options: {
+#        mime_types: { .txt: "text/plain;charset=UTF-8" }
 #      }
