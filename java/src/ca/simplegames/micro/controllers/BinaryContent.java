@@ -41,12 +41,16 @@ import java.util.Map;
 public class BinaryContent implements Controller {
 
     public static final String CONFIG_ELEMENT_MIME_TYPES = "mime_types";
+    private static final String FILE_FORMAT = "%s.%s";
+    private static final String IMAGE_FILE = "image_file";
+    private static final String TYPE = "type";
 
+    @SuppressWarnings("unchecked")
     public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
         SiteContext site = context.getSiteContext();
         Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
         File content = site.getRepositoryManager().getDefaultRepository()
-                .pathToFile(String.format("%s.%s", params.get("image_file")[0], params.get("type")[0]));
+                .pathToFile(String.format(FILE_FORMAT, params.get(IMAGE_FILE)[0], params.get(TYPE)[0]));
         String fileType = PathUtilities.extractType(content.getAbsolutePath());
 
         if (content.exists()) {
@@ -54,17 +58,18 @@ public class BinaryContent implements Controller {
                     .withBody(content).withContentLength(content.length());
 
             if (configuration != null) {
-                @SuppressWarnings("unchecked")
                 Map<String, String> customMimeTypes = (Map<String, String>) configuration.get(CONFIG_ELEMENT_MIME_TYPES);
                 if (!CollectionUtils.isEmpty(customMimeTypes) && customMimeTypes.containsKey(fileType)) {
                     rackResponse.withContentType(customMimeTypes.get(fileType));
+                } else {
+                    rackResponse.withContentType(Mime.mimeType(fileType));
                 }
             } else {
-                rackResponse.withHeader(Rack.HTTP_CONTENT_TYPE, Mime.mimeType(fileType));
+                rackResponse.withContentType(Mime.mimeType(fileType));
             }
         } else {
             context.getRackResponse()
-                    .withHeader("Content-Type", (Mime.mimeType(fileType)))
+                    .withContentType(Mime.mimeType(fileType))
                     .withContentLength(0)
                     .withBody(Globals.EMPTY_STRING)
                     .with(Rack.MESSAGE_STATUS, HttpServletResponse.SC_NOT_FOUND);
