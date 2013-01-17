@@ -16,7 +16,6 @@
 
 package ca.simplegames.micro.helpers;
 
-import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.Helper;
 import ca.simplegames.micro.SiteContext;
 
@@ -28,10 +27,10 @@ import java.util.Map;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2013-01-15 11:13 PM)
  */
-public class HelloHelper implements Helper {
+public class HelloHelper extends Helper {
     @Override
-    public Extension register(String name, SiteContext site, Map<String, Object> configuration) throws Exception {
-        return null;
+    public Helper register(String name, SiteContext site, Map<String, Object> configuration) throws Exception {
+        return this;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class HelloHelper implements Helper {
     }
 
     @Override
-    public String getConfiguration() {
+    public Map<String, Object> getConfiguration() {
         return null;
     }
 }

@@ -18,6 +18,7 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.extensions.ExtensionsManager;
 import ca.simplegames.micro.filters.FilterManager;
 import ca.simplegames.micro.helpers.HelperManager;
 import ca.simplegames.micro.repositories.RepositoryManager;
@@ -57,15 +58,15 @@ public class SiteContext extends MapContext {
     private RepositoryManager repositoryManager;
     private ControllerManager controllerManager;
     private FilterManager filterManager;
+    private HelperManager helperManager;
     private Map appConfig;
     private File webInfPath;
     private RouteManager routeManager;
-    private List<Extension> extensions = new ArrayList<Extension>();
+    private ExtensionsManager extensionsManager;
     private String microEnv;
     private TemplateEnginesManager templateEnginesManager;
     private Map<String, String> userMimeTypes = null;
     private String welcomeFile;
-    private HelperManager helperManager;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -112,25 +113,33 @@ public class SiteContext extends MapContext {
                 // - Controllers
                 controllerManager = new ControllerManager(this, (Map<String, Object>) appConfig.get("controllers"));
 
-                // - Helpers
-                // log.info("Helpers:");
-                File helpersConfig = new File(configPath, "filters.yml");
-                if (helpersConfig.exists()) {
+                // - Filters
+                // log.info("Filters:");
+                File filtersConfig = new File(configPath, "filters.yml");
+                if (filtersConfig.exists()) {
                     filterManager = new FilterManager(this,
-                            (List<Map<String, Object>>) new Yaml().load(new FileInputStream(helpersConfig)));
+                            (List<Map<String, Object>>) new Yaml().load(new FileInputStream(filtersConfig)));
                 }
 
-                // - Extensions
-                log.info("Extensions:");
+                // The strategy used for loading Helpers and Extensions will eventually be just one, currently
+                // exploring different methods for managing them, hence the redundancy, sorry for that.
+
+                // - Loading the Extensions
                 File extensionsDirectory = new File(configPath, "extensions");
                 if (extensionsDirectory.exists() && extensionsDirectory.isDirectory()) {
                     // load extensions
-                    for (File file : files(extensionsDirectory, ".yml")) {
+                    extensionsManager = new ExtensionsManager(this, files(extensionsDirectory, ".yml"));
+                }
+
+                // - Helpers
+                log.info("Helpers:");
+                File helpersDirectory = new File(configPath, "helpers");
+                helperManager = new HelperManager(this);
+                if (helpersDirectory.exists() && helpersDirectory.isDirectory()) {
+                    for (File file : files(helpersDirectory, ".yml")) {
                         Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(file));
-                        Extension extension = (Extension) ClassUtilities.loadClass((String) yaml.get("class")).newInstance();
-                        final String fileName = PathUtilities.extractName(file);
-                        extensions.add(extension.register(fileName, this, yaml));
-                        log.info(String.format("  %s: %s", extension.getName(), file.getAbsolutePath()));
+                        Helper helper = helperManager.addHelper(PathUtilities.extractName(file), yaml);
+                        log.info(String.format("  %s: %s", helper.getName(), file.getAbsolutePath()));
                     }
                 }
 
@@ -329,5 +338,9 @@ public class SiteContext extends MapContext {
 
     public HelperManager getHelperManager() {
         return helperManager;
+    }
+
+    public ExtensionsManager getExtensionsManager() {
+        return extensionsManager;
     }
 }

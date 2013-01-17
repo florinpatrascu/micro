@@ -24,7 +24,12 @@ import java.util.Map;
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2013-01-15 11:08 PM)
  */
-public interface Helper {
+public abstract class Helper {
+    private String name;
+    private String description;
+    private SiteContext site;
+    private Map<String, Object> cpnfiguration;
+
     /**
      * The Micro framework calls this method at startup right after the repositories were defined.
      *
@@ -35,20 +40,40 @@ public interface Helper {
      * @return self
      * @throws Exception in case something wrong happens
      */
-    public Extension register(String name, SiteContext site, Map<String, Object> configuration) throws Exception;
+    public Helper register(String name, SiteContext site, Map<String, Object> configuration) throws Exception{
+        this.site = site;
+        this.name = name;
+        this.cpnfiguration = configuration;
+        return this;
+    }
+
+    /**
+     * this method receives a request context and implements the business logic of the Helper
+     *
+     * @param context see {@link MicroContext}
+     * @return an Object defined by the Developer of this helper
+     * @throws Exception
+     */
+    // ??????????? public Object call(MicroContext context) throws Exception;
 
     /**
      * @return the name of this helper
      */
-    public String getName();
+    public String getName(){
+        return name;
+    }
 
     /**
      * @return the description of this helper
      */
-    public String getDescription();
+    public String getDescription(){
+        return description;
+    }
 
     /**
      * @return the configuration object received at registration
      */
-    public String getConfiguration();
+    public Map<String, Object> getConfiguration(){
+        return cpnfiguration;
+    }
 }

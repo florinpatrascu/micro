@@ -16,14 +16,9 @@
 
 package ca.simplegames.micro.helpers;
 
-import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
-import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.utils.PathUtilities;
-import org.apache.commons.lang.StringUtils;
-import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
+import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,73 +28,56 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Manager responsible with the Helper registration
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 10:33 PM)
  */
 public class HelperManager {
-    private Logger log = LoggerFactory.getLogger(getClass());
-    public static final String BEFORE = "before";
-    public static final String AFTER = "after";
-
+    private static Logger log = LoggerFactory.getLogger(Helper.class);
+    private List<Helper> helpers = new ArrayList<Helper>();
+    private Map<String, Helper> helpersMap = new HashMap<String, Helper>();
     private SiteContext site;
-    private List<Helper> beforeHelpers = new ArrayList<Helper>();
-    private List<Helper> afterHelpers = new ArrayList<Helper>();
 
-    public HelperManager(SiteContext site, List<Map<String, Object>> config) {
+    /**
+     * Create the helper manager
+     *
+     * @param site the SiteContext
+     */
+    public HelperManager(SiteContext site) {
         this.site = site;
-        if (!CollectionUtils.isEmpty(config)) {
-            //load helpers from config
-            for (Map<String, Object> helperConfig : config) {
-                for (Map.Entry<String, Object> entry : helperConfig.entrySet()) {
-                    try {
-                        String helperType = entry.getKey();
-                        Map<String, Object> helperDefinition = (Map<String, Object>) entry.getValue();
-                        Helper helper = createHelperFromModel(helperDefinition, helperType);
-                        addHelper(helper);
-                    } catch (Exception e) {
-                        log.error("cannot load the following helper: " + helperConfig);
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-
-        }
     }
 
-    public Helper createHelperFromModel(Map<String, Object> model, String type) throws Exception {
-        Helper helper = null;
-        if (!CollectionUtils.isEmpty(model)) {
-            helper = new GenericHelper();
-            //helper.init(site, model, StringUtils.defaultString(type, Globals.EMPTY_STRING).trim());
-        }
+    /**
+     * @return a list with all the Helpers
+     */
+    public List<Helper> getHelpers() {
+        return helpers;
+    }
+
+    /**
+     * instantiate and add a new Helper
+     *
+     * @param name   helper's name
+     * @param config the helper configuration
+     * @return a new Helper object
+     * @throws Exception
+     */
+    public Helper addHelper(String name, Map<String, Object> config) throws Exception {
+        Helper helper = (Helper) ClassUtilities.loadClass((String) config.get("class")).newInstance();
+        helpers.add(helper.register(name, site, config));
+        helpersMap.put(helper.getName(), helper);
         return helper;
     }
 
-    public Helper addHelper(Helper helper) {
-        if (helper != null) {
-            if (helper.isBefore()) {
-                beforeHelpers.add(helper);
-            } else if (helper.isAfter()) {
-                afterHelpers.add(helper);
-            }
-        }
-        return helper;
+    /**
+     * find a Helper by name
+     *
+     * @param name the name of the helper, case sensitive
+     * @return an existing Helper or null if the helper doesn't exist
+     */
+    public Helper findHelper(String name) {
+        return helpersMap.get(name);
     }
 
-    public List<Helper> getBeforeHelpers() {
-        return beforeHelpers;
-    }
-
-    public List<Helper> getAfterHelpers() {
-        return afterHelpers;
-    }
-
-    public List<Helper> getPathHelpers(String inputPath, MicroContext context) {
-        List<Helper> matchingHelpers = new ArrayList<Helper>();
-
-//
-
-        return matchingHelpers;
-    }
 }
