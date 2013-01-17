@@ -31,7 +31,6 @@ import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
-import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -41,7 +40,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -161,7 +159,7 @@ public class SiteContext extends MapContext {
                 userMimeTypes = (Map<String, String>) appConfig.get("mime_types");
 
                 //add anything else to the context? If no, then execute the app' startup controller:
-                controllerManager.execute(findApplicationScript(configPath), context);
+                controllerManager.execute(findApplicationScript(configPath), context, appConfig);
                 if (context.get(Globals.CLOSEABLE_BSF_MANAGER) != null) {
                     ((CloseableThreadLocal) context.get(Globals.CLOSEABLE_BSF_MANAGER)).close();
                 }
