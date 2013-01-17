@@ -12,11 +12,6 @@ import org.junit.Test;
 import java.net.URLEncoder;
 import java.util.Collections;
 
-//@RunWith(value = Suite.class)
-//@Suite.SuiteClasses(value = {MicroGenericTest.class})
-//@RunWith(OrderedRunner.class)
-//@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-
 /**
  * Micro Tester.
  *
@@ -25,7 +20,7 @@ import java.util.Collections;
  * @since <pre>Jan 1, 2013</pre>
  */
 public class MicroGenericTest {
-    static Micro micro;
+    public static Micro micro;
 
 
     @BeforeClass
@@ -70,24 +65,6 @@ public class MicroGenericTest {
         RackResponse response = micro.call(input);
         Assert.assertTrue("Context based localization failed",
                 RackResponse.getBodyAsString(response).contains("Grüß Gott!"));
-    }
-
-
-    /**
-     * test static content (binary) served from a dynamic repository, using the support of
-     * {@link ca.simplegames.micro.controllers.BinaryContent}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testBinaryContent() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.REQUEST_METHOD, "GET")
-                .with(Rack.PATH_INFO, "/micro-logo.png");
-
-        RackResponse response = micro.call(input);
-        Assert.assertTrue("Can't load binary content from a dynamic repository",
-                RackResponse.getBodyAsBytes(response).length == 6898);
     }
 
     /**
