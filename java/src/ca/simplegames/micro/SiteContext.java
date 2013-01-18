@@ -131,14 +131,14 @@ public class SiteContext extends MapContext {
                 }
 
                 // - Helpers
-                log.info("Helpers:");
+                //log.info("Helpers:");
                 File helpersDirectory = new File(configPath, "helpers");
                 helperManager = new HelperManager();
                 if (helpersDirectory.exists() && helpersDirectory.isDirectory()) {
                     for (File file : files(helpersDirectory, ".yml")) {
                         Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(file));
                         HelperWrapper helper = helperManager.addHelper(PathUtilities.extractName(file), yaml);
-                        log.info(String.format("  %s: %s", helper.getName(), file.getAbsolutePath()));
+                        //log.info(String.format("  %s: %s", helper.getName(), file.getAbsolutePath()));
                     }
                 }
 
