@@ -135,13 +135,15 @@ public class Micro {
             List<HelperWrapper> helpers = site.getHelperManager().getHelpers();
             if (!helpers.isEmpty()) {
                 for (HelperWrapper helper : helpers) {
-                    if (helper!= null) {
+                    if (helper != null) {
                         context.with(helper.getName(), helper.getInstance(context));
                     }
                 }
             }
 
-            callFilters(site.getFilterManager().getBeforeFilters(), context);
+            if (site.getFilterManager() != null) {
+                callFilters(site.getFilterManager().getBeforeFilters(), context);
+            }
 
             if (!context.isHalt()) {
                 String path = input.get(JRack.PATH_INFO);
@@ -149,7 +151,9 @@ public class Micro {
                     path = input.get(Rack.SCRIPT_NAME);
                 }
 
-                site.getRouteManager().call(path, context);
+                if (site.getRouteManager() != null) {
+                    site.getRouteManager().call(path, context);
+                }
 
                 if (!context.isHalt()) {
                     path = maybeAppendHtmlToPath(context);
@@ -182,7 +186,9 @@ public class Micro {
                 }
 
                 if (!context.isHalt()) {
-                    callFilters(site.getFilterManager().getAfterFilters(), context);
+                    if (site.getFilterManager() != null) {
+                        callFilters(site.getFilterManager().getAfterFilters(), context);
+                    }
                 }
             }
 

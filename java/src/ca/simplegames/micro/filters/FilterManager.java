@@ -41,14 +41,14 @@ public class FilterManager {
     public FilterManager(SiteContext site, List<Map<String, Object>> config) {
         if (!CollectionUtils.isEmpty(config)) {
             //load filters from config
-            for (Map<String, Object> helperConfig : config) {
-                for (Map.Entry<String, Object> entry : helperConfig.entrySet()) {
+            for (Map<String, Object> filterConfig : config) {
+                for (Map.Entry<String, Object> entry : filterConfig.entrySet()) {
                     try {
-                        String helperType = entry.getKey();
-                        Map<String, Object> helperDefinition = (Map<String, Object>) entry.getValue();
-                        addFilter(createHelperFromModel(helperDefinition, helperType));
+                        String filterType = entry.getKey();
+                        Map<String, Object> filterDefinition = (Map<String, Object>) entry.getValue();
+                        addFilter(createFilterFromModel(filterDefinition, filterType));
                     } catch (Exception e) {
-                        site.getLog().error("cannot load the following helper: " + helperConfig);
+                        site.getLog().error("cannot load the following filter: " + filterConfig);
                         e.printStackTrace();
                     }
                 }
@@ -67,7 +67,7 @@ public class FilterManager {
         return filter;
     }
 
-    public Filter createHelperFromModel(Map<String, Object> model, String type) throws Exception {
+    public Filter createFilterFromModel(Map<String, Object> model, String type) throws Exception {
         Filter filter = null;
         if (!CollectionUtils.isEmpty(model)) {
             filter = new FilterWrapper(model, type);
