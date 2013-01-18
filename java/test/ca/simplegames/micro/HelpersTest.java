@@ -16,20 +16,23 @@
 
 package ca.simplegames.micro;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import ca.simplegames.micro.helpers.HelloHelper;
+import ca.simplegames.micro.utils.Assert;
+import org.junit.Test;
 
 /**
- * Micro test suite. Add your tests here, pay attention to the order you execute the tests in the suite.
- *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
- * @since $Revision$ (created: 2013-01-16 9:01 PM)
+ * @since $Revision$ (created: 2013-01-17 8:44 PM)
  */
+public class HelpersTest {
+    static MicroContext<String> context = new MicroContext<String>();
+    Micro micro = MicroGenericTest.micro;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({MicroGenericTest.class, HelpersTest.class, FiltersTest.class})
-//@RunWith(OrderedRunner.class)
-//@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+    @Test
+    public void testDemoHelper() throws Exception {
 
-public class MicroTestSuite {
+        HelloHelper helper = (HelloHelper) micro.getSite().getHelperManager().findHelper("hello").getInstance(context);
+        Assert.isTrue(helper.getName().equals("Huston"));
+        Assert.isTrue(helper.getHello("Mona").equals("Hello Mona!"));
+    }
 }

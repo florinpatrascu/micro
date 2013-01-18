@@ -16,7 +16,6 @@
 
 package ca.simplegames.micro.helpers;
 
-import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
 
 /**
@@ -27,11 +26,7 @@ import ca.simplegames.micro.Helper;
  */
 public class HelloHelper extends Helper {
 
-    public String getHello() {
-        String name = Globals.EMPTY_STRING;
-        if (options != null) {
-            name = (String) options.get("name");
-        }
+    public String getHello(String name) {
         return String.format("Hello %s!", name);
     }
 
