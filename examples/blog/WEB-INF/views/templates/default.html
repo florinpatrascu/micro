@@ -11,8 +11,7 @@
 </head>
 <body>
     $partials.get("header.html")
-    #i18N("hello")<br />
-
+    #i18Nx("hello" [${hello.Name}]) <br />
     $content.get($path)
 
     ## testing Freemarker

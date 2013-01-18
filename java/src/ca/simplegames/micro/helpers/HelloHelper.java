@@ -16,10 +16,8 @@
 
 package ca.simplegames.micro.helpers;
 
+import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.Helper;
-import ca.simplegames.micro.SiteContext;
-
-import java.util.Map;
 
 /**
  * An example of Helper implementation
@@ -28,23 +26,16 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-01-15 11:13 PM)
  */
 public class HelloHelper extends Helper {
-    @Override
-    public Helper register(String name, SiteContext site, Map<String, Object> configuration) throws Exception {
-        return this;
+
+    public String getHello() {
+        String name = Globals.EMPTY_STRING;
+        if (options != null) {
+            name = (String) options.get("name");
+        }
+        return String.format("Hello %s!", name);
     }
 
-    @Override
     public String getName() {
-        return null;
-    }
-
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> getConfiguration() {
-        return null;
+        return (String) options.get("name");
     }
 }

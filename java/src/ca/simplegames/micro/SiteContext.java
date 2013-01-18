@@ -21,6 +21,7 @@ import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.extensions.ExtensionsManager;
 import ca.simplegames.micro.filters.FilterManager;
 import ca.simplegames.micro.helpers.HelperManager;
+import ca.simplegames.micro.helpers.HelperWrapper;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.route.RouteManager;
 import ca.simplegames.micro.templates.TemplateEnginesManager;
@@ -132,11 +133,11 @@ public class SiteContext extends MapContext {
                 // - Helpers
                 log.info("Helpers:");
                 File helpersDirectory = new File(configPath, "helpers");
-                helperManager = new HelperManager(this);
+                helperManager = new HelperManager();
                 if (helpersDirectory.exists() && helpersDirectory.isDirectory()) {
                     for (File file : files(helpersDirectory, ".yml")) {
                         Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(file));
-                        Helper helper = helperManager.addHelper(PathUtilities.extractName(file), yaml);
+                        HelperWrapper helper = helperManager.addHelper(PathUtilities.extractName(file), yaml);
                         log.info(String.format("  %s: %s", helper.getName(), file.getAbsolutePath()));
                     }
                 }

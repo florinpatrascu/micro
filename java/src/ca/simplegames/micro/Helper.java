@@ -25,55 +25,18 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-01-15 11:08 PM)
  */
 public abstract class Helper {
-    private String name;
-    private String description;
-    private SiteContext site;
-    private Map<String, Object> cpnfiguration;
+    protected Map<String, Object> options;
 
     /**
-     * The Micro framework calls this method at startup right after the repositories were defined.
+     * The Micro framework calls this method after the class was instantiated.
      *
-     * @param name          the name of the file this extension was loaded from, it is later used by Micro to make this
-     *                      helper visible in the context.
-     * @param site          the Micro "site" instance, see: {@link ca.simplegames.micro.SiteContext}
-     * @param configuration a Map containing a keys and objects useful to initialize this object
+     * @param context       the current Micro context
+     * @param options a Map containing a keys and objects useful to initialize this object
      * @return self
      * @throws Exception in case something wrong happens
      */
-    public Helper register(String name, SiteContext site, Map<String, Object> configuration) throws Exception{
-        this.site = site;
-        this.name = name;
-        this.cpnfiguration = configuration;
+    public Helper register(MicroContext context, Map<String, Object> options) throws Exception {
+        this.options = options;
         return this;
-    }
-
-    /**
-     * this method receives a request context and implements the business logic of the Helper
-     *
-     * @param context see {@link MicroContext}
-     * @return an Object defined by the Developer of this helper
-     * @throws Exception
-     */
-    // ??????????? public Object call(MicroContext context) throws Exception;
-
-    /**
-     * @return the name of this helper
-     */
-    public String getName(){
-        return name;
-    }
-
-    /**
-     * @return the description of this helper
-     */
-    public String getDescription(){
-        return description;
-    }
-
-    /**
-     * @return the configuration object received at registration
-     */
-    public Map<String, Object> getConfiguration(){
-        return cpnfiguration;
     }
 }

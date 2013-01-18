@@ -18,6 +18,7 @@ package ca.simplegames.micro;
 
 import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
+import ca.simplegames.micro.helpers.HelperWrapper;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.ClassUtils;
@@ -131,10 +132,12 @@ public class Micro {
 
         try {
             // inject the Helpers into the current context
-            List<Helper> helpers = site.getHelperManager().getHelpers();
-            for (Helper helper : helpers) {
-                if (helper!= null) {
-                    context.with(helper.getName(), helper);
+            List<HelperWrapper> helpers = site.getHelperManager().getHelpers();
+            if (!helpers.isEmpty()) {
+                for (HelperWrapper helper : helpers) {
+                    if (helper!= null) {
+                        context.with(helper.getName(), helper.getInstance(context));
+                    }
                 }
             }
 
@@ -193,6 +196,9 @@ public class Micro {
         } catch (FileNotFoundException e) {
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (ViewException e) {
+            return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+        } catch (Exception e) { // must think more about this one :(
+            e.printStackTrace();
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
         // Experimental!!!!!!
