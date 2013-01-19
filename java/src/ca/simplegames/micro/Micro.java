@@ -263,11 +263,10 @@ public class Micro {
     }
 
     private void showBanner() {
-        log.info("");
-        log.info(" _ __ ___ ( ) ___ _ __ ___ ");
-        log.info("| '_ ` _ \\| |/ __| '__/ _ \\ ");
-        log.info("| | | | | | | (__| | | (_) |");
-        log.info("|_| |_| |_|_|\\___|_|  \\___/  (v" + Globals.VERSION + ")");
+        log.info("       _            ");
+        log.info(" _ __ (_)__ _ _ ___ ");
+        log.info("| '  \\| / _| '_/ _ \\");
+        log.info("|_|_|_|_\\__|_| \\___/ (v" + Globals.VERSION + ")");
         log.info("= a modular micro MVC Java framework");
         log.info("");
     }
