@@ -64,10 +64,9 @@ public class Micro {
     private SiteContext site;
     private String welcomeFile;
 
-    public Micro(String path, ServletContext servletContext, String userClassPaths, String welcomeFile) throws Exception {
+    public Micro(String path, ServletContext servletContext, String userClassPaths) throws Exception {
         final File applicationPath = new File(path);
         final File webInfPath = new File(applicationPath, "WEB-INF");
-        this.welcomeFile = welcomeFile;
 
         showBanner();
 
@@ -77,6 +76,8 @@ public class Micro {
                 .with(Globals.SERVLET_PATH, applicationPath)
                 .with(Globals.WEB_INF_PATH, webInfPath)
         );
+
+        welcomeFile = site.getWelcomeFile();
 
         //initialize the classpath
         StringBuilder cp = new StringBuilder();
@@ -303,16 +304,18 @@ public class Micro {
             path = (String) rackInput.get(Rack.SCRIPT_NAME);
         }
 
-        if (isFilterAddsWelcomeFile() && !path.contains(HTML)) {
-            if (path.lastIndexOf(DOT) == -1) {
-                if (!path.endsWith(SLASH)) {
-                    path = path + SLASH;
-                }
-                String welcomeFile = StringUtils.defaultString(site.getWelcomeFile(), INDEX + DOT + HTML);
-                path = path + welcomeFile;
-            }
-            context.with(Globals.PATH_INFO, path);
+        if (welcomeFile.isEmpty() || path.contains(HTML)) {
+            return path;
         }
+
+        if (path.lastIndexOf(DOT) == -1) {
+            if (!path.endsWith(SLASH)) {
+                path = path + SLASH;
+            }
+            String welcomeFile = StringUtils.defaultString(site.getWelcomeFile(), INDEX + DOT + HTML);
+            path = path + welcomeFile;
+        }
+        context.with(Globals.PATH_INFO, path);
         return path;
     }
 

@@ -23,6 +23,7 @@ import org.jrack.RackResponse;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import java.io.File;
 
 /**
  * This {@link JRack} is the main entry point for requests to the Micro framework.
@@ -32,22 +33,15 @@ import javax.servlet.ServletContext;
  * @since $Revision$ (created: 2012-12-17 4:21 PM)
  */
 public class MicroFilter extends JRack {
-
-    FilterConfig filterConfig;
     private Micro micro;
 
     @Override
     public Object init(Object config) throws Exception {
-        filterConfig = (FilterConfig) config;
-
+        FilterConfig filterConfig = (FilterConfig) config;
         ServletContext servletContext = filterConfig.getServletContext();
 
-        String welcomeFile = StringUtils.defaultString(
-                filterConfig.getInitParameter("filterAddsWelcomeFile"), "false").trim();
-
         micro = new Micro(servletContext.getRealPath("/"), servletContext,
-                StringUtils.defaultString(((FilterConfig) config).getInitParameter("userClassPaths")),
-                welcomeFile);
+                StringUtils.defaultString(((FilterConfig) config).getInitParameter("userClassPaths")));
 
         return this;
     }

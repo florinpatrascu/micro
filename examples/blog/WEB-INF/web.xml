@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c)2012. Florin T.PATRASCU
+  ~ Copyright (c)2012-2013 Florin T.PATRASCU
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -34,20 +34,13 @@
             <param-value>js,images,styles,favicon</param-value>
         </init-param>
 
-        <init-param>
-            <param-name>userClassPaths</param-name>
-            <param-value>my_test_library_one.jar, my_test_library_one.jar</param-value>
-        </init-param>
+        <!--
+            <init-param>
+                <param-name>userClassPaths</param-name>
+                <param-value>my_test_library_one.jar, my_test_library_one.jar</param-value>
+            </init-param>
+        -->
 
-        <init-param>
-            <!--let the filter add index.html for empty path requests-->
-            <param-name>filterAddsWelcomeFile</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <!-- <init-param>
-            <param-name>configPath</param-name>
-            <param-value>/WEB-INF/micro.yaml</param-value>
-        </init-param> -->
     </filter>
 
     <filter-mapping>

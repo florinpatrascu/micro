@@ -56,7 +56,7 @@ public class SiteContext extends MapContext {
     private MicroCacheManager cacheManager;
     private RepositoryManager repositoryManager;
     private ControllerManager controllerManager;
-    private FilterManager filterManager;
+    private FilterManager filterManager= new FilterManager();
     private HelperManager helperManager;
     private Map appConfig;
     private File webInfPath;
@@ -65,7 +65,7 @@ public class SiteContext extends MapContext {
     private String microEnv;
     private TemplateEnginesManager templateEnginesManager;
     private Map<String, String> userMimeTypes = null;
-    private String welcomeFile;
+    private String welcomeFile = "index.html";
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -168,9 +168,17 @@ public class SiteContext extends MapContext {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+            if (appConfig.get("welcome_file") != null) {
+                welcomeFile = (String) appConfig.get("welcome_file");
+            }
+
+            log.info(String.format("Welcome file is: '%s'", welcomeFile));
+            log.info(String.format("Application running in: '%s' mode", microEnv));
+        }else{
+            log.error("Application running in an unknown mode, missing configuration.");
         }
-        welcomeFile = StringUtils.defaultString(appConfig.get("welcome_file"), "index.html");
-        log.info(String.format("running in: '%s' mode", microEnv));
+
         return this;
     }
 

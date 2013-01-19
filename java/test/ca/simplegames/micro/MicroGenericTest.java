@@ -25,7 +25,7 @@ public class MicroGenericTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        micro = new Micro("files", null, "../../lib", "index.html");
+        micro = new Micro("files", null, "../../lib");
         Assert.assertNotNull(micro);
         Assert.assertNotNull("Micro 'site' initialization failed", micro.getSite().getWebInfPath());
         Assert.assertTrue("Micro is not pointing to the correct test web app",

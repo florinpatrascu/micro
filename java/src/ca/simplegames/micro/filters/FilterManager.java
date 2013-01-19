@@ -37,6 +37,9 @@ public class FilterManager {
     private List<Filter> beforeFilters = new ArrayList<Filter>();
     private List<Filter> afterFilters = new ArrayList<Filter>();
 
+    public FilterManager() {
+    }
+
     @SuppressWarnings("unchecked")
     public FilterManager(SiteContext site, List<Map<String, Object>> config) {
         if (!CollectionUtils.isEmpty(config)) {
@@ -55,6 +58,7 @@ public class FilterManager {
             }
         }
     }
+
 
     public Filter addFilter(Filter filter) {
         if (filter != null) {

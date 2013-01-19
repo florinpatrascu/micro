@@ -125,7 +125,7 @@ public class PathUtilities {
         int dotIndex = fileName.lastIndexOf(DOT);
 
         if (dotIndex < 0) {
-            return null;
+            return Globals.EMPTY_STRING;
         }
 
         return fileName.substring(dotIndex);

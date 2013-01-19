@@ -33,6 +33,7 @@ template_engines:
 
 # MICRO_ENV: production
 
-# optional mime types to overwrite the default
+# optional mime types to overwrite the default.
+# welcome_file: "index.html"
 mime_types:
   .md: text/html; charset=utf8
