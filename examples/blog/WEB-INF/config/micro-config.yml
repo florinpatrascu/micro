@@ -33,8 +33,10 @@ template_engines:
 
 # MICRO_ENV: production
 
+# Optional welcome file. It is "index.html" if not defined here. Example:
+# welcome_file: "index.md"
+
 # optional mime types to overwrite the default.
-# welcome_file: "index.html"
 mime_types:
   .md: text/html; charset=utf8
         å
