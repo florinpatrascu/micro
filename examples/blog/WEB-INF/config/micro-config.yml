@@ -18,9 +18,9 @@ template_engines:
       name: velocity
       class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
       options:
-          resource_cache_enabled: true
-          resource_cache_interval: 15
-          global_macro_library: global_library.vm
+        resource_cache_enabled: true
+        resource_cache_interval: 15
+        global_macro_library: global_library.vm
       default: true
 
   - engine:
@@ -37,3 +37,4 @@ template_engines:
 # welcome_file: "index.html"
 mime_types:
   .md: text/html; charset=utf8
+        å
