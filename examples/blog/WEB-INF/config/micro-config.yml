@@ -39,4 +39,3 @@ template_engines:
 # optional mime types to overwrite the default.
 mime_types:
   .md: text/html; charset=utf8
-        å
