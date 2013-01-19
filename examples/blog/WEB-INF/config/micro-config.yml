@@ -4,7 +4,7 @@ description: My Blog
 repositories:
   content: {path: views/content, cache: memCache, config: config, default: true}
   partials: {path: views/partials, cache: partials, config: config}
-  templates: {path: views/templates, cache: memCache}
+  templates: {path: views/templates, config: config, cache: memCache}
 
 controllers: {path: controllers, cache: controllers}
 
