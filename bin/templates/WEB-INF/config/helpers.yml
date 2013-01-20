@@ -1,5 +1,0 @@
-- before:
-#      path: /^(?!\/(join|payment))/
-#      controller: ca.simplegames.micro.....
-#      options: {
-#      }
