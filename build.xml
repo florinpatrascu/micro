@@ -100,11 +100,18 @@
     <!-- ====================================================================== -->
     <target name="dist" depends="compile">
         <mkdir dir="${build.dist}"/>
-        <jar jarfile="${build.dist}/${name}-${version}.jar"
-             basedir="${build.classes}"/>
+        <jar jarfile="${build.dist}/${name}-${version}.jar" basedir="${build.classes}">
+            <manifest>
+                <attribute name="Built-By" value="${ant.version}" />
+                <attribute name="Built-On" value="${TODAY}" />
+                <attribute name="Built-At" value="${TSTAMP}" />
+                <attribute name="Implementation-Version" value="${version}" />
+            </manifest>
+        </jar>
         <copy file="LICENSE"
               tofile="${build.dist}/LICENSE"
               overwrite="true"/>
+
     </target>
 
     <!-- ====================================================================== -->
