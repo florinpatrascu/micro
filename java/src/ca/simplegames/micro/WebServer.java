@@ -46,11 +46,13 @@ public class WebServer {
 
             String path = args[0];
             int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
-
+            if (!System.getenv("PORT").isEmpty()) { // env port overrides user commands
+                port = Integer.parseInt(System.getenv("PORT"));
+            }
             try {
 
                 SelectChannelConnector connector = new SelectChannelConnector();
-                connector.setHost("127.0.0.1"); //the loneliest number
+                // connector.setHost("127.0.0.1"); //the loneliest number
                 connector.setPort(port);
                 connector.setThreadPool(new QueuedThreadPool(20));
                 connector.setMaxIdleTime(1000 * 60 * 60); // this will make debugging easier
