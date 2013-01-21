@@ -25,6 +25,10 @@
         <javac includeantruntime="false"/>
     </presetdef>
 
+    <tstamp>
+        <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss"/>
+    </tstamp>
+
     <property environment="env"/>
 
     <property file="build.properties"/>
@@ -102,10 +106,11 @@
         <mkdir dir="${build.dist}"/>
         <jar jarfile="${build.dist}/${name}-${version}.jar" basedir="${build.classes}">
             <manifest>
-                <attribute name="Built-By" value="${ant.version}" />
-                <attribute name="Built-On" value="${TODAY}" />
-                <attribute name="Built-At" value="${TSTAMP}" />
-                <attribute name="Implementation-Version" value="${version}" />
+                <attribute name="Signature-Title" value="${name}"/>
+                <attribute name="Signature-Version" value="${version}"/>
+                <attribute name="Signature-Vendor" value="${copyright}"/>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
             </manifest>
         </jar>
         <copy file="LICENSE"
@@ -135,7 +140,7 @@
                 <fileset dir="${global.libraries}">
                     <include name="**/*.jar"/>
                 </fileset>
-                <path id="micro"        location="${build.dist}/${name}-${version}.jar"/>
+                <path id="micro" location="${build.dist}/${name}-${version}.jar"/>
                 <path id="test_classes" location="${build.test.classes}"/>
             </classpath>
 
