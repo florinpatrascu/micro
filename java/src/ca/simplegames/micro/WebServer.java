@@ -61,6 +61,7 @@ public class WebServer {
 
                 ServletHandler handler = new ServletHandler();
                 webApp.setServletHandler(handler);
+                webApp.setParentLoaderPriority(true);
 
                 server.setHandler(webApp);
                 server.start();

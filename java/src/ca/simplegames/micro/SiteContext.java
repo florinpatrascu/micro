@@ -95,6 +95,10 @@ public class SiteContext extends MapContext {
                 appConfig = (Map) new Yaml().load(new FileInputStream(config));
                 with(Globals.MICRO_CACHE_CONFIG, appConfig.get("cache"));
                 microEnv = StringUtils.defaultString(appConfig.get(Globals.MICRO_ENV), Globals.DEVELOPMENT);
+                // and just check if System env vars overwrite our settings; useful when running @Heroku, etc.
+                microEnv = StringUtils.defaultString(System.getenv(Globals.MICRO_ENV), microEnv);
+                // or if there is a -DMICRO_ENV=... in the VM ARGS
+                microEnv = StringUtils.defaultString(System.getProperty(Globals.MICRO_ENV), microEnv);
 
                 // - Cache
                 cacheManager = new MicroCacheManager(this);
