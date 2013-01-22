@@ -46,7 +46,7 @@ public class WebServer {
 
             String path = args[0];
             int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
-            if (!System.getenv("PORT").isEmpty()) { // env port overrides user commands
+            if (System.getenv("PORT")!= null && !System.getenv("PORT").isEmpty()) { // env port overrides user commands
                 port = Integer.parseInt(System.getenv("PORT"));
             }
             try {
