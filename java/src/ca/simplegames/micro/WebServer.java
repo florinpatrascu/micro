@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WebServer {
     protected static final Logger log = LoggerFactory.getLogger(WebServer.class);
+    public static final String PORT = "PORT";
 
     /**
      * Will start the embedded Jetty server and will initialize the Micro web app. The web app is a
@@ -43,12 +44,21 @@ public class WebServer {
     public static void main(String[] args) throws Exception {
 
         if (args != null && args.length > 0) {
+            // http://stackoverflow.com/questions/1523595/programmatically-configure-jettys-logger
+            System.setProperty("org.mortbay.log.class", "ca.simplegames.micro.utils.JettyLogger");
 
             String path = args[0];
             int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
-            if (System.getenv("PORT")!= null && !System.getenv("PORT").isEmpty()) { // env port overrides user commands
-                port = Integer.parseInt(System.getenv("PORT"));
+            String envPort = System.getenv(PORT);
+
+            if (envPort != null && !envPort.isEmpty()) { // env port overrides user commands
+                try {
+                    port = Integer.parseInt(envPort);
+                } catch (NumberFormatException dontcare) {
+                    //
+                }
             }
+
             try {
 
                 SelectChannelConnector connector = new SelectChannelConnector();
@@ -72,7 +82,7 @@ public class WebServer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else{
+        } else {
             log.error("You must specify the path to the directory containing the Micro web application.");
         }
     }
