@@ -21,6 +21,7 @@ import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
+import ca.simplegames.micro.utils.ResourceUtils;
 import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
@@ -49,12 +50,13 @@ import java.util.Properties;
 @SuppressWarnings("unchecked")
 public class VelocityViewRenderer implements ViewRenderer, LogChute {
     private static final Logger log = LoggerFactory.getLogger(VelocityViewRenderer.class);
-    private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/velocity.properties";
+    private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/classes/velocity.properties";
 
-    // Here are the names of Velocity 1.x properties that can contains paths.
+    // Velocity 1.x properties key names that can contains paths.
     private static final String[] velocityKeys = {
             "runtime.log", "file.resource.loader.path", "velocimacro.library"
     };
+    public static final String MICRO_DEFAULT_VELOCITY_PROPERTIES = "ca/simplegames/micro/viewers/velocity/velocity.properties";
 
     //private final VelocityEngine velocityEngine = new VelocityEngine();
     private Properties velocityProperties = new Properties();
@@ -64,15 +66,18 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
     private SiteContext site;
     protected String name = "velocity";
 
-    public void loadConfiguration(Map<String, Object> configuration) throws Exception {
+    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
         setResourceCacheEnabled(StringUtils.defaultString(configuration.get("resource_cache_enabled"), "true"));
         setResourceCacheInterval(StringUtils.defaultString(configuration.get("resource_cache_interval"), "20"));
-        site = (SiteContext) configuration.get("micro.site");
+        this.site = site;
 
         try {
-            loadVelocityProperties(
-                    ClassUtilities.getResourceAsStream(
-                            "ca/simplegames/micro/viewers/velocity/velocity.properties"), configuration);
+            File velocityPropertiesFile = ResourceUtils.getFile( new File(site.getApplicationPath(),
+                    StringUtils.defaultString(configuration.get("velocity_properties"),
+                            MICRO_DEFAULT_VELOCITY_PROPERTIES)).getAbsolutePath());
+
+            loadVelocityProperties(velocityPropertiesFile.exists()?
+                    new java.io.FileInputStream(velocityPropertiesFile):null);
 
             Velocity.setProperty("micro.VM_global_library.vm.path",
                     StringUtils.defaultString(configuration.get("global_macro_library"),
@@ -130,12 +135,21 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
         }
     }
 
-
-    private void loadVelocityProperties(InputStream in, Map<String, Object> configuration) throws IOException {
+    /**
+     * load an initial set of Velocity properties
+     *
+     * @param in the input stream for the "velocity.properties" configuration file
+     * @throws IOException
+     */
+    private void loadVelocityProperties(InputStream in) throws IOException {
         try {
+            if (in == null) {
+                in = ClassUtilities.getResourceAsStream(MICRO_DEFAULT_VELOCITY_PROPERTIES);
+            }
+
             velocityProperties.load(in);
         } finally {
-            IO.close(in);
+            IO.close(in); // don't worry, it won't blow if in.null? :)
         }
     }
 

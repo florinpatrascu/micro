@@ -22,6 +22,7 @@ import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class MicroCacheManager {
     private Map<String, MicroCache> cacheImplementations = new HashMap<String, MicroCache>();
     private String cacheClass;
 
+    @SuppressWarnings("unchecked")
     public MicroCacheManager(SiteContext site) {
         if (site.isProduction()) {
             try {
@@ -48,7 +50,10 @@ public class MicroCacheManager {
                     Class aClass = ClassUtilities.loadClass(cacheClass);
                     MicroCache microCache = (MicroCache) aClass.newInstance();
 
-                    microCache.addCache(cacheName, (String) cacheConfig.get("config"));
+                    microCache.addCache(cacheName,
+                            new File( site.getApplicationPath(),
+                                    (String) cacheConfig.get("config")).getAbsolutePath());
+
                     microCache.setFlushInterval(0); //todo implement me
 
                     cacheImplementations.put(cacheName, microCache);

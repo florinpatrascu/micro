@@ -14,7 +14,7 @@ controllers: {path: controllers, cache: controllers}
 cache:
   names: [views, controllers]
   class: ca.simplegames.micro.cache.DefaultCache
-  config: ../../classes/ehcache.xml
+  config: WEB-INF/classes/ehcache.xml
 
 template_engines:
   - engine:
@@ -23,11 +23,12 @@ template_engines:
       options:
           resource_cache_enabled: true
           resource_cache_interval: 15
-          global_macro_library: global_library.vm
+          global_macro_library: WEB-INF/classes/global_library.vm
+          velocity_properties: WEB-INF/classes/velocity.properties
       default: true
 
   - engine:
       name: markdown
       class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
-MICRO_ENV: test
+MICRO_ENV: production

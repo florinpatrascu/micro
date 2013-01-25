@@ -1,6 +1,7 @@
 package ca.simplegames.micro.viewers.markup;
 
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.viewers.ViewException;
@@ -53,7 +54,7 @@ public class MarkupViewRenderer implements ViewRenderer {
         return 0;
     }
 
-    public void loadConfiguration(Map<String, Object> configuration) throws Exception {
+    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
     }
 
     @Override

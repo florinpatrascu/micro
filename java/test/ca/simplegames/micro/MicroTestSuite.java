@@ -27,7 +27,7 @@ import org.junit.runners.Suite;
  */
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({MicroGenericTest.class, HelpersTest.class, FiltersTest.class})
+@Suite.SuiteClasses({MicroGenericTest.class, HelpersTest.class, FiltersTest.class, RoutingTest.class})
 //@RunWith(OrderedRunner.class)
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 

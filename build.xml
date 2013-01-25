@@ -133,6 +133,7 @@
     <target name="test" depends="dist, compile_test">
         <junit printsummary="yes" fork="yes" haltonfailure="yes" dir="${test.dir}">
             <jvmarg value="-Dfile.encoding=UTF-8"/>
+            <jvmarg value="-Dnet.sf.ehcache.skipUpdateCheck=true"/>
             <formatter type="plain"/>
             <!--<formatter type="xml"/>-->
 
@@ -146,7 +147,8 @@
 
             <batchtest fork="yes" todir="${build.dir}">
                 <fileset dir="${test.dir}">
-                    <include name="**/*Test*.java"/>
+                    <include name="**/MicroTestSuite.java"/>
+                    <!--<include name="**/*Test*.java"/>-->
                 </fileset>
             </batchtest>
         </junit>

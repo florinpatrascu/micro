@@ -1,0 +1,11 @@
+#**
+ * Micro i18n Velocity macro support
+ *
+ * Convenient macro to translate a message code into a message.
+ * You can copy the two macros below to your VM_GLOBAL_library.vm, or
+ * better
+ *
+ * Florin, 2012-2013
+ *#
+#macro( i18N  $code )$i18N.getMessage($code,"")#end
+#macro( i18Nx $code $args)$i18N.getMessage( $code, $args.toArray(), "")#end

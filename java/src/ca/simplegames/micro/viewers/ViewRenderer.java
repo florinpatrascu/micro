@@ -17,9 +17,11 @@
 package ca.simplegames.micro.viewers;
 
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.Writer;
 import java.util.Map;
 
 /**
@@ -45,10 +47,11 @@ public interface ViewRenderer {
     /**
      * Load the configuration for the view.
      *
+     * @param site          the SiteContext instance
      * @param configuration The configuration object
      */
 
-    public void loadConfiguration(Map<String, Object> configuration) throws Exception;
+    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception;
 
     /**
      * @return the name of the rendering engine

@@ -356,4 +356,8 @@ public class SiteContext extends MapContext {
     public ExtensionsManager getExtensionsManager() {
         return extensionsManager;
     }
+
+    public File getApplicationPath() {
+        return (File) get(Globals.SERVLET_PATH);
+    }
 }

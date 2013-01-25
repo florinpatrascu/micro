@@ -37,7 +37,7 @@ public class TemplateEnginesManager {
 
                 ViewRenderer engine = (ViewRenderer) ClassUtilities.loadClass(klass).newInstance();
 
-                engine.loadConfiguration(options);
+                engine.loadConfiguration(site, options);
                 engines.put(name, engine);
 
                 if (defaultEngine == null && isDefaultEngine) {
@@ -61,8 +61,7 @@ public class TemplateEnginesManager {
                 engineConfig.put("resource_cache_interval", "15");
                 engineConfig.put("global_macro_library", "global_library.vm");
 
-                engineConfig.put("micro.site", site);
-                defaultEngine.loadConfiguration(engineConfig);
+                defaultEngine.loadConfiguration(site, engineConfig);
 
             } catch (Exception e) {
                 e.printStackTrace();
