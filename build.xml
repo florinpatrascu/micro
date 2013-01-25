@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-  ~ Copyright (c)2012. Florin T.PATRASCU
+  ~ Copyright (c)2012-2013 Florin T.PATRASCU
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
   ~ limitations under the License.
   -->
 
-<!--
-  ~ 2007 Florin
-  ~ build file used to generate a k2 service library
-  -->
-
 <project name="Micro" default="dist">
     <presetdef name="javac">
         <javac includeantruntime="false"/>
@@ -31,6 +26,8 @@
 
     <property environment="env"/>
 
+    <property name="release.major" value="0"/>
+    <property name="release.minor" value="1"/>
     <property file="build.properties"/>
     <property name="skip.tests" value="true"/>
 
@@ -52,10 +49,6 @@
         <include name="**/?*.json"/>
     </patternset>
 
-
-    <!-- Global Libraries -->
-
-
     <!-- ==================================================== -->
     <!-- Initialize Ant                                       -->
     <!-- ==================================================== -->
@@ -63,6 +56,13 @@
         <tstamp/>
     </target>
 
+    <!-- unlock the automatic numbering when Micro is released to public -->
+    <!--
+       <buildnumber file="build.number"/>
+       <property name="version" value="${release.major}.${release.minor}.${build.number}"/>
+    -->
+
+    <property name="version" value="${release.major}.${release.minor}.2"/>
 
     <!-- ====================================================================== -->
     <!-- Compile the source code.                                               -->
@@ -72,8 +72,16 @@
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.classes}"/>
 
+        <copy todir="${build.dir}/sources">
+            <fileset dir="${src.dir}"/>
+        </copy>
 
-        <javac srcdir="${src.dir}"
+        <replace file="${build.dir}/sources/ca/simplegames/micro/Globals.java">
+            <!--<replacefilter token="$DATE$" value="${svn.info.lastDate}" />-->
+            <replacefilter token="$VERSION$" value="${version}" />
+        </replace>
+
+        <javac srcdir="${build.dir}/sources"
                destdir="${build.classes}"
                debug="${compiler.debug}"
                deprecation="${compiler.generate.no.warnings}"
@@ -97,7 +105,6 @@
         </copy>
 
     </target>
-
 
     <!-- ====================================================================== -->
     <!-- Create the JAR archive.                                                -->

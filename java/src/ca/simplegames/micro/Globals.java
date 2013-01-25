@@ -21,8 +21,9 @@ package ca.simplegames.micro;
  * @since $Revision$ (created: 2012-12-19 11:18 AM)
  */
 public class Globals {
+    public static final String VERSION = "$VERSION$"; // see: http://semver.org/
+    public static final String DATE = "$DATE$";
     public static final String FRAMEWORK_NAME = "micro";
-    public static final String VERSION = "0.2";
     public static final String EMPTY_STRING = "";
     public static final String MICRO = "micro_";
     public static final String UTF8 = "UTF-8";

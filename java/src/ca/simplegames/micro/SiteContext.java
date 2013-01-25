@@ -360,4 +360,8 @@ public class SiteContext extends MapContext {
     public File getApplicationPath() {
         return (File) get(Globals.SERVLET_PATH);
     }
+
+    public static String getMicroVersion(){
+        return Globals.VERSION; // dynamic!
+    }
 }
