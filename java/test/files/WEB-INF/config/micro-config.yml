@@ -31,4 +31,4 @@ template_engines:
       name: markdown
       class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
-MICRO_ENV: production
+MICRO_ENV: test
