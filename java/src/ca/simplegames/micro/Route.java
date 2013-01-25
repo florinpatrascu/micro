@@ -65,11 +65,12 @@ public abstract class Route {
      * Invoked when a request is made on this route's corresponding route e.g. '/hello/{name}'
      * Micro framework will stop identifying other routes and will output the response created here
      *
+     *
      * @param context The micro context created when the Rack calls
      * @return a JRack response
      */
     public abstract RackResponse call(MicroContext context)
-            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException;
+            throws Exception;
 
     public View getView() {
         return view;

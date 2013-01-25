@@ -130,7 +130,11 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
             return IO.copy(new StringReader(writer.toString()), out); // doing this just to compute the size of the result :(
         } catch (ResourceNotFoundException e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
-        } catch (Exception e) {
+
+        } catch (Exception e) { // ugly, todo: please refactor me
+            if(e instanceof FileNotFoundException || e.getCause() instanceof FileNotFoundException){
+                throw new FileNotFoundException(e.getMessage());
+            }
             throw new ViewException(e);
         }
     }

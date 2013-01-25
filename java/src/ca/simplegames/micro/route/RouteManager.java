@@ -20,18 +20,14 @@ import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
-import ca.simplegames.micro.controllers.ControllerException;
-import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
-import ca.simplegames.micro.viewers.ViewException;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.jrack.Rack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,34 +70,29 @@ public class RouteManager {
         }
     }
 
-    public void call(String path, MicroContext context)
-            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
-
+    @SuppressWarnings("unchecked")
+    public void call(String path, MicroContext context) throws Exception {
         String requestedMethod = (String) context.getRackInput().get(Rack.REQUEST_METHOD);
 
         if (requestedMethod != null) {
             for (Route route : routes) {
                 if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
+
                     // todo: Add support for reusing compiled templates
                     UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
 
                     if (templateMatcher != null) {
-                        try {
-                            MultivaluedMap<String, String> routeParams = templateMatcher.getVariables(true);
-                            Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
+                        MultivaluedMap<String, String> routeParams = templateMatcher.getVariables(true);
+                        Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
 
-                            if (CollectionUtils.isEmpty(params)) {
-                                params = new HashMap<String, String[]>();
-                                context.with(Globals.PARAMS, params);
-                            }
+                        if (CollectionUtils.isEmpty(params)) {
+                            params = new HashMap<String, String[]>();
+                            context.with(Globals.PARAMS, params);
+                        }
 
-                            for (Map.Entry<String, List<String>> param : routeParams.entrySet()) {
-                                params.put(param.getKey(),
-                                        param.getValue().toArray(new String[param.getValue().size()]));
-                            }
-
-                        } catch (IllegalStateException e) {
-                            log.error(e.getMessage()); //todo: improve the error message
+                        for (Map.Entry<String, List<String>> param : routeParams.entrySet()) {
+                            params.put(param.getKey(),
+                                    param.getValue().toArray(new String[param.getValue().size()]));
                         }
 
                         route.call(context);

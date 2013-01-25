@@ -56,6 +56,7 @@ public class RouteWrapper extends Route {
     /**
      * the View support is not yet finalized; work in progress
      *
+     *
      * @param context The micro context created when the Rack calls
      * @return
      * @throws ControllerNotFoundException
@@ -64,8 +65,7 @@ public class RouteWrapper extends Route {
      * @throws ViewException
      */
     @Override
-    public RackResponse call(MicroContext context)
-            throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
+    public RackResponse call(MicroContext context) throws Exception {
 
         if (context != null) {
             SiteContext site = context.getSiteContext();

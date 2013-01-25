@@ -23,7 +23,6 @@ import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.apache.commons.lang.StringUtils;
 
@@ -46,14 +45,12 @@ public class RepositoryWrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public String get(String templateEngineName, String path) throws ControllerNotFoundException, ControllerException,
-            FileNotFoundException, ViewException {
+    public String get(String templateEngineName, String path) throws Exception {
         return get(templateEngineName, path, null);
     }
 
     @SuppressWarnings("unchecked")
-    public String get(String templateEngineName, String path, Map<String, Object> options) throws ControllerNotFoundException, ControllerException,
-            FileNotFoundException, ViewException {
+    public String get(String templateEngineName, String path, Map<String, Object> options) throws Exception {
 
         StringWriter writer = new StringWriter();
         View view = repository.getView(path);
@@ -75,7 +72,7 @@ public class RepositoryWrapper {
         return writer.toString();
     }
 
-    public String get(String path) throws ControllerNotFoundException, ControllerException, FileNotFoundException, ViewException {
+    public String get(String path) throws Exception {
         StringWriter writer = new StringWriter();
         View view = repository.getView(path);
         if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
