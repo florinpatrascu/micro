@@ -58,9 +58,11 @@ public class FilterWrapper implements Filter {
 
         if (config.get(Globals.CONTROLLERS) != null) {
             controllers = (List<Map<String, Object>>) config.get(Globals.CONTROLLERS);
-        }
-        if (config.get(Globals.CONTROLLER) != null) {
-            controllers = Collections.singletonList((Map<String, Object>) config.get(Globals.CONTROLLER));
+        } else if (config.get(Globals.CONTROLLER) != null) {
+            Map<String, Object> controller = new HashMap<String, Object>();
+            controller.put(Globals.NAME, config.get(Globals.CONTROLLER));
+            controller.put(Globals.OPTIONS, config.get(Globals.OPTIONS));
+            controllers = Collections.singletonList(controller);
         }
 
     }

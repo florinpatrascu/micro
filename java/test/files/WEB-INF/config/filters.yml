@@ -1,5 +1,15 @@
 - before:
-#      path: /^(?!\/(join|payment))/
-#      controller: ca.simplegames.micro.....
-#      options: {
-#      }
+    path: /private/repositories/{name}
+    controller: admin/CheckCredentials.bsh
+    options:
+      roles: [admin, root]
+
+#- before:
+#    path: /download
+#    controller: my.controllers.security.Admin
+
+- after:
+    path: /download
+    controller: logging/LogDownloadActivity.bsh
+    options:
+      events: [errors, success]

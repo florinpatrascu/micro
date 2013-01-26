@@ -17,7 +17,13 @@
 package ca.simplegames.micro;
 
 import junit.framework.Assert;
+import org.jrack.Context;
+import org.jrack.Rack;
+import org.jrack.RackResponse;
+import org.jrack.context.MapContext;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Suite dedicated to testing the Filters support
@@ -32,4 +38,17 @@ public class FiltersTest {
     public void testMicroIsLoaded() throws Exception {
         Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
     }
+
+    @Test
+    public void testI18N() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.PATH_INFO, "/private/repositories/micro")
+                .with(Rack.REQUEST_METHOD, "GET");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue("Expected a succesful response status", response.getStatus() == HttpServletResponse.SC_OK);
+        Assert.assertNotNull("Expecting a set of user roles in the current input",
+                RackResponse.getBodyAsString(response).contains("userRoles"));
+    }
+
 }
