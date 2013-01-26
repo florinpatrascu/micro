@@ -97,6 +97,7 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
 
         eprops.setProperty("micro.resource.loader.description", "Micro internal resource loader.");
         eprops.setProperty("micro.resource.loader.class", "ca.simplegames.micro.viewers.velocity.MicroResourceLoader");
+        eprops.setProperty("runtime.log.logsystem.class", "ca.simplegames.micro.viewers.velocity.VelocityViewRenderer");
         // eprops.setProperty("micro.resource.loader.repository", repository);
 
         if (resourceCacheEnabled) {
