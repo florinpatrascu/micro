@@ -46,14 +46,18 @@ public class MicroCacheManager {
                 List<String> cachesNames = (List<String>) cacheConfig.get("names");
                 cacheClass = (String) cacheConfig.get("class");
 
+                String config = (String) cacheConfig.get("config");
+
                 for (String cacheName : cachesNames) {
                     Class aClass = ClassUtilities.loadClass(cacheClass);
                     MicroCache microCache = (MicroCache) aClass.newInstance();
+                    String cacheConfigPath = null;
 
-                    microCache.addCache(cacheName,
-                            new File( site.getApplicationPath(),
-                                    (String) cacheConfig.get("config")).getAbsolutePath());
+                    if (config != null) {
+                        cacheConfigPath = new File(site.getApplicationPath(), config).getAbsolutePath();
+                    }
 
+                    microCache.addCache(cacheName, cacheConfigPath);
                     microCache.setFlushInterval(0); //todo implement me
 
                     cacheImplementations.put(cacheName, microCache);

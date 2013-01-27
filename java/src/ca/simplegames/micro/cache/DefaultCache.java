@@ -47,7 +47,7 @@ public class DefaultCache implements MicroCache {
         try {
 
             CacheManager manager;
-            if (config != null) {
+            if (config != null && config[0] != null) {
                 try {
                     // URL url = Micro.class.getResource(config[0]);
                     // new File(ResourceUtils.toURI(url).getSchemeSpecificPart());
