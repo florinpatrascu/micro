@@ -269,7 +269,7 @@ public class Micro {
         log.info(" _ __ ___ ( ) ___ _ __ ___ ");
         log.info("| '_ ` _ \\| |/ __| '__/ _ \\ ");
         log.info("| | | | | | | (__| | | (_) |");
-        log.info("|_| |_| |_|_|\\___|_|  \\___/  (v" + Globals.VERSION + ")");
+        log.info("|_| |_| |_|_|\\___|_|  \\___/  (" + Globals.VERSION + ")");
         log.info("= a modular micro MVC Java framework");
         log.info("");
     }
