@@ -39,16 +39,32 @@ public class FiltersTest {
         Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
     }
 
+
     @Test
-    public void testI18N() throws Exception {
+    public void testBeforeFilters() throws Exception {
         Context<String> input = new MapContext<String>()
                 .with(Rack.PATH_INFO, "/private/repositories/micro")
                 .with(Rack.REQUEST_METHOD, "GET");
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue("Expected a succesful response status", response.getStatus() == HttpServletResponse.SC_OK);
-        Assert.assertNotNull("Expecting a set of user roles in the current input",
+        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
+                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
+        Assert.assertTrue("Expecting a set of user roles in the current input",
                 RackResponse.getBodyAsString(response).contains("userRoles"));
     }
 
+    @Test
+    public void testAfterFilters() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.PATH_INFO, "/download/")
+                .with(Rack.REQUEST_METHOD, "GET");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
+                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
+
+        Assert.assertTrue("Download activity must be logged",
+                ((MicroContext) input.getObject(Globals.CONTEXT))
+                        .get("downloadActivity").equals("logged"));
+    }
 }

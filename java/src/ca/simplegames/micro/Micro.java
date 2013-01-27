@@ -115,11 +115,13 @@ public class Micro {
                 .with(Globals.LOG, log)
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.MICRO_ENV, site.getMicroEnv())
-                        // .with(Globals.CONTEXT, context) <-- don't, please!
+             // .with(Globals.CONTEXT, context) <-- don't, please!
                 .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo)
                 .with(TOOLS, tools);
+
+        input.with(Globals.CONTEXT, context); // mostly for helping the testing effort
 
         for (Repository repository : site.getRepositoryManager().getRepositories()) {
             context.with(repository.getName(), repository.getRepositoryWrapper(context));
