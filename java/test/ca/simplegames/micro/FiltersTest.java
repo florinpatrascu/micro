@@ -47,8 +47,8 @@ public class FiltersTest {
                 .with(Rack.REQUEST_METHOD, "GET");
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
-                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
+        expect200(response);
+
         Assert.assertTrue("Expecting a set of user roles in the current input",
                 RackResponse.getBodyAsString(response).contains("userRoles"));
     }
@@ -60,11 +60,15 @@ public class FiltersTest {
                 .with(Rack.REQUEST_METHOD, "GET");
 
         RackResponse response = micro.call(input);
-        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
-                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
+        expect200(response);
 
         Assert.assertTrue("Download activity must be logged",
                 ((MicroContext) input.getObject(Globals.CONTEXT))
                         .get("downloadActivity").equals("logged"));
+    }
+
+    private void expect200(RackResponse response) {
+        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
+                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
     }
 }
