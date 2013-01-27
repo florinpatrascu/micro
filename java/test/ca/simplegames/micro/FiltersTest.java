@@ -67,6 +67,20 @@ public class FiltersTest {
                         .get("downloadActivity").equals("logged"));
     }
 
+    @Test
+    public void testPathLessFilters() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.PATH_INFO, "/index.html")
+                .with(Rack.REQUEST_METHOD, "GET");
+
+        RackResponse response = micro.call(input);
+        expect200(response);
+
+        Assert.assertTrue("There is no stickiness in this context, pathless filters failure",
+                ((MicroContext) input.getObject(Globals.CONTEXT))
+                        .get("sticky").equals("I am a sticky filter"));
+    }
+
     private void expect200(RackResponse response) {
         Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
                 response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);

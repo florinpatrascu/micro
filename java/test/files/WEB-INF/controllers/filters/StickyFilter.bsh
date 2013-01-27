@@ -1,0 +1,3 @@
+message = "I am a sticky filter";
+log.info(message);
+context.with("sticky", message);

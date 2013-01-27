@@ -1,4 +1,7 @@
 - before:
+    controller: filters/StickyFilter.bsh
+
+- before:
     path: /private/repositories/{name}
     controller: admin/CheckCredentials.bsh
     options:

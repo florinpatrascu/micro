@@ -15,4 +15,4 @@
  */
 
 context.put("downloadActivity", "logged");
-print("Download activity was tracked.");
+log.warn("Download activity was tracked.");
