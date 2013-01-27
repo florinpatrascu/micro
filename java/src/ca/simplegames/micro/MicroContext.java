@@ -44,7 +44,7 @@ public class MicroContext<T> implements Context<T> {
     }
 
     public MicroContext() {
-        this(new ConcurrentHashMap<String, Object>());
+        this(new ConcurrentHashMap<String, Object>(8, 0.9f, 1));
     }
 
     public Object getObject(String key) {
