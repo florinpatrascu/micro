@@ -1,0 +1,8 @@
+<h1>#i18N("hello_world")</h1>
+
+## having fun with Velocity :)
+#set($languages = ["en", "fr", "gr", "de", "ro", "ru"])
+(#foreach($lang in $languages)
+  <a href="${request.ContextPath}/index.html?language=$!{lang}">${lang}</a>
+  #if($velocityCount < $languages.size()) | #end
+#end)

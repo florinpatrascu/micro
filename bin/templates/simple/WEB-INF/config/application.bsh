@@ -1,0 +1,9 @@
+import ca.simplegames.micro.Globals;
+/**
+ * This controller is executed after the Micro framework is loaded
+ */
+ 
+site.ExtensionsManager
+    .require("i18N");
+  
+// log.info("Micro is running ...");
