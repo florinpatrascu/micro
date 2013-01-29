@@ -1,0 +1,3 @@
+import ca.simplegames.micro.SiteContext;
+
+print("Micro "+SiteContext.getMicroVersion());
