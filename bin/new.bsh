@@ -38,7 +38,7 @@ options.addOption("f", "force", false, "Overwrite files that already exist" );
 try{
   if(bsh.args != null){
     CommandLine line = parser.parse(options, bsh.args);
-    print(line.getArgs());
+    //print(line.getArgs());
     overwrite = line.hasOption("f");
     
     if(line.Args.length > 0){
