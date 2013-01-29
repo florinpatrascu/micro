@@ -1,5 +1,5 @@
-/*
- * Copyright (c)2012. Florin T.PATRASCU
+/**
+ * Copyright (c)2012-2013 Florin T.PATRASCU
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.*;
+import org.apache.commons.io.FileUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ MICRO_HOME=System.getenv("MICRO_HOME");
 source(MICRO_HOME+"/bin/cli.bsh");
 source(MICRO_HOME+"/bin/utils.bsh");
 
-print(bsh.cwd);
+// print(bsh.cwd);
 Logger log = LoggerFactory.getLogger(Interpreter.class);
 CommandLineParser parser = new PosixParser();
 Options options = new Options();
@@ -34,22 +35,41 @@ Options options = new Options();
 options.addOption("f", "force", false, "Overwrite files that already exist" );
 // options.addOption("t", "template", false, "Use a template" );
 
-
 try{
   if(bsh.args != null){
     CommandLine line = parser.parse(options, bsh.args);
     print(line.getArgs());
-
-    if( line.hasOption( "f" ) ) {
-      // print the value of block-size
-      System.out.println( line.getOptionValue("template"));
+    overwrite = line.hasOption("f");
+    
+    if(line.Args.length > 0){
+      srcDir  = new File(MICRO_HOME+"/bin/templates/simple");
+      destDir = new File(line.Args[0]);
+      
+      if(srcDir.exists() && srcDir.isDirectory()){
+        if(!destDir.exists()){
+          // print("copy from: "+ srcDir.AbsolutePath + ", to: "+destDir.AbsolutePath); 
+          copyDirectoryContents(srcDir, destDir);     
+          chmod("755", new File(destDir, "run.sh")); // poor man solution until JDK7 hits mainstream
+        }else if(destDir.exists() && !overwrite){
+          print("a folder with the same name exists already. Use -f to overwrite. You cannot undo this!");
+        }else{
+          print("Overwriting: "+destDir.CanonicalPath);
+          copyDirectoryContents(srcDir, destDir);  
+          chmod("755", new File(destDir, "run.sh"));
+        }
+      }else{
+        print("Micro is not configured properly; missing application template.");
+      }
+    
+    }else{
+      print("Please specify the application name. Try:\n micro new my_new_webapp");
     }
-
+    
   }else{
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("micro new APP_PATH [options]", "", options, "The 'micro new' command creates a new Micro application with a default directory structure and configuration at the path you specify.");
   }  
 }catch(ParseException exp) {
   // oops, something went wrong
-  log.error( "Parsing failed. Reason: " + exp.getMessage() );
+  log.error("Parsing failed. Reason: " + exp.getMessage() );
 }
