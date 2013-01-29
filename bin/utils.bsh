@@ -18,7 +18,9 @@ import org.apache.commons.lang3.*;
 import org.apache.commons.io.FileUtils;
 
 chmod(String permissions, File file){
-  Runtime.getRuntime().exec("chmod "+ permissions + " " + new File(destDir, "run.sh").AbsolutePath);     
+  if(file.exists()){
+    Runtime.getRuntime().exec("chmod "+ permissions + " " + new File(destDir, "run.sh").AbsolutePath);     
+  }
 }
 
 public void copyDirectory(File src , File dest) throws IOException {
