@@ -17,6 +17,7 @@
 package ca.simplegames.micro.controllers;
 
 import ca.simplegames.micro.Controller;
+import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import com.sun.management.OperatingSystemMXBean;
 import org.jrack.Rack;
@@ -41,6 +42,7 @@ import java.util.*;
 public class StatsController implements Controller {
     private static final long MEGA_BYTE = 1048576;
     public static final String JSON_TYPE = ".json";
+    public static final String POWERED_BY_MICRO = "Micro " + Globals.VERSION;
 
     public void execute(MicroContext context, Map configuration) throws ControllerException {
         Map<String, Object> systemInfo = new HashMap<String, Object>();
@@ -67,9 +69,10 @@ public class StatsController implements Controller {
         memInfo.put("total", totalMemory);
         memInfo.put("used", usedMemory);
         memInfo.put("free", freeMemory);
-        memInfo.put("free_percent", p100);
+        memInfo.put("percent_free", p100);
 
         systemInfo.put("memory", memInfo);
+        systemInfo.put("powered_by", POWERED_BY_MICRO);
 
         //cpu usage in milli secs
         long currentCpuUsage = sunOperatingSystemMXBean.getProcessCpuTime() / 1000000;
