@@ -66,6 +66,7 @@ public class SiteContext extends MapContext {
     private TemplateEnginesManager templateEnginesManager;
     private Map<String, String> userMimeTypes = null;
     private String welcomeFile = "index.html";
+    private File applicationConfigPath;
 
     public SiteContext(Context<String> env) {
         for (Map.Entry<String, Object> entry : env) {
@@ -86,6 +87,7 @@ public class SiteContext extends MapContext {
     @SuppressWarnings("unchecked")
     public SiteContext loadApplication(String configPath) throws Exception {
         File config = new File(configPath, "micro-config.yml");
+        applicationConfigPath = new File(configPath);
         webInfPath = (File) get(Globals.WEB_INF_PATH);
 
         if (config.exists()) {
@@ -363,5 +365,9 @@ public class SiteContext extends MapContext {
 
     public static String getMicroVersion(){
         return Globals.VERSION; // dynamic!
+    }
+
+    public File getApplicationConfigPath() {
+        return applicationConfigPath;
     }
 }

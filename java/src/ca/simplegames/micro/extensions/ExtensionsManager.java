@@ -21,16 +21,13 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.utils.Assert;
 import ca.simplegames.micro.utils.PathUtilities;
 import org.jrack.utils.ClassUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 
 /**
  * Manager responsible with loading and registering Micro extensions
@@ -57,16 +54,43 @@ public class ExtensionsManager {
     }
 
     public ExtensionsManager require(String name) throws Exception { //todo: improve the Exceptions
+        Extension extension = null;
         Map<String, Object> yaml = extensionsConfigMap.get(name);
-        if(yaml != null && !registeredExtensions.contains(name)){
-            Extension extension = (Extension) ClassUtilities.loadClass((String) yaml.get("class")).newInstance();
-            extension.register(name, site, yaml);
+        if (yaml != null && !registeredExtensions.contains(name)) {
 
-            if(registeredExtensions.isEmpty()){ //cosmetics
-                site.getLog().info("Extensions:");
+            File extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + name + "/lib");
+
+            if (extensionLibDir.exists() && extensionLibDir.isDirectory()) {
+                List<URL> jarUrls = new ArrayList<URL>();
+                for (File file : site.files(extensionLibDir, ".jar")) {
+                    jarUrls.add(file.toURI().toURL());
+                }
+
+                URLClassLoader child = new URLClassLoader(jarUrls.toArray(new URL[jarUrls.size()]),
+                        this.getClass().getClassLoader());
+                Class classToLoad = Class.forName((String) yaml.get("class"), true, child);
+                extension = (Extension) classToLoad.newInstance();
             }
-            registeredExtensions.add(name);
-            site.getLog().info(String.format("  %s, loaded.", extension.getName()));
+
+            if (extension == null) {
+                // check if the Extension is using a Micro class...
+                final Class klass = ClassUtilities.loadClass((String) yaml.get("class"));
+                if (klass != null) {
+                    extension = (Extension) klass.newInstance();
+                }
+            }
+
+            if (extension != null) {
+                extension.register(name, site, yaml);
+
+                if (registeredExtensions.isEmpty()) { //cosmetics
+                    site.getLog().info("Extensions:");
+                }
+                registeredExtensions.add(name);
+                site.getLog().info(String.format("  %s, loaded.", extension.getName()));
+            } else {
+                site.getLog().error(String.format("  %s, not loaded.", name));
+            }
         }
         return this;
     }

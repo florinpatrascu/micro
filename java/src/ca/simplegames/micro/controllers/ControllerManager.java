@@ -32,7 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The ControllerManager - responsible for finding, caching, instantiating and executing Micro controllers
@@ -47,7 +49,7 @@ public class ControllerManager {
     private Logger log = LoggerFactory.getLogger(getClass());
     private SiteContext site;
     private MicroCache cachedScriptControllers;
-    private File pathToAppControllers;
+    private Set<File> pathsToControllers = new HashSet<File>();
 
     public ControllerManager(SiteContext site, Map<String, Object> config) {
         this.site = site;
@@ -56,7 +58,7 @@ public class ControllerManager {
                     StringUtils.defaultString((String) config.get("cache"),
                             Globals.SCRIPT_CONTROLLERS_CACHE_NAME).trim());
         }
-        pathToAppControllers = new File(site.getWebInfPath(), "controllers");
+        pathsToControllers.add(new File(site.getWebInfPath(), "controllers"));
     }
 
     public void execute(String controllerName, MicroContext context) throws Exception {
@@ -126,11 +128,18 @@ public class ControllerManager {
             }
 
             if (scriptController == null) {
+
                 File controllerFile = new File(name);
                 if (!controllerFile.exists()) {
                     // maybe it exists in the app controllers?
-                    controllerFile = new File(getPathToAppControllers(), name);
+                    for(File path: pathsToControllers){
+                        controllerFile = new File(path, name);
+                        if(controllerFile.exists()){
+                            break;
+                        }
+                    }
                 }
+
 
                 if (controllerFile.exists()) {
                     try {
@@ -154,7 +163,10 @@ public class ControllerManager {
         }
     }
 
-    public File getPathToAppControllers() {
-        return pathToAppControllers;
+
+    public void addPathToControllers(File path) {
+        if (path != null && path.exists()) {
+            pathsToControllers.add(path);
+        }
     }
 }

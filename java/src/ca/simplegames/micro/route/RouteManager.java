@@ -63,7 +63,7 @@ public class RouteManager {
         }
     }
 
-    private void add(Route route) {
+    public void add(Route route) {
         if (route != null) {
             routes.add(route);
             routesMap.put(route.getPath(), route);

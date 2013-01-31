@@ -49,7 +49,7 @@ public class RouteWrapper extends Route {
      * @param config a map containing nodes in a configuration loaded from an external support,
      *               an .yml file for example?!
      */
-    protected RouteWrapper(String route, Map<String, Object> config) {
+    public RouteWrapper(String route, Map<String, Object> config) {
         super(route, config);
     }
 
