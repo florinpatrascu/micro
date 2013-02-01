@@ -93,10 +93,10 @@ public abstract class Repository {
             site.getLog().info(String.format("   - renderer: '%s'", renderer.getName()));
 
             if (cache != null) {
-                site.getLog().info(String.format("  cache.: '%s'", cache.getName()));
+                site.getLog().info(String.format("   - cache...: '%s'", cache.getName()));
             }
             if (config != null && config.exists() && config.isDirectory()) {
-                site.getLog().info(String.format("  config: '%s'", config.getAbsolutePath()));
+                site.getLog().info(String.format("   - config..: '%s'", config.getAbsolutePath()));
             }
 
 

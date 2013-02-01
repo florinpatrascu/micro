@@ -23,6 +23,7 @@ import ca.simplegames.micro.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +39,34 @@ public class RepositoryManager {
     private Repository defaultRepository;
     private Repository templatesRepository;
     private List<Repository> repositories = new ArrayList<Repository>();
+    private SiteContext site;
 
     @SuppressWarnings("unchecked")
     public RepositoryManager(SiteContext site) {
+        this.site = site;
+
+        addRepositories((Map<String, Object>) site.getAppConfig().get("repositories"));
+        site.with(Globals.MICRO_REPOSITORY_MANAGER, this);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public void addRepositories(File rootPath, Map<String, Object> repos) {
         try {
-            Map<String, Object> repos = (Map<String, Object>) site.getAppConfig().get("repositories");
             if (!CollectionUtils.isEmpty(repos)) {
                 for (String repoName : repos.keySet()) {
                     Map<String, Object> repoConfig = (Map<String, Object>) repos.get(repoName);
+
+                    String repoPathName = (String) repoConfig.get("path");
+                    String repoPath = StringUtils.defaultString(
+                            rootPath != null && rootPath.exists() ?
+                                    new File(rootPath, repoPathName).getAbsolutePath()
+                                    : repoPathName, Globals.EMPTY_STRING);
+
                     Repository repository = new FSRepository(repoName,
                             site.getCacheManager().getCache(StringUtils.defaultString(repoConfig.get("cache"),
                                     Globals.EMPTY_STRING)), site,
-                            StringUtils.defaultString(repoConfig.get("path"), Globals.EMPTY_STRING),
+                            repoPath,
                             StringUtils.defaultString(
                                     repoConfig.get(Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME),
                                     Globals.DEFAULT_REPOSITORY_CONFIG_PATH_NAME),
@@ -76,7 +93,17 @@ public class RepositoryManager {
             log.error("defining the repositories; " + e.getMessage());
         }
 
-        site.with(Globals.MICRO_REPOSITORY_MANAGER, this);
+    }
+
+    /**
+     * define a group of repository
+     *
+     * @param repos a Map containing the repository definitions declared by the
+     *              "repositories" element from micro-config.yml
+     */
+    @SuppressWarnings("unchecked")
+    public void addRepositories(Map<String, Object> repos) {
+        addRepositories(null, repos);
     }
 
     public Repository getDefaultRepository() {

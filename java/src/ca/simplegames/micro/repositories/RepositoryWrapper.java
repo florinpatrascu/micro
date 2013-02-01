@@ -96,4 +96,8 @@ public class RepositoryWrapper {
             }
         }
     }
+
+    public Repository getRepository() {
+        return repository;
+    }
 }

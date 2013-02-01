@@ -45,7 +45,7 @@ public class Globals {
     public static final String DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH = "ca/simplegames/micro/viewers/velocity/VM_global_library.vm";
     public static final String MICRO_REPOSITORY_MANAGER = MICRO + "repository_manager";
 
-    public static final String PATH_INFO="pathInfo";
+    public static final String PATH_INFO = "pathInfo";
     public static final String PATH = "path";
     public static final String REQUEST = "request";
     public static final String RESPONSE = "response";
@@ -57,13 +57,13 @@ public class Globals {
     public static final String TEMPLATE = "template";
     public static final String REPOSITORY = "repository";
     public static final String CONTROLLER = "controller";
-    public static final String CONTROLLERS = CONTROLLER+"s";
-    public static final String PARAMS ="params";
+    public static final String CONTROLLERS = CONTROLLER + "s";
+    public static final String PARAMS = "params";
     public static final String VIEW = "view";
-    public static final String YML_EXTENSION=".yml";
-    public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME="config";
-    public static final String WEB_APP_NAME=MICRO+"web_app_name";
-    public static final String WEB_APP_DESCRIPTION=MICRO+"web_app_description";
+    public static final String YML_EXTENSION = ".yml";
+    public static final String DEFAULT_REPOSITORY_CONFIG_PATH_NAME = "config";
+    public static final String WEB_APP_NAME = MICRO + "web_app_name";
+    public static final String WEB_APP_DESCRIPTION = MICRO + "web_app_description";
     public static final String OPTIONS = "options";
     public static final String NAME = "name";
     public static final String ERROR = "error";
@@ -78,4 +78,6 @@ public class Globals {
     public static final String CHARSET = "charset";
     public static final String CLOSEABLE_BSF_MANAGER = "closeable_bsf_manager";
     public static final String CONFIGURATION = "configuration";
+    public static final String MICRO_TEMPLATES_REPOSITORY_NAME = MICRO + "templates_repository_name";
+    public static final String MICRO_DEFAULT_REPOSITORY_NAME  =  MICRO + "default_repository_name";
 }

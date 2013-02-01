@@ -159,19 +159,30 @@ public class Micro {
                 }
 
                 if (!context.isHalt()) {
-                    path = maybeAppendHtmlToPath(context);
-                    context.with(Globals.PATH, path.replace("//", SLASH));
+                    path = (String) context.get(Globals.PATH);
+                    if (path == null) { // user not deciding the PATH
+                        path = maybeAppendHtmlToPath(context);
+                        context.with(Globals.PATH, path.replace("//", SLASH));
+                    }
+
                     final String pathBasedContentType = PathUtilities.extractType((String) context.get(Globals.PATH));
 
                     String templateName = StringUtils.defaultString(context.getTemplateName(),
                             RepositoryManager.DEFAULT_TEMPLATE_NAME);
+
+                    Repository defaultRepository = site.getRepositoryManager().getDefaultRepository();
+                    // verify if there is a default repository decided by 3rd party components; controllers, extensions, etc.
+                    if (context.get(Globals.MICRO_DEFAULT_REPOSITORY_NAME) != null) {
+                        defaultRepository = site.getRepositoryManager()
+                                .getRepository((String) context.get(Globals.MICRO_DEFAULT_REPOSITORY_NAME));
+                    }
 
                     // calculate the Template name
                     View view = (View) context.get(Globals.VIEW);
                     if (view != null && StringUtils.isNotBlank(view.getTemplate())) {
                         templateName = view.getTemplate();
                     } else {
-                        view = site.getRepositoryManager().getDefaultRepository().getView(path);
+                        view = defaultRepository.getView(path);
                         if (view != null && view.getTemplate() != null) {
                             templateName = view.getTemplate();
                         }
@@ -181,11 +192,22 @@ public class Micro {
                     // the Template body merged with the View's own content. Controllers are executed *before*
                     // rendering the Template *and before* rendering the View, but only if there are any View or Template
                     // Controllers defined by the user.
-                    String out = site.getRepositoryManager().getTemplatesRepository().getRepositoryWrapper(context)
-                            .get(templateName + pathBasedContentType);
 
-                    response.withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
-                            .withBody(out);
+                    Repository templatesRepository = site.getRepositoryManager().getTemplatesRepository();
+                    if (context.getTemplatesRepositoryName() != null) {
+                        templatesRepository = site.getRepositoryManager()
+                                .getRepository(context.getTemplatesRepositoryName());
+                    }
+
+                    if (templatesRepository != null) {
+                        String out = templatesRepository.getRepositoryWrapper(context)
+                                .get(templateName + pathBasedContentType);
+
+                        response.withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
+                                .withBody(out);
+                    } else {
+                        throw new FileNotFoundException(String.format("templates repository: %s", context.getTemplatesRepositoryName()));
+                    }
                 }
 
                 if (!context.isHalt()) {
@@ -198,6 +220,7 @@ public class Micro {
             return context.getRackResponse().withContentType(getContentType(context));
 
         } catch (ControllerNotFoundException e) {
+            e.printStackTrace();
             return badJuju(context, HttpServletResponse.SC_NO_CONTENT, e);
         } catch (ControllerException e) {
             e.printStackTrace();

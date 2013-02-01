@@ -142,7 +142,17 @@ public class MicroContext<T> implements Context<T> {
         with(Globals.RACK_RESPONSE, response);
     }
 
-    public Logger getLog(){
+    public Logger getLog() {
         return (Logger) get(Globals.LOG);
+    }
+
+    public String getTemplatesRepositoryName() {
+        return (String) get(Globals.MICRO_TEMPLATES_REPOSITORY_NAME);
+    }
+
+    public void setTemplatesRepositoryName(String repositoryName) {
+        if (repositoryName != null && repositoryName.trim().length() > 0) {
+            with(Globals.MICRO_TEMPLATES_REPOSITORY_NAME, repositoryName);
+        }
     }
 }

@@ -87,7 +87,7 @@ public class ExtensionsManager {
                     site.getLog().info("Extensions:");
                 }
                 registeredExtensions.add(name);
-                site.getLog().info(String.format("  %s, loaded.", extension.getName()));
+                site.getLog().info(String.format(" - %s, loaded.", extension.getName()));
             } else {
                 site.getLog().error(String.format("  %s, not loaded.", name));
             }
