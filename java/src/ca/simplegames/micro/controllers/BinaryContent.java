@@ -20,6 +20,7 @@ import ca.simplegames.micro.Controller;
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
 import org.jrack.Rack;
@@ -49,8 +50,15 @@ public class BinaryContent implements Controller {
     public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
         SiteContext site = context.getSiteContext();
         Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
-        File content = site.getRepositoryManager().getDefaultRepository()
-                .pathToFile(String.format(FILE_FORMAT, params.get(IMAGE_FILE)[0], params.get(TYPE)[0]));
+        Repository defaultRepository = site.getRepositoryManager().getDefaultRepository();
+        if (configuration != null && configuration.get(Globals.REPOSITORY) != null) {
+            defaultRepository = site.getRepositoryManager()
+                    .getRepository((String) configuration.get(Globals.REPOSITORY));
+        }
+
+        File content = defaultRepository.pathToFile(
+                String.format(FILE_FORMAT, params.get(IMAGE_FILE)[0], params.get(TYPE)[0]));
+
         String fileType = PathUtilities.extractType(content.getAbsolutePath());
 
         if (content.exists()) {
