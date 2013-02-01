@@ -171,4 +171,9 @@ public class DefaultCache implements MicroCache {
     public String getName() {
         return name;
     }
+
+    @Override
+    public int getSize() {
+        return cache.getSize();
+    }
 }

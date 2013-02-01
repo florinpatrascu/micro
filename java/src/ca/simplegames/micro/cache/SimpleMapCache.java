@@ -20,13 +20,14 @@ import org.jrack.Context;
 import org.jrack.context.MapContext;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-19 7:15 PM)
  */
 public class SimpleMapCache implements MicroCache {
-    Context<String> cache = new MapContext<String>();
+    Map<String, Object> cache = new ConcurrentHashMap<String, Object>(8, 0.9f, 2);
     private String name = "map";
 
     public void addCache(String name, String ... config) throws MicroCacheException {
@@ -38,7 +39,7 @@ public class SimpleMapCache implements MicroCache {
     }
 
     public void put(Object key, Object value) throws MicroCacheException {
-        cache.with((String) key, value);
+        cache.put((String) key, value);
     }
 
     public void remove(Object key) throws MicroCacheException {
@@ -46,7 +47,7 @@ public class SimpleMapCache implements MicroCache {
     }
 
     public void clear() throws MicroCacheException {
-        cache = new MapContext<String>();
+        cache = new ConcurrentHashMap<String, Object>(8, 0.9f, 2);
     }
 
     public void destroy() throws MicroCacheException {
@@ -60,15 +61,8 @@ public class SimpleMapCache implements MicroCache {
         return 0;
     }
 
-    // todo: please refactor
     public List getKeys() throws MicroCacheException {
-        List<String> keys = new ArrayList<String>();
-
-        for (Map.Entry<String, Object> entry : cache) {
-            keys.add(entry.getKey());
-        }
-
-        return keys;
+        return new ArrayList<String>(cache.keySet());
     }
 
     public Object getStatistics() throws MicroCacheException {
@@ -77,5 +71,10 @@ public class SimpleMapCache implements MicroCache {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int getSize() {
+        return ((Map)cache).size();
     }
 }

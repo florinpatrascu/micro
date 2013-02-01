@@ -117,4 +117,10 @@ public interface MicroCache {
      * @return the name of this cache
      */
     public String getName();
+
+    /**
+     *
+     * @return the size of the cache
+     */
+    public int getSize();
 }
