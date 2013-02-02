@@ -81,15 +81,20 @@ public class Micro {
 
         //initialize the classpath
         StringBuilder cp = new StringBuilder();
-        cp.append(webInfPath.toString()).append("/lib,");
-        cp.append(webInfPath.toString()).append("/classes,");
+        if (new File(webInfPath, "/lib").exists()) {
+            cp.append(webInfPath.toString()).append("/lib,");
+        }
+
+        if (new File(webInfPath, "/classes").exists()) {
+            cp.append(webInfPath.toString()).append("/classes,");
+        }
 
         if (StringUtils.isNotBlank(userClassPaths)) {
             cp.append(",").append(userClassPaths);
         }
 
         String resources = ClassUtils.configureClasspath(webInfPath.toString(),
-                StringUtils.split(cp.toString(), ",: "));
+                StringUtils.split(cp.toString(), ",:"));
         if (log.isDebugEnabled()) {
             log.info("classpath: " + resources);
         }
