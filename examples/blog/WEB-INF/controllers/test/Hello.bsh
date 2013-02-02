@@ -1,8 +1,0 @@
-import org.jrack.RackResponseUtils;
-import ca.simplegames.micro.Globals;
-import org.apache.commons.lang3.StringUtils;
-
-params = context.get(Globals.PARAMS);
-String name = params.get("name") != null? params.get("name")[0] : "";
-context.setRackResponse(RackResponseUtils.standardHtml(name));
-context.halt();

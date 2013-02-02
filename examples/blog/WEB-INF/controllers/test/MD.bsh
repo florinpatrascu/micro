@@ -1,8 +1,0 @@
-import ca.simplegames.micro.Globals;
-import org.jrack.RackResponseUtils;
-import org.apache.commons.lang3.StringUtils;
-
-response = context.getRackResponse();
-if(response != null){
-    response.withContentType("text/html; charset=utf8");
-}
