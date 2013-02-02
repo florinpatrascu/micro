@@ -23,6 +23,7 @@
             overflowToDisk="false"
             timeToIdleSeconds="10"
             timeToLiveSeconds="20"
+            statistics="true"
             />
 
     <cache name="views"
@@ -33,6 +34,7 @@
            overflowToDisk="false"
            diskPersistent="false"
            diskExpiryThreadIntervalSeconds="60"
+           statistics="true"
             />
 
     <cache name="controllers"
@@ -43,5 +45,6 @@
            overflowToDisk="false"
            diskPersistent="false"
            diskExpiryThreadIntervalSeconds="60"
+           statistics="true"
             />
 </ehcache>
