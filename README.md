@@ -52,6 +52,10 @@ We hope you'll enjoy writing web applications with **Micro**.
 
 Thank you!    
 
+### Documentation
+The documentation is a work in progress and can be found here: [micro-docs.simplegames.ca](http://micro-docs.simplegames.ca). It is hosted at Heroku, using Micro itself for publishing. 
+
+Feedback and contributions to the project, no matter what kind, are always very welcome.
 
 ### Submitting an Issue
 We use the [GitHub issue tracker](https://github.com/florinpatrascu/micro/issues) to track bugs and features. Before submitting a bug report or feature request, check to make sure it hasn't already been submitted. When submitting a bug report, please include a [Gist](https://gist.github.com/) that includes a stack trace and any other details that may be necessary to reproduce the bug, including your Java version and operating system. Ideally, a bug report should include a pull request with failing specs.
