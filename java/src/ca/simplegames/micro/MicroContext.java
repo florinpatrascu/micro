@@ -155,4 +155,14 @@ public class MicroContext<T> implements Context<T> {
             with(Globals.MICRO_TEMPLATES_REPOSITORY_NAME, repositoryName);
         }
     }
+
+    public String getDefaultRepositoryName() {
+        return (String) get(Globals.MICRO_DEFAULT_REPOSITORY_NAME);
+    }
+
+    public void setDefaultRepositoryName(String repositoryName) {
+        if (repositoryName != null && repositoryName.trim().length() > 0) {
+            with(Globals.MICRO_DEFAULT_REPOSITORY_NAME, repositoryName);
+        }
+    }
 }

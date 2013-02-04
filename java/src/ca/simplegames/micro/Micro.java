@@ -177,9 +177,9 @@ public class Micro {
 
                     Repository defaultRepository = site.getRepositoryManager().getDefaultRepository();
                     // verify if there is a default repository decided by 3rd party components; controllers, extensions, etc.
-                    if (context.get(Globals.MICRO_DEFAULT_REPOSITORY_NAME) != null) {
+                    if (context.getDefaultRepositoryName() != null) {
                         defaultRepository = site.getRepositoryManager()
-                                .getRepository((String) context.get(Globals.MICRO_DEFAULT_REPOSITORY_NAME));
+                                .getRepository(context.getDefaultRepositoryName());
                     }
 
                     // calculate the Template name
