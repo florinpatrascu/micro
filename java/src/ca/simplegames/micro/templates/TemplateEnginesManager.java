@@ -21,6 +21,13 @@ public class TemplateEnginesManager {
     Map<String, ViewRenderer> engines = new HashMap<String, ViewRenderer>();
     private ViewRenderer defaultEngine = null;
 
+    /**
+     * Template manager responsible with loading all the required rendering engines
+     *
+     * @param site   a valid SiteContext instance
+     * @param config a valid Micro configuration object
+     * @throws Exception if there are any errors encountered
+     */
     @SuppressWarnings("unchecked")
     public TemplateEnginesManager(SiteContext site, Map<String, Object> config) throws Exception {
         // Initialize a repository specific View renderer
@@ -28,23 +35,7 @@ public class TemplateEnginesManager {
         List<Map<String, Object>> templateEngines = (List<Map<String, Object>>) site.getAppConfig().get("template_engines");
         if (templateEngines != null) {
             for (Map templateEngine : templateEngines) {
-                Map<String, Object> engineConfig = (Map<String, Object>) templateEngine.get("engine");
-                String name = (String) engineConfig.get("name");
-                String klass = (String) engineConfig.get("class");
-                Map<String, Object> options = (Map<String, Object>) engineConfig.get("options");
-                boolean isDefaultEngine = StringUtils.defaultString(engineConfig.get("default"),
-                        "false").trim().equalsIgnoreCase("true");
-
-                ViewRenderer engine = (ViewRenderer) ClassUtilities.loadClass(klass).newInstance();
-
-                engine.loadConfiguration(site, options);
-                engines.put(name, engine);
-
-                if (defaultEngine == null && isDefaultEngine) {
-                    defaultEngine = engine;
-                }
-                site.getLog().info(String.format(" engine: %s, class: %s%s",
-                        name, klass, isDefaultEngine ? ", default." : Globals.EMPTY_STRING));
+                addTemplateEngine(site, templateEngine);
             }
 
             if (defaultEngine == null && !engines.isEmpty()) {
@@ -70,15 +61,58 @@ public class TemplateEnginesManager {
         }
     }
 
+    /**
+     * add a new template engine
+     *
+     * @param site                     a SiteContext instance
+     * @param templateEngineDefinition a Map containing the engine definitions
+     * @throws Exception if the engine cannot be loaded
+     */
+    public void addTemplateEngine(SiteContext site, Map templateEngineDefinition) throws Exception {
+        Map<String, Object> engineConfig = (Map<String, Object>) templateEngineDefinition.get("engine");
+        String name = (String) engineConfig.get("name");
+        String klass = (String) engineConfig.get("class");
+        Map<String, Object> options = (Map<String, Object>) engineConfig.get("options");
+        boolean isDefaultEngine = StringUtils.defaultString(engineConfig.get("default"),
+                "false").trim().equalsIgnoreCase("true");
+
+        ViewRenderer engine = null;
+        try {
+            engine = (ViewRenderer) ClassUtilities.loadClass(klass).newInstance();
+            engine.loadConfiguration(site, options);
+            engines.put(name, engine);
+
+            if (defaultEngine == null && isDefaultEngine) {
+                defaultEngine = engine;
+            }
+            site.getLog().info(String.format(" engine: %s, class: %s%s",
+                    name, klass, isDefaultEngine ? ", default." : Globals.EMPTY_STRING));
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @return all known engins
+     */
     public Map<String, ViewRenderer> getEngines() {
         return Collections.unmodifiableMap(engines);
     }
 
+    /**
+     * @param name the name of the engine
+     * @return a template engine, if registered with {@code name}
+     */
     public ViewRenderer getEngine(String name) {
         return engines.get(name);
 
     }
 
+    // return the default rendering engine
     public ViewRenderer getDefaultEngine() {
         return defaultEngine;
     }

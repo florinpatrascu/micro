@@ -17,6 +17,7 @@
 package ca.simplegames.micro.extensions;
 
 import ca.simplegames.micro.Extension;
+import ca.simplegames.micro.Micro;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.utils.Assert;
 import ca.simplegames.micro.utils.PathUtilities;
@@ -25,9 +26,14 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manager responsible with loading and registering Micro extensions
@@ -59,17 +65,29 @@ public class ExtensionsManager {
         if (yaml != null && !registeredExtensions.contains(name)) {
 
             File extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + name + "/lib");
+            Class[] parameters = new Class[]{URL.class};
+            URLClassLoader microClassLoader = (URLClassLoader) Micro.class.getClassLoader();
+            Class sysclass = URLClassLoader.class;
 
             if (extensionLibDir.exists() && extensionLibDir.isDirectory()) {
-                List<URL> jarUrls = new ArrayList<URL>();
                 for (File file : site.files(extensionLibDir, ".jar")) {
-                    jarUrls.add(file.toURI().toURL());
+                    try {
+                        Method method = sysclass.getDeclaredMethod("addURL", parameters);
+                        method.setAccessible(true);
+                        method.invoke(microClassLoader, file.toURI().toURL());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        throw new IOException("Error, could not add URL to system classloader");
+                    }
                 }
 
-                URLClassLoader child = new URLClassLoader(jarUrls.toArray(new URL[jarUrls.size()]),
-                        this.getClass().getClassLoader());
-                Class classToLoad = Class.forName((String) yaml.get("class"), true, child);
-                extension = (Extension) classToLoad.newInstance();
+                try {
+                    Class classToLoad = Class.forName((String) yaml.get("class"), true, microClassLoader);
+                    extension = (Extension) classToLoad.newInstance();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    throw new Exception(String.format("Class: %s, not found.", yaml.get("class")));
+                }
             }
 
             if (extension == null) {
