@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure id="Server" class="org.mortbay.jetty.Server">
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Set name="ThreadPool">
+
+        <New class="org.mortbay.thread.QueuedThreadPool">
+            <Set name="minThreads">100</Set>
+            <Set name="maxThreads">200</Set>
+            <Set name="lowThreads">20</Set>
+        </New>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+    <Set name="stopAtShutdown">true</Set>
+    <Set name="sendServerVersion">true</Set>
+    <Set name="sendDateHeader">true</Set>
+    <Set name="gracefulShutdown">1000</Set>
+
+</Configure>
