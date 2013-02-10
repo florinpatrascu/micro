@@ -22,8 +22,12 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.thread.QueuedThreadPool;
+import org.mortbay.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * Micro as a web server using embedded Jetty.
@@ -68,6 +72,11 @@ public class WebServer {
                 connector.setMaxIdleTime(1000 * 60 * 60); // this will make debugging easier
 
                 Server server = new Server(port);
+                if (new File("jetty.xml").exists()) {
+                    XmlConfiguration configuration = new XmlConfiguration(new FileInputStream("jetty.xml"));
+                    configuration.configure(server);
+                    log.info("jetty config detected ...");
+                }
                 server.setConnectors(new Connector[]{connector});
                 WebAppContext webApp = new WebAppContext(path, "/");
 
