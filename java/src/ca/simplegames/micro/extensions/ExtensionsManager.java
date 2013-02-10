@@ -43,8 +43,9 @@ import java.util.Set;
  */
 public class ExtensionsManager {
     private Map<String, Map<String, Object>> extensionsConfigMap = new HashMap<String, Map<String, Object>>();
-    private SiteContext site;
     private Set<String> registeredExtensions = new HashSet<String>();
+    private File extensionsFolder;
+    private SiteContext site;
 
     @SuppressWarnings("unchecked")
     public ExtensionsManager(SiteContext site, File[] configFiles) throws Exception {
@@ -52,19 +53,36 @@ public class ExtensionsManager {
         Assert.notNull(configFiles);
         this.site = site;
 
-        for (File configFile : configFiles) {
-            Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(configFile));
-            final String fileName = PathUtilities.extractName(configFile);
-            extensionsConfigMap.put(fileName, yaml);
+        if (configFiles != null && configFiles.length > 0) {
+            extensionsFolder = configFiles[0].getParentFile();
+            if (site.getLog().isDebugEnabled()) {
+                site.getLog().debug(String.format("Extensions folder used: %s/", extensionsFolder.getAbsolutePath()));
+            }
+
+            if (extensionsFolder.exists() && extensionsFolder.isDirectory()) {
+                for (File configFile : configFiles) {
+                    Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(configFile));
+                    final String fileName = PathUtilities.extractName(configFile);
+                    extensionsConfigMap.put(fileName, yaml);
+                }
+            }
         }
     }
 
     public ExtensionsManager require(String name) throws Exception { //todo: improve the Exceptions
         Extension extension = null;
         Map<String, Object> yaml = extensionsConfigMap.get(name);
-        if (yaml != null && !registeredExtensions.contains(name)) {
+        File extensionLibDir;
 
-            File extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + name + "/lib");
+        if (yaml != null && !registeredExtensions.contains(name)) {
+            final String extensionLibFolderName = name + "/lib";
+
+            if (extensionsFolder == null) {
+                extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + extensionLibFolderName);
+            } else {
+                extensionLibDir = new File(extensionsFolder, extensionLibFolderName);
+            }
+
             Class[] parameters = new Class[]{URL.class};
             URLClassLoader microClassLoader = (URLClassLoader) Micro.class.getClassLoader();
             Class sysclass = URLClassLoader.class;
