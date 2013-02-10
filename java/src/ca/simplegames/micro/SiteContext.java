@@ -370,4 +370,35 @@ public class SiteContext extends MapContext {
     public File getApplicationConfigPath() {
         return applicationConfigPath;
     }
+
+    // convenient group of setters that can be used when testing or for
+    // other specific requirements.
+
+    public void setCacheManager(MicroCacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    public void setRepositoryManager(RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
+    }
+
+    public void setControllerManager(ControllerManager controllerManager) {
+        this.controllerManager = controllerManager;
+    }
+
+    public void setFilterManager(FilterManager filterManager) {
+        this.filterManager = filterManager;
+    }
+
+    public void setHelperManager(HelperManager helperManager) {
+        this.helperManager = helperManager;
+    }
+
+    public void setExtensionsManager(ExtensionsManager extensionsManager) {
+        this.extensionsManager = extensionsManager;
+    }
+
+    public void setMicroEnv(String microEnv) {
+        this.microEnv = microEnv;
+    }
 }
