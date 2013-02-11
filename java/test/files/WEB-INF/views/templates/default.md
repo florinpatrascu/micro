@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" media="screen" href="${request.ContextPath}/styles/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="$!{request.ContextPath}/styles/main.css">
     <title>untitled</title>
     <meta name="generator" content="">
     <meta name="author" content="">

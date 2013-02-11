@@ -22,12 +22,14 @@ import ca.simplegames.micro.View;
 import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
+import ca.simplegames.micro.controllers.ControllerWrapper;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.viewers.ViewRenderer;
-import org.apache.commons.lang.StringUtils;
+import org.jrack.utils.ClassUtilities;
 
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -89,9 +91,30 @@ public class RepositoryWrapper {
             ControllerManager controllerManager = context.getSiteContext().getControllerManager();
             for (Map<String, Object> map : controllers) {
                 final Map controllerMap = (Map) map.get(Globals.CONTROLLER);
-                String controllerName = (String) controllerMap.get(Globals.NAME);
-                if (StringUtils.isNotBlank(controllerName)) {
-                    controllerManager.execute(controllerName, context, (Map) controllerMap.get(Globals.OPTIONS));
+                if (!CollectionUtils.isEmpty(controllerMap)) {
+                    String controllerName = (String) controllerMap.get(Globals.NAME);
+                    String wrapperName = (String) controllerMap.get(Globals.WRAPPER);
+
+                    // StringUtils.isNotBlank too heavy for this crowded space ... sorry Commons::Lang
+                    if (controllerName != null && !controllerName.isEmpty()) {
+                        if (wrapperName != null && !wrapperName.isEmpty()) {
+                            try {
+                                ControllerWrapper controller =
+                                        (ControllerWrapper)ClassUtilities.loadClass(wrapperName).newInstance();
+                                Class[] paramTypes = {String.class, MicroContext.class, Map.class};
+                                Object[] params = {controllerName, context, (Map) controllerMap.get(Globals.OPTIONS)};
+                                Method method = controller.getClass()
+                                        .getDeclaredMethod(ControllerManager.EXECUTE_METHOD, paramTypes);
+                                method.invoke(controller, params);
+                            } catch (Exception e) {
+                                repository.getLog().error(String.format("%s, error: %s", controllerName, e.getMessage()));
+                                e.printStackTrace();
+                                throw new ControllerException(e.getMessage());
+                            }
+                        } else {
+                            controllerManager.execute(controllerName, context, (Map) controllerMap.get(Globals.OPTIONS));
+                        }
+                    }
                 }
             }
         }

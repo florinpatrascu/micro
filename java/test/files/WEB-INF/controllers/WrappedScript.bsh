@@ -1,0 +1,17 @@
+/**
+ * A test script, wrapped in crepe suzette :)
+ * florin, 2013
+ */
+
+params = context.get("params");
+errorOnDemand = params != null && params.get("_why") != null;
+
+if(errorOnDemand){
+    // this will trigger the Wrapper's onException
+    error = context.get("AOP::Error");
+    throw new Exception("the lucky stiff, not found.");
+}else{
+    wrappedWith = configuration.get("wrapped_with");
+    context.put("wrappedWith", wrappedWith);
+}
+

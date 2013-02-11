@@ -1,0 +1,6 @@
+controllers:
+  - controller:
+      wrapper: ca.simplegames.micro.AOPLikeController
+      name: WrappedScript.bsh
+      options: # available as "options" to both actors: wrapper and controller
+        wrapped_with: love #;)
