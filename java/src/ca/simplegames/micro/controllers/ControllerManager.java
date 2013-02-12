@@ -16,10 +16,7 @@
 
 package ca.simplegames.micro.controllers;
 
-import ca.simplegames.micro.Controller;
-import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.MicroContext;
-import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.*;
 import ca.simplegames.micro.cache.MicroCache;
 import ca.simplegames.micro.cache.MicroCacheException;
 import org.apache.bsf.util.IOUtils;
@@ -88,13 +85,16 @@ public class ControllerManager {
                     // ... Object result =
                     method.invoke(controller, params);
                 } catch (Exception e) {
-                    log.error(String.format("%s, error: %s", controllerName, e.getMessage()));
-                    e.printStackTrace();
-                    throw new ControllerException(e.getMessage());
+                    if (e.getCause() instanceof RedirectException) {
+                        throw new RedirectException(); // must be a better way :'(
+                    } else {
+                        log.error(String.format("%s, error: %s", controllerName, e.getMessage()));
+                        e.printStackTrace();
+                        throw new ControllerException(e.getMessage());
+                    }
                 }
 
-            }
-        } else {
+            }        } else {
             throw new ControllerException(controllerNotFoundMessage);
         }
     }

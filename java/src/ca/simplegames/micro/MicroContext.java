@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.utils.UrlUtilities;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
@@ -165,4 +166,45 @@ public class MicroContext<T> implements Context<T> {
             with(Globals.MICRO_DEFAULT_REPOSITORY_NAME, repositoryName);
         }
     }
+
+    /**
+     * If the HTTP 1.1 client is redirected from a different verb than GET, use 303
+     * instead of 302 by default. You may still pass 302 explicitly.
+     * <p/>
+     * todo: improve the API for specifying a secure redirect
+     * too bad the scripting is unable to find the Java methods using optional arguments :(
+     *
+     * @param path   the path where the browser will be redirected to
+     * @param secure true if redirecting to 443
+     * @throws RedirectException a special exception to be intercepted by Micro so it can
+     *                           halt the current process and return the control back to the JRack
+     */
+    public void setRedirect(String path, boolean secure, int redirectCode) throws RedirectException {
+        if (path != null && !path.isEmpty()) {
+            RackResponse response = getRackResponse();
+            String method = getRequest() != null? getRequest().getMethod(): Globals.EMPTY_STRING;
+            int rCode = redirectCode != 0 ? redirectCode :
+                    (!"GET".equalsIgnoreCase(method) ? 303 : 302);
+
+            response = null;
+            response = new RackResponse(rCode)
+                    .withBody(Globals.EMPTY_STRING)
+                    .withContentLength(0);
+
+            int defaultPort = getRequest() != null? getRequest().getServerPort() : 8080;
+            UrlUtilities urlUtilities = new UrlUtilities(getRequest(), getResponse());
+
+            String location = secure ?
+                    urlUtilities.buildSecure(path) :
+                    urlUtilities.buildStandard(path, defaultPort);
+
+            with(Globals.RACK_RESPONSE, response.withHeader("Location", location));
+            throw new RedirectException();
+        }
+    }
+
+    public void setRedirect(String path, boolean secure) throws RedirectException {
+        setRedirect(path, secure, 0);
+    }
+
 }

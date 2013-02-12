@@ -234,6 +234,8 @@ public class Micro {
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (ViewException e) {
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+        }catch (RedirectException re){
+            return context.getRackResponse();
         } catch (Exception e) { // must think more about this one :(
             e.printStackTrace();
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);

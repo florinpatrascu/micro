@@ -1,6 +1,7 @@
 package ca.simplegames.micro.viewers.markup;
 
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
@@ -9,7 +10,6 @@ import ca.simplegames.micro.viewers.ViewRenderer;
 import org.pegdown.PegDownProcessor;
 
 import java.io.FileNotFoundException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Map;
@@ -48,11 +48,14 @@ public class MarkupViewRenderer implements ViewRenderer {
             } catch (FileNotFoundException e) {
                 throw new FileNotFoundException(String.format("%s not found.", path));
             } catch (Exception e) {
-                throw new ViewException(e);
+                if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
+                    throw new RedirectException();
+                } else {
+                    throw new ViewException(e.getMessage()); // generic??
+                }
             }
         }
-        return 0;
-    }
+        return 0;    }
 
     public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
     }

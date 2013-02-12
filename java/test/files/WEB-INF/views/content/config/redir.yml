@@ -1,0 +1,3 @@
+controllers:
+  - controller:
+      name: RedirectTestController.bsh

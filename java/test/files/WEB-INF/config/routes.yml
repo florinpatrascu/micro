@@ -11,3 +11,8 @@
   # method: get
   controller:
     name: ca.simplegames.micro.controllers.StatsController
+
+- route: /redir/me
+  controller:
+    name: ca.simplegames.micro.RedirectTestController
+

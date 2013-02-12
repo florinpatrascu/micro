@@ -1,0 +1,6 @@
+import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.Globals;
+
+resourceType = PathUtilities.extractType((String) context.get(Globals.PATH));
+log.info("extracted resource type: "+resourceType);
+context.setRedirect("redirected"+resourceType, false);

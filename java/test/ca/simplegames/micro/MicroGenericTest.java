@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.Collections;
 
@@ -172,6 +173,33 @@ public class MicroGenericTest {
         RackResponse response = micro.call(input);
         Assert.assertTrue(RackResponse.getBodyAsString(response)
                 .contains("<h3>Markdown</h3><p>This is a simple markdown document</p>"));
+    }
+
+    @Test
+    public void testScriptingControllersRedirectToUrl() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/redir.html");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue(response.getStatus() == HttpServletResponse.SC_SEE_OTHER);
+        String location = response.getHeaders().get("Location");
+        Assert.assertTrue(location.contains("redirected.html"));
+        Assert.assertTrue(RackResponse.getBodyAsString(response).isEmpty());
+    }
+
+
+    @Test
+    public void testRoutesRedirectToUrl() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/redir/me");
+
+        RackResponse response = micro.call(input);
+        Assert.assertTrue(response.getStatus() == HttpServletResponse.SC_SEE_OTHER);
+        String location = response.getHeaders().get("Location");
+        Assert.assertTrue(location.contains("redirected")); // no extension in this case
+        Assert.assertTrue(RackResponse.getBodyAsString(response).isEmpty());
     }
 
     /**

@@ -17,8 +17,8 @@
 package ca.simplegames.micro.viewers.freemarker;
 
 import ca.simplegames.micro.Globals;
-import ca.simplegames.micro.Micro;
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
@@ -71,8 +71,11 @@ public class FreemarkerViewRenderer implements ViewRenderer {
         } catch (IOException e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ViewException(e.getMessage()); // generic??
+            if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
+                throw new RedirectException();
+            }else{
+                throw new ViewException(e.getMessage()); // generic??
+            }
         }
     }
 

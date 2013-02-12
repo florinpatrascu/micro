@@ -29,6 +29,7 @@ import ca.simplegames.micro.utils.CloseableThreadLocal;
 import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.utils.StringUtils;
 import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.jrack.Context;
 import org.jrack.context.MapContext;
@@ -280,9 +281,9 @@ public class SiteContext extends MapContext {
      * @param configuration an optional Map containing configuration elements
      * @param log           a logger that can be used by the client code
      * @return a new BSF Engine
-     * @throws Exception if the Engine cannot be created
+     * @throws BSFException if the Engine cannot be created
      */
-    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration, Logger log) throws Exception {
+    public BSFEngine getBSFEngine(String language, MicroContext context, Map configuration, Logger log) throws BSFException {
         //@SuppressWarnings("unchecked")
         //CloseableThreadLocal<BSFManager> bsfManagerTL = (CloseableThreadLocal<BSFManager>)
         //        context.get(Globals.CLOSEABLE_BSF_MANAGER);

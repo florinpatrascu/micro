@@ -18,6 +18,7 @@ package ca.simplegames.micro.controllers;
 
 import ca.simplegames.micro.Controller;
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
@@ -81,9 +82,14 @@ public class ScriptController implements Controller {
                 throw new ControllerException("Micro site is not in the current context, please review");
             }
             // return bsfManager.lookupBean(Globals.SCRIPT_CONTROLLER_RESPONSE);
-        } catch (Exception e) {
-            throw new ControllerException(
-                    String.format("error while executing: %s; details: %s", controllerName, e.getMessage()));
+        } catch (BSFException e) {
+            // check is stupid BSF is eating all the exceptions again >:/
+            if (e.getMessage() != null && e.getMessage().contains(RedirectException.class.getName())) {
+                throw new RedirectException(); // stupid ...
+            } else {
+                throw new ControllerException(
+                        String.format("error while executing: %s; details: %s", controllerName, e.getMessage()));
+            }
         }
 
     }

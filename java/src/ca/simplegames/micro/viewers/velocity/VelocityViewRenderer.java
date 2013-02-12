@@ -18,6 +18,7 @@ package ca.simplegames.micro.viewers.velocity;
 
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
+import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
@@ -135,6 +136,8 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
         } catch (Exception e) { // ugly, todo: please refactor me
             if(e instanceof FileNotFoundException || e.getCause() instanceof FileNotFoundException){
                 throw new FileNotFoundException(e.getMessage());
+            }else if(e instanceof RedirectException || e.getCause() instanceof RedirectException){
+               throw new RedirectException();
             }
             throw new ViewException(e);
         }
