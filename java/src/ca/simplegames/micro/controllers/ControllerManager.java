@@ -93,8 +93,8 @@ public class ControllerManager {
                         throw new ControllerException(e.getMessage());
                     }
                 }
-
-            }        } else {
+            }
+        } else {
             throw new ControllerException(controllerNotFoundMessage);
         }
     }
@@ -132,9 +132,9 @@ public class ControllerManager {
                 File controllerFile = new File(name);
                 if (!controllerFile.exists()) {
                     // maybe it exists in the app controllers?
-                    for(File path: pathsToControllers){
+                    for (File path : pathsToControllers) {
                         controllerFile = new File(path, name);
-                        if(controllerFile.exists()){
+                        if (controllerFile.exists()) {
                             break;
                         }
                     }
