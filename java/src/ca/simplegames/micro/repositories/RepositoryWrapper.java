@@ -24,8 +24,11 @@ import ca.simplegames.micro.controllers.ControllerManager;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.controllers.ControllerWrapper;
 import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.jrack.utils.ClassUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
@@ -74,14 +77,55 @@ public class RepositoryWrapper {
         return writer.toString();
     }
 
+    /**
+     * executes the filters and the controllers associated with this path and returns the rendered content
+     *
+     * @param path the view path
+     * @return a String representing the result of the Filters and Controllers merged with the Template content
+     * @throws Exception
+     */
     public String get(String path) throws Exception {
+        final Logger log = LoggerFactory.getLogger(path);
+
         StringWriter writer = new StringWriter();
         View view = repository.getView(path);
-        if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
-            executeViewControllers(view.getControllers(), context);
+
+        try {
+            if (view != null && !view.getFiltersBefore().isEmpty()) {
+                for (Map<String, Object> filterMap : view.getFiltersBefore()) {
+                    Map.Entry<String, Object> filterDef = filterMap.entrySet().iterator().next();
+                    try {
+                        repository.getSite().getControllerManager().execute(
+                                filterDef.getKey(), context, (Map) filterDef.getValue());
+                    } catch (Exception e) {
+                        log.error(String.format("Error while evaluating the BEFORE filter: `%s`", filterDef.getKey()));
+                        e.printStackTrace();
+                        throw new ViewException(e);
+                    }
+                }
+            }
+
+            if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
+                executeViewControllers(view.getControllers(), context);
+            }
+
+            repository.getRenderer().render(path, repository, context, writer);
+            return writer.toString();
+
+        } finally {
+            if (view != null && !view.getFiltersAfter().isEmpty()) {
+                for (Map<String, Object> filterMap : view.getFiltersAfter()) {
+                    Map.Entry<String, Object> filterDef = filterMap.entrySet().iterator().next();
+                    try {
+                        repository.getSite().getControllerManager().execute(
+                                filterDef.getKey(), context, (Map) filterDef.getValue());
+                    } catch (Exception e) {
+                        log.error(String.format("Error while evaluating the AFTER filter: `%s`", filterDef.getKey()));
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        repository.getRenderer().render(path, repository, context, writer);
-        return writer.toString();
     }
 
     private void executeViewControllers(List<Map<String, Object>> controllers, MicroContext context)
@@ -100,7 +144,7 @@ public class RepositoryWrapper {
                         if (wrapperName != null && !wrapperName.isEmpty()) {
                             try {
                                 ControllerWrapper controller =
-                                        (ControllerWrapper)ClassUtilities.loadClass(wrapperName).newInstance();
+                                        (ControllerWrapper) ClassUtilities.loadClass(wrapperName).newInstance();
                                 Class[] paramTypes = {String.class, MicroContext.class, Map.class};
                                 Object[] params = {controllerName, context, (Map) controllerMap.get(Globals.OPTIONS)};
                                 Method method = controller.getClass()

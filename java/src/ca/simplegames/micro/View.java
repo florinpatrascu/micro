@@ -19,8 +19,8 @@ package ca.simplegames.micro;
 import ca.simplegames.micro.utils.CollectionUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +35,8 @@ public class View implements Serializable {
     private String template = null;
     private String path = null;
     private List<Map<String, Object>> controllers = null;
+    private List<Map<String, Object>> filtersBefore = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> filtersAfter = new ArrayList<Map<String, Object>>();
 
     public View(Map<String, Object> config) {
         if (!CollectionUtils.isEmpty(config)) {
@@ -53,7 +55,22 @@ public class View implements Serializable {
                 controllers = (List<Map<String, Object>>) config.get(Globals.CONTROLLERS);
             }
             if (config.get(Globals.CONTROLLER) != null) {
-                controllers = Collections.singletonList((Map<String, Object>)config.get(Globals.CONTROLLER));
+                controllers = Collections.singletonList((Map<String, Object>) config.get(Globals.CONTROLLER));
+            }
+
+            List<Map> viewFilters = (List<Map>) config.get(Globals.FILTERS);
+            if (viewFilters != null && !viewFilters.isEmpty()) {
+                // define the BEFORE and AFTER filters
+                for(Map filterDef : viewFilters){
+                    Map.Entry<String, Object> entry = (Map.Entry<String, Object>) filterDef.entrySet().iterator().next();
+                    boolean isBefore = entry.getKey().equalsIgnoreCase("before");
+                    Map<String, Object> controller = (Map<String, Object>) entry.getValue();
+                    String controllerName = (String) controller.get("controller");
+                    Map<String, Object> controllerOptions = (Map<String, Object>) controller.get("options");
+
+                    List<Map<String, Object>> controllers = isBefore? filtersBefore: filtersAfter;
+                    controllers.add(Collections.<String, Object>singletonMap(controllerName, controllerOptions));
+                }
             }
         }
     }
@@ -76,5 +93,13 @@ public class View implements Serializable {
 
     public String getPath() {
         return path;
+    }
+
+    public List<Map<String, Object>> getFiltersBefore() {
+        return filtersBefore;
+    }
+
+    public List<Map<String, Object>> getFiltersAfter() {
+        return filtersAfter;
     }
 }

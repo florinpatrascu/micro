@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
 /**
@@ -65,5 +66,24 @@ public class ViewsTest {
                 body.contains("Errare humanum est, perseverare diabolicum!"));
         Assert.assertTrue(!body.contains("Wrapped with: love"));
         Assert.assertTrue(body.contains("After: true"));
+    }
+
+    /**
+     * evaluate and test a View that has BEFORE and AFTER filters wrapping around its controllers
+     */
+    @Test
+    public void testViewWithFilters() throws Exception {
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/view_with_filters.html");
+
+        RackResponse response = micro.call(input);
+        String body = RackResponse.getBodyAsString(response);
+        MicroContext context = (MicroContext) ((MapContext) input).get("context");
+        Assert.assertTrue("Invalid response", response.getStatus() == HttpServletResponse.SC_OK);
+        Assert.assertTrue("Couldn't evaluate the BEFORE filters",
+                body.contains("BEFORE: [filters/BeforeViewFilter1.bsh, filters/BeforeViewFilter2.bsh]"));
+        Assert.assertNotNull("Should receive some feedback from the AFTER filters",
+                context.get("afterFilters"));
     }
 }

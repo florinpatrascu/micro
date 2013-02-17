@@ -57,6 +57,7 @@ public class Globals {
     public static final String TEMPLATE = "template";
     public static final String REPOSITORY = "repository";
     public static final String CONTROLLER = "controller";
+    public static final String FILTERS = "filters";
     public static final String WRAPPER = "wrapper";
     public static final String CONTROLLERS = CONTROLLER + "s";
     public static final String PARAMS = "params";

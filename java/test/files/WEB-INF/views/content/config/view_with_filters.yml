@@ -1,0 +1,19 @@
+filters:
+  - before:
+      controller: filters/BeforeViewFilter1.bsh
+      options: {}
+
+  - before:
+      controller: filters/BeforeViewFilter2.bsh
+
+  - after:
+      controller: filters/AfterViewFilter1.bsh
+      options:
+        trac: tor
+
+controllers:
+  - controller:
+      wrapper: ca.simplegames.micro.AOPLikeController
+      name: WrappedScript.bsh
+      options: # available as "options" to both actors: wrapper and controller
+        wrapped_with: love #;)
