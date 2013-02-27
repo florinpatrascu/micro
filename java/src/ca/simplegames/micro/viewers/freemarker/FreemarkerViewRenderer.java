@@ -67,7 +67,7 @@ public class FreemarkerViewRenderer implements ViewRenderer {
             return IO.copy(new StringReader(writer.toString()), out);
 
         } catch (TemplateException e) {
-            throw new ViewException(e);
+            throw new ViewException(e.getMessage());
         } catch (IOException e) {
             throw new FileNotFoundException(String.format("%s not found.", path));
         } catch (Exception e) {

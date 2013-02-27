@@ -100,7 +100,7 @@ public class RepositoryWrapper {
                     } catch (Exception e) {
                         log.error(String.format("Error while evaluating the BEFORE filter: `%s`", filterDef.getKey()));
                         e.printStackTrace();
-                        throw new ViewException(e);
+                        throw new ViewException(e.getMessage());
                     }
                 }
             }

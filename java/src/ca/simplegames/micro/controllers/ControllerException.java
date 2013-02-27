@@ -16,6 +16,8 @@
 
 package ca.simplegames.micro.controllers;
 
+import ca.simplegames.micro.utils.NestedExceptionUtils;
+
 /**
  * ControllerException
  *
@@ -23,12 +25,6 @@ package ca.simplegames.micro.controllers;
  * @since $Revision$ (created: 2012-12-29 12:14 AM)
  */
 public class ControllerException extends Exception {
-    /**
-     * Constructor for ControllerException.
-     */
-    public ControllerException() {
-        super();
-    }
 
     /**
      * Constructor for ControllerException.
@@ -47,14 +43,14 @@ public class ControllerException extends Exception {
      */
     public ControllerException(String message, Throwable cause) {
         super(message, cause);
+        initCause(cause);
     }
 
     /**
-     * Constructor for ControllerException.
-     *
-     * @param cause
+     * Return the detail message, including the message from the nested exception
+     * if there is one.
      */
-    public ControllerException(Throwable cause) {
-        super(cause);
+    public String getMessage() {
+        return NestedExceptionUtils.buildMessage(super.getMessage(), getCause());
     }
 }

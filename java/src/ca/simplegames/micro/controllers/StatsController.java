@@ -54,7 +54,7 @@ public class StatsController implements Controller {
             sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(
                     mbeanServer, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
         } catch (IOException e) {
-            throw new ControllerException(e);
+            throw new ControllerException(e.getMessage());
         }
 
         Runtime rt = Runtime.getRuntime();
@@ -121,7 +121,7 @@ public class StatsController implements Controller {
                     sysinfoJson.toString(2) : sysinfoJson.toString();
         } catch (JSONException e) {
             e.printStackTrace();
-            throw new ControllerException(e);
+            throw new ControllerException(e.getMessage());
         }
 
         context.getRackResponse()

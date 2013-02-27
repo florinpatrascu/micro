@@ -29,7 +29,7 @@ public class TestControllerWrapper implements ControllerWrapper {
             context.getSiteContext().getControllerManager().execute(controllerName, context, configuration);
         } catch (RuntimeException rte) {
             onException();
-            throw new ControllerException(rte);
+            throw new ControllerException(rte.getMessage());
         } catch (ControllerNotFoundException e) {
             onException();
             throw new FileNotFoundException(controllerName);

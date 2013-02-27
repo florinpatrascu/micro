@@ -18,6 +18,7 @@ package ca.simplegames.micro.viewers;
 
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.repositories.Repository;
 
 import java.io.FileNotFoundException;
@@ -42,7 +43,7 @@ public interface ViewRenderer {
      */
 
     public long render(String path, Repository repository, MicroContext context, Writer out)
-            throws FileNotFoundException, ViewException;
+            throws FileNotFoundException, ViewException, ControllerException;
 
     /**
      * Load the configuration for the view.

@@ -20,6 +20,7 @@ import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
 import ca.simplegames.micro.utils.ResourceUtils;
@@ -121,7 +122,7 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
     }
 
     public long render(String path, Repository repository, MicroContext context, Writer out)
-            throws FileNotFoundException, ViewException {
+            throws FileNotFoundException, ViewException, ControllerException {
 
         StringWriter writer = new StringWriter();
         VelocityViewContext viewContext = new VelocityViewContext(context);
@@ -139,7 +140,11 @@ public class VelocityViewRenderer implements ViewRenderer, LogChute {
             }else if(e instanceof RedirectException || e.getCause() instanceof RedirectException){
                throw new RedirectException();
             }
-            throw new ViewException(e);
+
+            if(e.getCause()!=null && e.getCause() instanceof ControllerException){
+                throw new ControllerException(e.getMessage());
+            }
+            throw new ViewException(e.getMessage());
         }
     }
 

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
@@ -90,7 +91,8 @@ public class ControllerManager {
                     } else {
                         log.error(String.format("%s, error: %s", controllerName, e.getMessage()));
                         e.printStackTrace();
-                        throw new ControllerException(e.getMessage());
+                        throw new ControllerException(
+                                String.format("%s, error: %s", controllerName, e.getCause()));
                     }
                 }
             }

@@ -16,6 +16,8 @@
 
 package ca.simplegames.micro.viewers;
 
+import ca.simplegames.micro.utils.NestedExceptionUtils;
+
 /**
  * ViewException
  *
@@ -23,13 +25,6 @@ package ca.simplegames.micro.viewers;
  * @since $Revision$ (created: 2012-12-29 12:36 AM)
  */
 public class ViewException extends Exception {
-    /**
-     * Constructor for ViewException.
-     */
-    public ViewException() {
-        super();
-    }
-
     /**
      * Constructor for ViewException.
      *
@@ -47,14 +42,14 @@ public class ViewException extends Exception {
      */
     public ViewException(String message, Throwable cause) {
         super(message, cause);
+        initCause(cause);
     }
 
     /**
-     * Constructor for ViewException.
-     *
-     * @param cause
+     * Return the detail message, including the message from the nested exception
+     * if there is one.
      */
-    public ViewException(Throwable cause) {
-        super(cause);
+    public String getMessage() {
+        return NestedExceptionUtils.buildMessage(super.getMessage(), getCause());
     }
 }
