@@ -225,19 +225,21 @@ public class Micro {
             return context.getRackResponse().withContentType(getContentType(context));
 
         } catch (ControllerNotFoundException e) {
-            e.printStackTrace();
+            context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_NO_CONTENT, e);
         } catch (ControllerException e) {
-            e.printStackTrace();
+            context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         } catch (FileNotFoundException e) {
+            context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (ViewException e) {
+            context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }catch (RedirectException re){
             return context.getRackResponse();
         } catch (Exception e) { // must think more about this one :(
-            e.printStackTrace();
+            context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
         // Experimental!!!!!!
