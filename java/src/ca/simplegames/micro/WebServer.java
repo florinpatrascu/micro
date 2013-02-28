@@ -84,10 +84,9 @@ public class WebServer {
                 webApp.setServletHandler(handler);
                 webApp.setParentLoaderPriority(true);
 
-                server.setHandler(webApp);
+                server.addHandler(webApp);
                 server.start();
                 server.join();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
