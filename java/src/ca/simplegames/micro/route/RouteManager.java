@@ -83,16 +83,18 @@ public class RouteManager {
 
                     if (templateMatcher != null) {
                         MultivaluedMap<String, String> routeParams = templateMatcher.getVariables(true);
-                        Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
+                        Map<String, Object> params = (Map<String, Object>) context.get(Globals.PARAMS);
 
                         if (CollectionUtils.isEmpty(params)) {
-                            params = new HashMap<String, String[]>();
+                            params = new HashMap<String, Object>();
                             context.with(Globals.PARAMS, params);
                         }
 
                         for (Map.Entry<String, List<String>> param : routeParams.entrySet()) {
-                            params.put(param.getKey(),
-                                    param.getValue().toArray(new String[param.getValue().size()]));
+                            Object paramValue = param.getValue() != null && param.getValue().size() == 1
+                                    ? param.getValue().get(0) :
+                                    param.getValue().toArray(new String[param.getValue().size()]);
+                            params.put(param.getKey(), paramValue);
                         }
 
                         route.call(context);

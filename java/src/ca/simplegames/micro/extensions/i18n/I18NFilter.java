@@ -83,11 +83,11 @@ public class I18NFilter implements Filter {
                 } else if (Globals.PARAMS.equalsIgnoreCase(scope.trim())) {
                     if (context.get(Rack.PARAMS) != null) {
                         @SuppressWarnings("unchecked")
-                        final Map<String, String[]> params = ((Map<String, String[]>) context.get(Rack.PARAMS));
-                        final String[] intercept = params.get(extension.getIntercept());
+                        final Map<String, Object> params = ((Map<String, Object>) context.get(Rack.PARAMS));
+                        final String intercept = (String) params.get(extension.getIntercept());
 
-                        if (intercept != null && intercept.length > 0) {
-                            final String attribute = params.get(extension.getIntercept())[0];
+                        if (intercept != null && intercept.length()>0) {
+                            final String attribute = (String) params.get(extension.getIntercept());
                             if (attribute != null && attribute.trim().length() > 0) {
                                 language = attribute;
                                 break;

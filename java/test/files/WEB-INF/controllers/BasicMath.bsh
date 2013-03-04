@@ -3,7 +3,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptEngine;
 import java.net.URLDecoder;
 
-expression = URLDecoder.decode(context.get(Globals.PARAMS).get("exp")[0], Globals.UTF8);
+expression = URLDecoder.decode(context.get(Globals.PARAMS).get("exp"), Globals.UTF8);
 
 // I know we're wasting resources, but it is for testing purposes
 ScriptEngineManager manager = new ScriptEngineManager();

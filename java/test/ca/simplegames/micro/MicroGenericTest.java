@@ -77,7 +77,7 @@ public class MicroGenericTest {
     @Test
     public void testI18N() throws Exception {
         Context<String> input = new MapContext<String>()
-                .with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"en"}))
+                .with(Rack.PARAMS, Collections.singletonMap("language", "en"))
                 .with(Rack.PATH_INFO, "/index.html")
                 .with(Rack.REQUEST_METHOD, "GET");
 
@@ -86,12 +86,12 @@ public class MicroGenericTest {
         Assert.assertTrue("Expecting: Hello", RackResponse.getBodyAsString(response).contains("Hello"));
 
         // Romanian
-        input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"ro"}));
+        input.with(Rack.PARAMS, Collections.singletonMap("language", "ro"));
         response = micro.call(input);
         Assert.assertTrue("Expecting: Bună!", RackResponse.getBodyAsString(response).contains("Bună!"));
 
         // German
-        input.with(Rack.PARAMS, Collections.singletonMap("language", new String[]{"de"}));
+        input.with(Rack.PARAMS, Collections.singletonMap("language", "de"));
         response = micro.call(input);
         Assert.assertTrue("Expecting: Grüß Gott!", RackResponse.getBodyAsString(response).contains("Grüß Gott!"));
 
@@ -107,9 +107,7 @@ public class MicroGenericTest {
         Context<String> input = new MapContext<String>()
                 .with(Rack.REQUEST_METHOD, "GET")
                 .with(Rack.PATH_INFO, "/result.html")
-                .with(Rack.PARAMS, Collections.singletonMap("exp",
-                        new String[]{URLEncoder.encode("2+2", Globals.UTF8)}));
-
+                .with(Rack.PARAMS, Collections.singletonMap("exp", URLEncoder.encode("2+2", Globals.UTF8)));
 
         RackResponse response = micro.call(input);
         Assert.assertTrue("Can't use the request parameters",

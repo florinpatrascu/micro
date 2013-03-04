@@ -49,7 +49,7 @@ public class BinaryContent implements Controller {
     @SuppressWarnings("unchecked")
     public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
         SiteContext site = context.getSiteContext();
-        Map<String, String[]> params = (Map<String, String[]>) context.get(Globals.PARAMS);
+        Map<String, Object> params = (Map<String, Object>) context.get(Globals.PARAMS);
         Repository defaultRepository = site.getRepositoryManager().getDefaultRepository();
         if (configuration != null && configuration.get(Globals.REPOSITORY) != null) {
             defaultRepository = site.getRepositoryManager()
@@ -57,7 +57,7 @@ public class BinaryContent implements Controller {
         }
 
         File content = defaultRepository.pathToFile(
-                String.format(FILE_FORMAT, params.get(IMAGE_FILE)[0], params.get(TYPE)[0]));
+                String.format(FILE_FORMAT, params.get(IMAGE_FILE), params.get(TYPE)));
 
         String fileType = PathUtilities.extractType(content.getAbsolutePath());
 

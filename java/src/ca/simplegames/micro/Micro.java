@@ -23,6 +23,7 @@ import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
 import ca.simplegames.micro.utils.ClassUtils;
 import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.utils.ParamsFactory;
 import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
@@ -121,7 +122,8 @@ public class Micro {
                 .with(Globals.REQUEST, context.getRequest())
                 .with(Globals.MICRO_ENV, site.getMicroEnv())
              // .with(Globals.CONTEXT, context) <-- don't, please!
-                .with(Globals.PARAMS, input.get(Rack.PARAMS)) //<- just a convenience
+                .with(Globals.PARAMS, input.get(Rack.PARAMS))
+                .with(Globals.PARAMS, ParamsFactory.capture(context)) //<- wrap them nicely
                 .with(Globals.SITE, site)
                 .with(Globals.PATH_INFO, pathInfo)
                 .with(TOOLS, tools);
