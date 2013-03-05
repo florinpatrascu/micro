@@ -35,25 +35,28 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-03-03 4:12 PM)
  */
 public class ParamsFactory {
+    public static final Map<String, Object> READ_ONLY_EMPTY_MAP = new HashMap<String, Object>(0);
 
     /**
      * @param context for getting access to the Request elements
      * @return a new Map containing the captured parameters, names and values
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> capture(MicroContext context) {
         Map<String, Object> params = null;
 
         if (context != null) {
             params = (Map<String, Object>) context.get(Globals.PARAMS);
-            if (params == null) {
-                params = new HashMap<String, Object>();
-            }
 
             final HttpServletRequest request = context.getRequest();
 
             if (request != null) {
                 // request Parameters
                 Enumeration names = request.getParameterNames();
+                if (names.hasMoreElements() && params == null) {
+                    params = new HashMap<String, Object>();
+                }
+
                 while (names.hasMoreElements()) {
                     Object name = names.nextElement();
                     String[] values = request.getParameterValues(String.valueOf(name));
@@ -65,6 +68,9 @@ public class ParamsFactory {
 
                 // request Attributes
                 names = request.getAttributeNames();
+                if (names.hasMoreElements() && params == null) {
+                    params = new HashMap<String, Object>();
+                }
                 while (names.hasMoreElements()) {
                     Object name = names.nextElement();
                     Object value = request.getAttribute(String.valueOf(name));
@@ -77,6 +83,9 @@ public class ParamsFactory {
                 final HttpSession session = request.getSession(false);
                 if (session != null) {
                     names = session.getAttributeNames();
+                    if (names.hasMoreElements() && params == null) {
+                        params = new HashMap<String, Object>();
+                    }
                     while (names.hasMoreElements()) {
                         Object name = names.nextElement();
                         Object value = session.getAttribute(String.valueOf(name));
@@ -87,6 +96,6 @@ public class ParamsFactory {
                 }
             }
         }
-        return params;
+        return params == null ? READ_ONLY_EMPTY_MAP : params;
     }
 }
