@@ -21,6 +21,7 @@ import ca.simplegames.micro.MicroContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,6 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-03-03 4:12 PM)
  */
 public class ParamsFactory {
-    public static final Map<String, Object> READ_ONLY_EMPTY_MAP = new HashMap<String, Object>(0);
 
     /**
      * @param context for getting access to the Request elements
@@ -96,6 +96,6 @@ public class ParamsFactory {
                 }
             }
         }
-        return params == null ? READ_ONLY_EMPTY_MAP : params;
+        return params == null ? Collections.EMPTY_MAP : params;
     }
 }
