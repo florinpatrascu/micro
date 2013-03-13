@@ -27,8 +27,7 @@ import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
@@ -91,7 +90,8 @@ public class MicroResourceLoader extends ResourceLoader {
         }
 
         try {
-            return repository.getInputStream(name);
+            File file =  new File(name);
+            return new BufferedInputStream(new FileInputStream(file));
         } catch (Exception e) {
             throw new ResourceNotFoundException(name);
         }
@@ -121,7 +121,8 @@ public class MicroResourceLoader extends ResourceLoader {
         }
 
         try {
-            return repository.getLastModified(resource.getName());
+            File file =  new File(resource.getName());
+            return file.lastModified();
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
