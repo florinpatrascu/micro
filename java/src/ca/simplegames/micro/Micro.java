@@ -21,7 +21,10 @@ import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.helpers.HelperWrapper;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
-import ca.simplegames.micro.utils.*;
+import ca.simplegames.micro.utils.ClassUtils;
+import ca.simplegames.micro.utils.CollectionUtils;
+import ca.simplegames.micro.utils.ParamsFactory;
+import ca.simplegames.micro.utils.PathUtilities;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +49,7 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-01-01 4:22 PM)
  */
 public class Micro {
+    public static final String DOUBLE_SLASH = "//";
     private Logger log = LoggerFactory.getLogger(getClass());
     public static final String DOT = ".";
     public static final String SLASH = "/";
@@ -168,7 +172,7 @@ public class Micro {
                     path = (String) context.get(Globals.PATH);
                     if (path == null) { // user not deciding the PATH
                         path = maybeAppendHtmlToPath(context);
-                        context.with(Globals.PATH, path.replace("//", SLASH));
+                        context.with(Globals.PATH, path.contains(DOUBLE_SLASH) ? path.replace(DOUBLE_SLASH, SLASH) : path);
                     }
 
                     final String pathBasedContentType = PathUtilities.extractType((String) context.get(Globals.PATH));
@@ -237,7 +241,7 @@ public class Micro {
         } catch (ViewException e) {
             context.with(Globals.ERROR, e);
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
-        }catch (RedirectException re){
+        } catch (RedirectException re) {
             return context.getRackResponse();
         } catch (Exception e) { // must think more about this one :(
             context.with(Globals.ERROR, e);

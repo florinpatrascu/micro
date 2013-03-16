@@ -17,8 +17,6 @@
 package ca.simplegames.micro.utils;
 
 import ca.simplegames.micro.Globals;
-import org.apache.wink.common.internal.uritemplate.JaxRsUriTemplateProcessor;
-import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 
 import java.io.File;
 
@@ -69,7 +67,7 @@ public class PathUtilities {
      */
 
     public static String extractName(String path) {
-        return path != null? extractName(new File(path)) : Globals.EMPTY_STRING;
+        return path != null ? extractName(new File(path)) : Globals.EMPTY_STRING;
     }
 
     /**
@@ -84,7 +82,14 @@ public class PathUtilities {
         String name = Globals.EMPTY_STRING;
 
         if (file != null) {
-            name = file.getName().replaceFirst(Globals.FILE_EXTENSION_MATCHER, Globals.EMPTY_STRING);
+            // correct but too expensive :(
+            // name = file.getName().replaceFirst(Globals.FILE_EXTENSION_MATCHER, Globals.EMPTY_STRING);
+            String fileName = file.getName();
+            int dotIndex = fileName.lastIndexOf(DOT);
+
+            if (dotIndex >= 0) {
+                name = fileName.substring(0, dotIndex);
+            }
         }
 
         return name;
@@ -104,15 +109,13 @@ public class PathUtilities {
             return Globals.EMPTY_STRING;
         }
 
-        File file = new File(path);
-        String fileName = file.getName();
-        int dotIndex = fileName.lastIndexOf(DOT);
-
-        if (dotIndex < 0) {
+        int dotIndex = path.lastIndexOf(DOT);
+        int sepPos = path.lastIndexOf(File.separator);
+        if (dotIndex < 0 || dotIndex < sepPos) {
             return Globals.EMPTY_STRING;
         }
 
-        return fileName.substring(dotIndex);
+        return path.substring(dotIndex);
     }
 
     /**
