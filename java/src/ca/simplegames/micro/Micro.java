@@ -21,10 +21,7 @@ import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.helpers.HelperWrapper;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.repositories.RepositoryManager;
-import ca.simplegames.micro.utils.ClassUtils;
-import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.utils.ParamsFactory;
-import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.utils.*;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
@@ -242,6 +239,7 @@ public class Micro {
             return context.getRackResponse();
         } catch (Exception e) { // must think more about this one :(
             context.with(Globals.ERROR, e);
+            e.printStackTrace();
             return badJuju(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
         // Experimental!!!!!!
