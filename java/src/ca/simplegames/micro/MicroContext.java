@@ -207,4 +207,7 @@ public class MicroContext<T> implements Context<T> {
         setRedirect(path, secure, 0);
     }
 
+    public Map<String, Object> getParams() {
+        return (Map<String, Object>) get(Globals.PARAMS);
+    }
 }

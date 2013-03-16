@@ -59,22 +59,6 @@ public class PathUtilities {
         }
     }
 
-    /**
-     * Match a route.
-     *
-     * @param requestPath The request path submitted by the client
-     * @param testPath    The match path
-     */
-    public static UriTemplateMatcher routeMatch(String requestPath, String testPath) {
-        JaxRsUriTemplateProcessor processor = new JaxRsUriTemplateProcessor(testPath);
-        UriTemplateMatcher matcher = processor.matcher();
-
-        if (matcher.matches(requestPath)) {
-            return matcher;
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Extract the page name from the given path.  The page name is the

@@ -16,13 +16,20 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.utils.ResponseUtils;
 import junit.framework.Assert;
 import org.jrack.Context;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
 import org.jrack.context.MapContext;
 import org.jrack.utils.Mime;
+import org.json.JSONObject;
 import org.junit.Test;
+
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test file for everything about routing in Micro
@@ -57,5 +64,55 @@ public class RoutingTest {
         Assert.assertTrue("Invalid Content-Type header",
                 RackResponse.getHeaders(response).get("Content-Type")
                         .equalsIgnoreCase(Mime.mimeType(".png")));
+    }
+
+    @Test
+    public void testParamLessRoutes() throws Exception {
+
+        micro.getSite().getRouteManager().add(new Route("/micro/files",
+                Collections.<String, Object>singletonMap("foo", "bar")) {
+            @Override
+            public RackResponse call(MicroContext context) throws Exception {
+                context.halt();
+                return ResponseUtils.standardHtml("/micro/files");
+            }
+        });
+
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/micro/files");
+
+        RackResponse response = micro.call(input);
+        Assert.assertEquals("Invalid response", "/micro/files",
+                RackResponse.getBodyAsString(response, Charset.forName("UTF-8")));
+    }
+
+    @Test
+    public void testParametrizedRoutes() throws Exception {
+
+        micro.getSite().getRouteManager().add(new Route("/micro/{name}/{version:.*}",
+                Collections.<String, Object>emptyMap()) {
+
+            @Override
+            public RackResponse call(MicroContext context) throws Exception {
+                String name = (String) context.getParams().get("name");
+                String version = (String) context.getParams().get("version");
+                Map<String, Object> microDetails = new HashMap<String, Object>();
+                microDetails.put("name", name);
+                microDetails.put("version", version);
+
+                JSONObject json = new JSONObject(Collections.singletonMap("micro", microDetails));
+                context.halt();
+                return ResponseUtils.standardJson(json.toString());
+            }
+        });
+
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/micro/µ/0.1.2");
+
+        RackResponse response = micro.call(input);
+        Assert.assertEquals("Invalid response", "{\"micro\":{\"name\":\"µ\",\"version\":\"0.1.2\"}}",
+                RackResponse.getBodyAsString(response, Charset.forName("UTF-8")));
     }
 }

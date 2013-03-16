@@ -80,7 +80,7 @@ public class RouteManager {
                 if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
 
                     // todo: Add support for reusing compiled templates
-                    UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(path, route.getPath());
+                    UriTemplateMatcher templateMatcher = route.match(path, route.getPath());
 
                     if (templateMatcher != null) {
                         MultivaluedMap<String, String> routeParams = templateMatcher.getVariables(true);

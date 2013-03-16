@@ -23,8 +23,8 @@ import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.utils.PathUtilities;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wink.common.internal.uritemplate.JaxRsUriTemplateProcessor;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.jrack.Context;
 import org.jrack.JRack;
@@ -47,6 +47,7 @@ public class FilterWrapper implements Filter {
     private Boolean after;
     private String path;
     private List<Map<String, Object>> controllers = null;
+    private JaxRsUriTemplateProcessor processor;
 
     @SuppressWarnings("unchecked")
     public FilterWrapper(Map<String, Object> config, String type) {
@@ -86,7 +87,7 @@ public class FilterWrapper implements Filter {
                     requestPath = input.get(Rack.SCRIPT_NAME);
                 }
 
-                UriTemplateMatcher templateMatcher = PathUtilities.routeMatch(requestPath, path);
+                UriTemplateMatcher templateMatcher = match(requestPath, path);
 
                 if (templateMatcher != null) {
                     try {
@@ -126,5 +127,21 @@ public class FilterWrapper implements Filter {
             }
         }
 
+    }
+
+    /**
+     * Match a filter path. Temporarily redundant!
+     *
+     * @param requestPath The request path submitted by the client
+     * @param testPath    The match path
+     */
+    private UriTemplateMatcher match(String requestPath, String testPath) {
+
+        if (processor == null) {
+            processor = new JaxRsUriTemplateProcessor(testPath);
+        }
+
+        UriTemplateMatcher matcher = processor.matcher();
+        return matcher.matches(requestPath) ? matcher : null;
     }
 }

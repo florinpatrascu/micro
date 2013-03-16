@@ -17,6 +17,8 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.utils.CollectionUtils;
+import org.apache.wink.common.internal.uritemplate.JaxRsUriTemplateProcessor;
+import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.jrack.RackResponse;
 
 import java.util.List;
@@ -35,6 +37,7 @@ public abstract class Route {
     private View view;
     private Map<String, Object> config;
     private String method = Globals.EMPTY_STRING;
+    private JaxRsUriTemplateProcessor processor;
 
     /**
      * Constructor
@@ -99,5 +102,21 @@ public abstract class Route {
     @Override
     public String toString() {
         return String.format("'%s'; %s", route, method);
+    }
+
+    /**
+     * Match a route.
+     *
+     * @param requestPath The request path submitted by the client
+     * @param testPath    The match path
+     */
+    public UriTemplateMatcher match(String requestPath, String testPath) {
+
+        if (processor == null) {
+            processor = new JaxRsUriTemplateProcessor(testPath);
+        }
+
+        UriTemplateMatcher matcher = processor.matcher();
+        return matcher.matches(requestPath) ? matcher : null;
     }
 }
