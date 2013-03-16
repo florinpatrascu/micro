@@ -24,6 +24,7 @@ import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.jrack.Rack;
+import org.jrack.RackResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,11 @@ public class RouteManager {
                             params.put(param.getKey(), paramValue);
                         }
 
-                        route.call(context);
+                        RackResponse response = route.call(context);
+                        if (response != null) {
+                            context.setRackResponse(response);
+                        }
+
                         if (context.isHalt()) {
                             break;
                         }
