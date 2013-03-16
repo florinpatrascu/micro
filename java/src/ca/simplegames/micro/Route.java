@@ -54,7 +54,10 @@ public abstract class Route {
             if (config.get("method") != null) {
                 this.method = ((String) config.get("method")).trim().toUpperCase();
             }
-            view = new View(config);
+
+            // todo: Should refactor the nested controllers, so that they don't collide with the ones from the View, if there is a View?!
+            view = new View(config.containsKey(Globals.VIEW) ?
+                    (Map<String, Object>) config.get(Globals.VIEW) : config); // arghhh >:/
         }
     }
 

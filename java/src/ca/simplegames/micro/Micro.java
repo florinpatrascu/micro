@@ -162,6 +162,8 @@ public class Micro {
                     site.getRouteManager().call(path, context);
                 }
 
+                // Routes or filters providing their own Views will most probably ask a flow interruption, hence the
+                // next check for isHalt()
                 if (!context.isHalt()) {
                     path = (String) context.get(Globals.PATH);
                     if (path == null) { // user not deciding the PATH

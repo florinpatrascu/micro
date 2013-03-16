@@ -16,3 +16,9 @@
   controller:
     name: ca.simplegames.micro.RedirectTestController
 
+- route: /view/{something}
+  method: get, head
+  view:
+    repository: content
+    template: clean
+    path: something.txt

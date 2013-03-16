@@ -115,4 +115,21 @@ public class RoutingTest {
         Assert.assertEquals("Invalid response", "{\"micro\":{\"name\":\"µ\",\"version\":\"0.1.2\"}}",
                 RackResponse.getBodyAsString(response, Charset.forName("UTF-8")));
     }
+
+    /**
+     * testing a declared Route that serve a View
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testViewsOnRoute() throws Exception {
+
+        Context<String> input = new MapContext<String>()
+                .with(Rack.REQUEST_METHOD, "GET")
+                .with(Rack.PATH_INFO, "/view/Micro");
+
+        RackResponse response = micro.call(input);
+        Assert.assertEquals("Invalid response", "Micro",
+                RackResponse.getBodyAsString(response, Charset.forName("UTF-8")));
+    }
 }

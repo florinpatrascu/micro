@@ -66,6 +66,7 @@ public class RouteWrapper extends Route {
      */
     @Override
     public RackResponse call(MicroContext context) throws Exception {
+        RackResponse response = null;
 
         if (context != null) {
             SiteContext site = context.getSiteContext();
@@ -80,7 +81,7 @@ public class RouteWrapper extends Route {
             }
 
             if (getView() != null && getView().getPath() != null) {
-                RackResponse response = context.getRackResponse();
+                response = context.getRackResponse();
                 RepositoryManager repositoryManager = site.getRepositoryManager();
                 String repositoryName = StringUtils.defaultString(getView().getRepositoryName(),
                         repositoryManager.getDefaultRepository().getName());
@@ -107,8 +108,12 @@ public class RouteWrapper extends Route {
                 response.withContentType(contentType)
                         .withContentLength(out.getBytes(Charset.forName(Globals.UTF8)).length)
                         .withBody(out);
+
+                // We have a View served by
+                // Faites vos jeux, rien ne va plus
+                context.halt();
             }
         }
-        return null;
+        return response;
     }
 }
