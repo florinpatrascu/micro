@@ -16,15 +16,9 @@
 
 package ca.simplegames.micro;
 
-import ca.simplegames.micro.controllers.ControllerException;
-import ca.simplegames.micro.controllers.ControllerNotFoundException;
-import ca.simplegames.micro.controllers.StatsController;
 import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.utils.StringUtils;
-import ca.simplegames.micro.viewers.ViewException;
 import org.jrack.RackResponse;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +34,7 @@ public abstract class Route {
     private String route;
     private View view;
     private Map<String, Object> config;
-    private String method;
+    private String method = Globals.EMPTY_STRING;
 
     /**
      * Constructor
@@ -51,11 +45,11 @@ public abstract class Route {
      */
     protected Route(String route, Map<String, Object> config) {
         this.route = route;
+
         if (!CollectionUtils.isEmpty(config)) {
             this.config = config;
-            this.method = Globals.EMPTY_STRING;
-            if(config.get("method") != null){
-                this.method = ((String)config.get("method")).trim().toUpperCase();
+            if (config.get("method") != null) {
+                this.method = ((String) config.get("method")).trim().toUpperCase();
             }
             view = new View(config);
         }
@@ -64,7 +58,6 @@ public abstract class Route {
     /**
      * Invoked when a request is made on this route's corresponding route e.g. '/hello/{name}'
      * Micro framework will stop identifying other routes and will output the response created here
-     *
      *
      * @param context The micro context created when the Rack calls
      * @return a JRack response
