@@ -21,7 +21,6 @@ import ca.simplegames.micro.MicroContext;
 import ca.simplegames.micro.Route;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.utils.CollectionUtils;
-import ca.simplegames.micro.utils.PathUtilities;
 import org.apache.wink.common.internal.uritemplate.UriTemplateMatcher;
 import org.jrack.Rack;
 import org.jrack.RackResponse;
@@ -29,12 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
+ * The Route manager is responsible for initializing various Routes at startup time, and for executing those
+ * {@link Route} instances that are matching the request path at runtime
+ *
  * @author <a href="mailto:florin.patrascu@gmail.com">Florin T.PATRASCU</a>
  * @since $Revision$ (created: 2012-12-21 6:04 PM)
  */
@@ -43,13 +42,9 @@ public class RouteManager {
 
     private List<Route> routes = new ArrayList<Route>();
     private Map<String, Route> routesMap = new HashMap<String, Route>();
-    //private Map<Uri, Route> compiledRoutesMap = new HashMap<String, Route>();
-    private SiteContext site;
 
     public RouteManager(SiteContext site, List<Map<String, Object>> routeMaps) {
-        this.site = site;
         if (!CollectionUtils.isEmpty(routeMaps)) {
-            //load filters from config
             for (Map<String, Object> routeMap : routeMaps) {
                 try {
                     String routePath = (String) routeMap.get("route");
@@ -60,10 +55,14 @@ public class RouteManager {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
+    /**
+     * add a new Route
+     *
+     * @param route the route instance
+     */
     public void add(Route route) {
         if (route != null) {
             routes.add(route);
@@ -71,6 +70,23 @@ public class RouteManager {
         }
     }
 
+    /**
+     * method used by various admin tools
+     *
+     * @return a read only map containing all the route paths and their associated route instances
+     */
+    public Map<String, Route> getRoutesMap() {
+        return Collections.unmodifiableMap(routesMap);
+    }
+
+    /**
+     * assess and call one ore more {@link Route} instances that matches the request path parameter. The
+     * execution flow can be interrupted if the Route implementation is requiring a full stop: aka context.halt()
+     *
+     * @param path    the request path
+     * @param context the current micro context
+     * @throws Exception if underlining Controllers or Views will throw any errors
+     */
     @SuppressWarnings("unchecked")
     public void call(String path, MicroContext context) throws Exception {
         String requestedMethod = (String) context.getRackInput().get(Rack.REQUEST_METHOD);
@@ -79,7 +95,6 @@ public class RouteManager {
             for (Route route : routes) {
                 if (route.getMethod().isEmpty() || route.getMethod().contains(requestedMethod)) {
 
-                    // todo: Add support for reusing compiled templates
                     UriTemplateMatcher templateMatcher = route.match(path, route.getPath());
 
                     if (templateMatcher != null) {
