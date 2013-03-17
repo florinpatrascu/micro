@@ -109,7 +109,7 @@
     <!-- ====================================================================== -->
     <!-- Create the JAR archive.                                                -->
     <!-- ====================================================================== -->
-    <target name="dist" depends="compile">
+    <target name="dist" depends="clean, compile">
         <mkdir dir="${build.dist}"/>
         <jar jarfile="${build.dist}/${name}-${version}.jar" basedir="${build.classes}">
             <manifest>
