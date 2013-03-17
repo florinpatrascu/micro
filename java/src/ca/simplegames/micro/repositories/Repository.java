@@ -32,6 +32,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -53,6 +54,7 @@ public abstract class Repository {
     private ViewRenderer renderer;
     private File config;
     private boolean isDefault;
+    private Map<String, ViewConfigElements> viewConfigPathMap = new HashMap<String, ViewConfigElements>();
 
     /**
      * creates a new Repository object
@@ -213,33 +215,45 @@ public abstract class Repository {
         return getReader(path, Charset.forName(Globals.UTF8));
     }
 
+    /**
+     * @param name a resource name; a view template name
+     * @return a {@link View} instance
+     */
     @SuppressWarnings("unchecked")
     public View getView(String name) {
         if (config != null) {
-            File viewConfig = new File(config, PathUtilities.extractViewPath(name) + Globals.YML_EXTENSION);
-            String viewAbsolutePath = viewConfig.getAbsolutePath();
-            String key = String.format(VIEW_CACHE_KEY_FORMAT, getName(), name);
+            ViewConfigElements viewConfigElements = viewConfigPathMap.get(name);
 
+            if (viewConfigElements == null) {
+                File viewConfig = new File(config, PathUtilities.extractViewPath(name) + Globals.YML_EXTENSION);
+                viewConfigElements = new ViewConfigElements(viewConfig.getAbsolutePath(), viewConfig.exists());
+                viewConfigPathMap.put(name, viewConfigElements);
+            }
+
+            String key = String.format(VIEW_CACHE_KEY_FORMAT, getName(), name);
             Map viewModel = null;
 
-            if (cache != null) {
+            // don't hit the cache unnecessarily if the config was never there!
+            if (cache != null && viewConfigElements.isConfigFileExists()) {
                 try {
                     viewModel = (Map) cache.get(key);
                 } catch (MicroCacheException e) {
-                    log.error(String.format("Cannot cache the view: %s", viewAbsolutePath));
+                    log.error(String.format("Cannot cache the view: %s", viewConfigElements.getConfigFullPath()));
                     e.printStackTrace();
                 }
             }
 
-            if (viewModel == null && viewConfig.exists()) {
+            // there is no ViewModel if the config file doesn't exist
+            if (viewModel == null && viewConfigElements.isConfigFileExists()) {
                 try {
-                    viewModel = (Map) new Yaml().load(new FileInputStream(viewConfig));
+                    viewModel = (Map) new Yaml().load(
+                            new FileInputStream(new File(viewConfigElements.getConfigFullPath())));
                     if (cache != null) {
                         try {
                             cache.put(key, viewModel);
                         } catch (MicroCacheException e) {
                             log.error(String.format("Cannot use the cache for retrieving this view: %s",
-                                    viewAbsolutePath));
+                                    viewConfigElements.getConfigFullPath()));
                             e.printStackTrace();
                         }
                     }
@@ -254,5 +268,26 @@ public abstract class Repository {
             }
         }
         return null;
+    }
+
+    /**
+     * internal class used as a shortcut to avoid File name calculations; a performance optimization
+     */
+    class ViewConfigElements {
+        private String configFullPath;
+        private boolean configFileExists = false;
+
+        ViewConfigElements(String configFullPath, boolean configFileExists) {
+            this.configFullPath = configFullPath;
+            this.configFileExists = configFileExists;
+        }
+
+        public String getConfigFullPath() {
+            return configFullPath;
+        }
+
+        public boolean isConfigFileExists() {
+            return configFileExists;
+        }
     }
 }
