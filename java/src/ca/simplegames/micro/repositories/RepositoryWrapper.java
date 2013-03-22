@@ -30,7 +30,6 @@ import org.jrack.utils.ClassUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -69,11 +68,7 @@ public class RepositoryWrapper {
             context.getMap().putAll(options);
         }
 
-        try {
-            engine.render(path, repository, context, writer);
-        } catch (Exception e) {
-            throw new FileNotFoundException(String.format("%s not found.", path));
-        }
+        engine.render(path, repository, context, writer);
         return writer.toString();
     }
 
