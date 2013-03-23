@@ -53,33 +53,17 @@ public class RepositoryWrapper {
         return get(templateEngineName, path, null);
     }
 
-    @SuppressWarnings("unchecked")
-    public String get(String templateEngineName, String path, Map<String, Object> options) throws Exception {
-
-        StringWriter writer = new StringWriter();
-        View view = repository.getView(path);
-        if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
-            executeViewControllers(view.getControllers(), context);
-        }
-
-        ViewRenderer engine = context.getSiteContext().getTemplateEnginesManager().getEngine(templateEngineName);
-
-        if (options != null && !options.isEmpty()) {
-            context.getMap().putAll(options);
-        }
-
-        engine.render(path, repository, context, writer);
-        return writer.toString();
-    }
-
     /**
      * executes the filters and the controllers associated with this path and returns the rendered content
      *
-     * @param path the view path
+     * @param templateEngineName the name of the Template engine that will render this page
+     * @param path               the view path
+     * @param model              a Map containing an optional ad-hoc user model that will be passed to the renderer
      * @return a String representing the result of the Filters and Controllers merged with the Template content
      * @throws Exception
      */
-    public String get(String path) throws Exception {
+    @SuppressWarnings("unchecked")
+    public String get(String templateEngineName, String path, Map<String, Object> model) throws Exception {
         final Logger log = LoggerFactory.getLogger(path);
 
         StringWriter writer = new StringWriter();
@@ -100,11 +84,19 @@ public class RepositoryWrapper {
                 }
             }
 
+
             if (view != null && !CollectionUtils.isEmpty(view.getControllers())) {
                 executeViewControllers(view.getControllers(), context);
             }
 
-            repository.getRenderer().render(path, repository, context, writer);
+            ViewRenderer engine = context.getSiteContext().getTemplateEnginesManager().getEngine(templateEngineName);
+
+            if (model != null && !model.isEmpty()) {
+                context.getMap().putAll(model);
+            }
+
+            engine.render(path, repository, context, writer);
+
             return writer.toString();
 
         } finally {
@@ -121,6 +113,17 @@ public class RepositoryWrapper {
                 }
             }
         }
+    }
+
+    /**
+     * executes the filters and the controllers associated with this path and returns the rendered content
+     *
+     * @param path the view path
+     * @return a String representing the result of the Filters and Controllers merged with the Template content
+     * @throws Exception
+     */
+    public String get(String path) throws Exception {
+        return get(repository.getRenderer().getName(), path);
     }
 
     private void executeViewControllers(List<Map<String, Object>> controllers, MicroContext context)
