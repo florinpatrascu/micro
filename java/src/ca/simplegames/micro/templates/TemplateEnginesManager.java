@@ -2,9 +2,11 @@ package ca.simplegames.micro.templates;
 
 import ca.simplegames.micro.Globals;
 import ca.simplegames.micro.SiteContext;
+import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import org.jrack.utils.ClassUtilities;
+import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,9 +84,19 @@ public class TemplateEnginesManager {
             engine.loadConfiguration(site, options);
             engines.put(name, engine);
 
-            if (defaultEngine == null && isDefaultEngine) {
+            if (isDefaultEngine) {
                 defaultEngine = engine;
+                if (site.getRepositoryManager() != null) {
+                    List<Repository> repositories = site.getRepositoryManager().getRepositories();
+                    Logger log = site.getLog();
+                    log.info("Resetting the default template engine:");
+                    for (Repository repository : repositories) {
+                        repository.setRenderer(engine);
+                        log.info(String.format(" ** repository: `%s`, using: `%s`", repository.getName(), name));
+                    }
+                }
             }
+
             site.getLog().info(String.format(" engine: %s, class: %s%s",
                     name, klass, isDefaultEngine ? ", default." : Globals.EMPTY_STRING));
         } catch (InstantiationException e) {
