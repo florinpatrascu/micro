@@ -118,9 +118,8 @@ public class RouteManager {
                             context.setRackResponse(response);
                         }
 
-                        if (context.isHalt()) {
-                            break;
-                        }
+                        // first matching route wins
+                        break;
                     }
                 }
             }
