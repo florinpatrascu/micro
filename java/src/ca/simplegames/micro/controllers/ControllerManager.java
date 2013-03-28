@@ -59,7 +59,7 @@ public class ControllerManager {
         pathsToControllers.add(new File(site.getWebInfPath(), "controllers"));
     }
 
-    public void execute(String controllerName, MicroContext context) throws Exception {
+    public void execute(String controllerName, MicroContext context) throws ControllerException, ControllerNotFoundException {
         execute(controllerName, context, null);
     }
 
