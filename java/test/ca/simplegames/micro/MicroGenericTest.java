@@ -182,8 +182,8 @@ public class MicroGenericTest {
         RackResponse response = micro.call(input);
         Assert.assertTrue(response.getStatus() == HttpServletResponse.SC_SEE_OTHER);
         String location = response.getHeaders().get("Location");
-        Assert.assertTrue(location.contains("redirected.html"));
-        Assert.assertTrue(RackResponse.getBodyAsString(response).isEmpty());
+        Assert.assertTrue("Invalid redirection control", location.contains("redirected.html"));
+        Assert.assertTrue("The response must be empty", RackResponse.getBodyAsString(response).isEmpty());
     }
 
 

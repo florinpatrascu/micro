@@ -1,9 +1,9 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.controllers.ControllerException;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.utils.PathUtilities;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class RedirectTestController implements Controller {
     @Override
-    public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
+    public void execute(MicroContext context, Map configuration) throws ControllerException {
         String resourceType = PathUtilities.extractType((String) context.get(Globals.PATH));
         context.setRedirect("redirected" + resourceType, false);
     }

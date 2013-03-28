@@ -1,0 +1,5 @@
+/**
+ * simple Controller used for its wisdom :0
+ */
+
+boom = 1/0;

@@ -47,7 +47,7 @@ public class BinaryContent implements Controller {
     private static final String TYPE = "type";
 
     @SuppressWarnings("unchecked")
-    public void execute(MicroContext context, Map configuration) throws ControllerException, FileNotFoundException {
+    public void execute(MicroContext context, Map configuration) throws ControllerException {
         SiteContext site = context.getSiteContext();
         Map<String, Object> params = (Map<String, Object>) context.get(Globals.PARAMS);
         Repository defaultRepository = site.getRepositoryManager().getDefaultRepository();
@@ -56,25 +56,29 @@ public class BinaryContent implements Controller {
                     .getRepository((String) configuration.get(Globals.REPOSITORY));
         }
 
-        File content = defaultRepository.pathToFile(
+        File file = defaultRepository.pathToFile(
                 String.format(FILE_FORMAT, params.get(IMAGE_FILE), params.get(TYPE)));
 
-        String fileType = PathUtilities.extractType(content.getAbsolutePath());
+        String fileType = PathUtilities.extractType(file.getAbsolutePath());
 
-        if (content.exists()) {
-            RackResponse rackResponse = context.getRackResponse()
-                    .withBody(content).withContentLength(content.length());
-
-            if (configuration != null) {
-                Map<String, String> customMimeTypes = (Map<String, String>) configuration.get(CONFIG_ELEMENT_MIME_TYPES);
-                if (!CollectionUtils.isEmpty(customMimeTypes) && customMimeTypes.containsKey(fileType)) {
-                    rackResponse.withContentType(customMimeTypes.get(fileType));
+        if (file.exists()) {
+            RackResponse rackResponse = null;
+            try {
+                rackResponse = context.getRackResponse().withBody(file).withContentLength(file.length());
+                if (configuration != null) {
+                    Map<String, String> customMimeTypes = (Map<String, String>) configuration.get(CONFIG_ELEMENT_MIME_TYPES);
+                    if (!CollectionUtils.isEmpty(customMimeTypes) && customMimeTypes.containsKey(fileType)) {
+                        rackResponse.withContentType(customMimeTypes.get(fileType));
+                    } else {
+                        rackResponse.withContentType(Mime.mimeType(fileType));
+                    }
                 } else {
                     rackResponse.withContentType(Mime.mimeType(fileType));
                 }
-            } else {
-                rackResponse.withContentType(Mime.mimeType(fileType));
+            } catch (FileNotFoundException e) {
+                throw new ControllerException("File not found: " + file.getAbsolutePath(), e);
             }
+
         } else {
             context.getRackResponse()
                     .withContentType(Mime.mimeType(fileType))

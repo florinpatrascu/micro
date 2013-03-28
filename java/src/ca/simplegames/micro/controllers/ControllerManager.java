@@ -26,9 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
@@ -73,11 +71,7 @@ public class ControllerManager {
 
         if (controller != null) {
             if (controller instanceof ScriptController) {
-                try {
-                    controller.execute(context, configuration);
-                } catch (FileNotFoundException e) {
-                    throw new ControllerException(controllerNotFoundMessage);
-                }
+                controller.execute(context, configuration);
             } else {
                 try {
                     Class[] paramTypes = {MicroContext.class, Map.class};
