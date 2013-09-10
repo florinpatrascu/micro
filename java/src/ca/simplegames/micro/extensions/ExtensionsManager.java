@@ -20,6 +20,7 @@ import ca.simplegames.micro.Extension;
 import ca.simplegames.micro.Micro;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.utils.Assert;
+import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.PathUtilities;
 import org.jrack.utils.ClassUtilities;
 import org.yaml.snakeyaml.Yaml;
@@ -42,93 +43,104 @@ import java.util.Set;
  * @since $Revision$ (created: 2013-01-16 5:48 PM)
  */
 public class ExtensionsManager {
-    private Map<String, Map<String, Object>> extensionsConfigMap = new HashMap<String, Map<String, Object>>();
-    private Set<String> registeredExtensions = new HashSet<String>();
-    private File extensionsFolder;
-    private SiteContext site;
+  private Map<String, Map<String, Object>> extensionsConfigMap = new HashMap<String, Map<String, Object>>();
+  private Set<String> registeredExtensions = new HashSet<String>();
+  private File extensionsFolder;
+  private SiteContext site;
 
-    @SuppressWarnings("unchecked")
-    public ExtensionsManager(SiteContext site, File[] configFiles) throws Exception {
-        Assert.notNull(site);
-        Assert.notNull(configFiles);
-        this.site = site;
+  @SuppressWarnings("unchecked")
+  public ExtensionsManager(SiteContext site, File[] configFiles) throws Exception {
+    Assert.notNull(site);
+    Assert.notNull(configFiles);
+    this.site = site;
 
-        if (configFiles != null && configFiles.length > 0) {
-            extensionsFolder = configFiles[0].getParentFile();
-            if (site.getLog().isDebugEnabled()) {
-                site.getLog().debug(String.format("Extensions folder used: %s/", extensionsFolder.getAbsolutePath()));
-            }
+    if (configFiles != null && configFiles.length > 0) {
+      extensionsFolder = configFiles[0].getParentFile();
+      if (site.getLog().isDebugEnabled()) {
+        site.getLog().debug(String.format("Extensions folder used: %s/", extensionsFolder.getAbsolutePath()));
+      }
 
-            if (extensionsFolder.exists() && extensionsFolder.isDirectory()) {
-                for (File configFile : configFiles) {
-                    Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(configFile));
-                    final String fileName = PathUtilities.extractName(configFile);
-                    extensionsConfigMap.put(fileName, yaml);
-                }
-            }
+      if (extensionsFolder.exists() && extensionsFolder.isDirectory()) {
+        for (File configFile : configFiles) {
+          Map<String, Object> yaml = (Map<String, Object>) new Yaml().load(new FileInputStream(configFile));
+          final String fileName = PathUtilities.extractName(configFile);
+          extensionsConfigMap.put(fileName, yaml);
         }
+      }
     }
+  }
 
-    public ExtensionsManager require(String name) throws Exception { //todo: improve the Exceptions
-        Extension extension = null;
-        Map<String, Object> yaml = extensionsConfigMap.get(name);
-        File extensionLibDir;
+  public ExtensionsManager require(String name) throws Exception { //todo: improve the Exceptions
+    Extension extension = null;
+    Map<String, Object> yaml = extensionsConfigMap.get(name);
+    File extensionLibDir;
 
-        if (yaml != null && !registeredExtensions.contains(name)) {
-            final String extensionLibFolderName = name + "/lib";
+    if (yaml != null && !registeredExtensions.contains(name)) {
+      final String extensionLibFolderName = name + "/lib";
 
-            if (extensionsFolder == null) {
-                extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + extensionLibFolderName);
-            } else {
-                extensionLibDir = new File(extensionsFolder, extensionLibFolderName);
-            }
+      if (extensionsFolder == null) {
+        extensionLibDir = new File(site.getApplicationConfigPath(), "/extensions/" + extensionLibFolderName);
+      } else {
+        extensionLibDir = new File(extensionsFolder, extensionLibFolderName);
+      }
 
-            Class[] parameters = new Class[]{URL.class};
-            URLClassLoader microClassLoader = (URLClassLoader) Micro.class.getClassLoader();
-            Class sysclass = URLClassLoader.class;
+      Class[] parameters = new Class[]{URL.class};
+      URLClassLoader microClassLoader = (URLClassLoader) Micro.class.getClassLoader();
+      Class sysclass = URLClassLoader.class;
 
-            if (extensionLibDir.exists() && extensionLibDir.isDirectory()) {
-                for (File file : site.files(extensionLibDir, ".jar")) {
-                    try {
-                        Method method = sysclass.getDeclaredMethod("addURL", parameters);
-                        method.setAccessible(true);
-                        method.invoke(microClassLoader, file.toURI().toURL());
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                        throw new IOException("Error, could not add URL to system classloader");
-                    }
-                }
-
-                try {
-                    Class classToLoad = Class.forName((String) yaml.get("class"), true, microClassLoader);
-                    extension = (Extension) classToLoad.newInstance();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    throw new Exception(String.format("Class: %s, not found.", yaml.get("class")));
-                }
-            }
-
-            if (extension == null) {
-                // check if the Extension is using a Micro class...
-                final Class klass = ClassUtilities.loadClass((String) yaml.get("class"));
-                if (klass != null) {
-                    extension = (Extension) klass.newInstance();
-                }
-            }
-
-            if (extension != null) {
-                extension.register(name, site, yaml);
-
-                if (registeredExtensions.isEmpty()) { //cosmetics
-                    site.getLog().info("Extensions:");
-                }
-                registeredExtensions.add(name);
-                site.getLog().info(String.format(" - %s, loaded.", extension.getName()));
-            } else {
-                site.getLog().error(String.format("  %s, not loaded.", name));
-            }
+      if (extensionLibDir.exists() && extensionLibDir.isDirectory()) {
+        for (File file : site.files(extensionLibDir, ".jar")) {
+          try {
+            Method method = sysclass.getDeclaredMethod("addURL", parameters);
+            method.setAccessible(true);
+            method.invoke(microClassLoader, file.toURI().toURL());
+          } catch (Throwable t) {
+            t.printStackTrace();
+            throw new IOException("Error, could not add URL to system classloader");
+          }
         }
-        return this;
-    }
 
+        try {
+          Class classToLoad = Class.forName((String) yaml.get("class"), true, microClassLoader);
+          extension = (Extension) classToLoad.newInstance();
+        } catch (ClassNotFoundException e) {
+          e.printStackTrace();
+          throw new Exception(String.format("Class: %s, not found.", yaml.get("class")));
+        }
+      }
+
+      if (extension == null) {
+        // check if the Extension is using a Micro class...
+        final Class klass = ClassUtilities.loadClass((String) yaml.get("class"));
+        if (klass != null) {
+          extension = (Extension) klass.newInstance();
+        }
+      }
+
+      if (extension != null) {
+        extension.register(name, site, yaml);
+
+        if (registeredExtensions.isEmpty()) { //cosmetics
+          site.getLog().info("Extensions:");
+        }
+        registeredExtensions.add(extension.getName());
+        site.getLog().info(String.format(" - %s, loaded.", extension.getName()));
+      } else {
+        site.getLog().error(String.format("  %s, not loaded.", name));
+      }
+    }
+    return this;
+  }
+
+
+  public void shutdown() {
+    if (!CollectionUtils.isEmpty(registeredExtensions)) {
+      for (String extensionName : registeredExtensions) {
+        Extension extension = (Extension) site.get(extensionName);
+        if (extension != null) {
+          extension.shutdown();
+        }
+      }
+    }
+  }
 }

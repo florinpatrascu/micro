@@ -26,22 +26,27 @@ import java.util.Map;
  * @since $Revision$ (created: 2012-12-27 5:02 PM)
  */
 public interface Extension {
-    /**
-     * The Micro framework calls this method at startup right after the repositories were defined.
-     *
-     * @param name          the name of the file this extension was loaded from, it is later used by Micro to make this
-     *                      extension visible throughout the site or context. This name can be changed by the
-     *                      developer at registration time.
-     * @param site          the Micro "site" instance, see: {@link ca.simplegames.micro.SiteContext}
-     * @param configuration a Map containing a keys and objects useful to initialize this object
-     * @return self
-     * @throws Exception in case something wrong happens
-     */
-    public Extension register(String name, SiteContext site, Map<String, Object> configuration) throws Exception;
+  /**
+   * The Micro framework calls this method at startup right after the repositories were defined.
+   *
+   * @param name          the name of the file this extension was loaded from, it is later used by Micro to make this
+   *                      extension visible throughout the site or context. This name can be changed by the
+   *                      developer at registration time.
+   * @param site          the Micro "site" instance, see: {@link ca.simplegames.micro.SiteContext}
+   * @param configuration a Map containing a keys and objects useful to initialize this object
+   * @return self
+   * @throws Exception in case something wrong happens
+   */
+  public Extension register(String name, SiteContext site, Map<String, Object> configuration) throws Exception;
 
-    /**
-     * @return the name of this extension
-     */
-    public String getName();
+  /**
+   * @return the name of this extension
+   */
+  public String getName();
+
+  /**
+   * method invoked when the micro container is shutting down
+   */
+  public void shutdown();
 
 }

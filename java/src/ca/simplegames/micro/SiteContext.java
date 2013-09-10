@@ -17,7 +17,9 @@
 package ca.simplegames.micro;
 
 import ca.simplegames.micro.cache.MicroCacheManager;
+import ca.simplegames.micro.controllers.ControllerException;
 import ca.simplegames.micro.controllers.ControllerManager;
+import ca.simplegames.micro.controllers.ControllerNotFoundException;
 import ca.simplegames.micro.extensions.ExtensionsManager;
 import ca.simplegames.micro.filters.FilterManager;
 import ca.simplegames.micro.helpers.HelperManager;
@@ -169,7 +171,7 @@ public class SiteContext extends MapContext {
         userMimeTypes = (Map<String, String>) appConfig.get("mime_types");
 
         //add anything else to the context? If no, then execute the app' startup controller:
-        controllerManager.execute(findApplicationScript(configPath), context, appConfig);
+        controllerManager.execute(findApplicationStartupScript(configPath), context, appConfig);
         if (context.get(Globals.CLOSEABLE_BSF_MANAGER) != null) {
           ((CloseableThreadLocal) context.get(Globals.CLOSEABLE_BSF_MANAGER)).close();
         }
@@ -199,11 +201,19 @@ public class SiteContext extends MapContext {
     });
   }
 
-  private String findApplicationScript(String configPath) {
+  private String findApplicationStartupScript(String configPath) {
+    return findSpecialApplicationScripts(configPath, "application");
+  }
+
+  private String findApplicationShutdownScript(String configPath) {
+    return findSpecialApplicationScripts(configPath, "shutdown");
+  }
+
+  private String findSpecialApplicationScripts(String configPath, String scriptName) {
     String actionPath = Globals.EMPTY_STRING;
 
     for (String ext : new String[]{"bsh", "rb", "js"}) {
-      File applicationScript = new File(configPath, "application." + ext);
+      File applicationScript = new File(configPath, String.format("%s.%s", scriptName, ext));
 
       if (applicationScript.exists()) {
         actionPath = applicationScript.getAbsolutePath();
@@ -403,5 +413,34 @@ public class SiteContext extends MapContext {
 
   public void setMicroEnv(String microEnv) {
     this.microEnv = microEnv;
+  }
+
+  /**
+   * this method notifies the appropriate Micro managers to shutdown
+   */
+  public void shutdown() {
+    MicroContext context = new MicroContext();
+    context.with(Globals.SITE, this);
+
+    try {
+      controllerManager.execute(
+          findApplicationShutdownScript(applicationConfigPath.getAbsolutePath()), context, appConfig);
+    } catch (ControllerException e) {
+      e.printStackTrace();
+    } catch (ControllerNotFoundException e) {
+      // no problem, the shutdown controller is optional
+    }
+    extensionsManager.shutdown();
+  }
+
+  /**
+   * a convenient wrapper if you're used with the JPublish site object ;)
+   *
+   * @param attributeName  the attribute name
+   * @param attributeValue the value associated with this attribute
+   */
+  public SiteContext put(String attributeName, Object attributeValue) {
+    with(attributeName, attributeValue);
+    return this;
   }
 }
