@@ -96,7 +96,7 @@ public class Micro {
     }
 
     String resources = ClassUtils.configureClasspath(webInfPath.toString(),
-        StringUtils.split(cp.toString(), ",:"));
+        StringUtils.split(cp.toString(), ","+File.pathSeparatorChar));
     if (log.isDebugEnabled()) {
       log.info("classpath: " + resources);
     }
