@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2012. Florin T.PATRASCU
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ public class SiteContext extends MapContext {
   private Map<String, String> userMimeTypes = null;
   private String welcomeFile = "index.html";
   private File applicationConfigPath;
+  private boolean legacy;
 
   public SiteContext(Context<String> env) {
     for (Map.Entry<String, Object> entry : env) {
@@ -183,6 +184,9 @@ public class SiteContext extends MapContext {
       if (appConfig.get("welcome_file") != null) {
         welcomeFile = (String) appConfig.get("welcome_file");
       }
+
+      // disable the 'yield' support for the webapps using the "JPublish" design style
+      legacy = StringUtils.defaultString(appConfig.get(Globals.LEGACY), "false").equalsIgnoreCase("true");
 
       log.info(String.format("Welcome file is: '%s'", welcomeFile));
       log.info(String.format("Application running in: '%s' mode", microEnv));
@@ -413,6 +417,18 @@ public class SiteContext extends MapContext {
 
   public void setMicroEnv(String microEnv) {
     this.microEnv = microEnv;
+  }
+
+  public boolean isLegacy() {
+    return legacy;
+  }
+
+  /**
+   * this will be a context object rather than a global one
+   * @param legacy TRUE, if you like to pull your Views in your main Templates
+   */
+  public void setLegacy(boolean legacy) {
+    this.legacy = legacy;
   }
 
   /**

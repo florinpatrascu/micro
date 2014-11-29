@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({MicroGenericTest.class, ViewsTest.class, HelpersTest.class,
-        ControllerManagerTest.class, FiltersTest.class, RoutingTest.class})
+    ControllerManagerTest.class, FiltersTest.class, RoutingTest.class})
 //@RunWith(OrderedRunner.class)
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 

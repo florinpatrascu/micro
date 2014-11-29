@@ -32,3 +32,5 @@ template_engines:
       class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
 MICRO_ENV: test
+LEGACY: true
+

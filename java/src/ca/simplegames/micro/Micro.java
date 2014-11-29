@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class Micro {
     }
 
     String resources = ClassUtils.configureClasspath(webInfPath.toString(),
-        StringUtils.split(cp.toString(), ","+File.pathSeparatorChar));
+        StringUtils.split(cp.toString(), "," + File.pathSeparatorChar));
     if (log.isDebugEnabled()) {
       log.info("classpath: " + resources);
     }
@@ -116,7 +116,7 @@ public class Micro {
   }
 
   public void shutdown() {
-    if(site != null){
+    if (site != null) {
       log.warn("Shutdown procedure started ...");
       site.shutdown();
       log.info("Shutdown completed.");
@@ -214,10 +214,14 @@ public class Micro {
             }
           }
 
-          // Render the Default Template. The template will pull out the View, the result being sent out as
-          // the Template body merged with the View's own content. Controllers are executed *before*
-          // rendering the Template *and before* rendering the View, but only if there are any View or Template
-          // Controllers defined by the user.
+          if (!site.isLegacy()) {
+            // Execute the View Filters and Controllers (if any), render it and save it as the context 'yield' var
+            context.put(Globals.YIELD, defaultRepository.getRepositoryWrapper(context).get(path));
+          }
+
+          // Render the Default Template. The template will pull out the View via the Globals.YIELD, and the result being
+          // sent out as the Template body merged with the View's own content. The Controllers are executed *before*
+          // rendering the View, any context artifacts being available to the Template as well.
 
           Repository templatesRepository = site.getRepositoryManager().getTemplatesRepository();
           if (context.getTemplatesRepositoryName() != null) {

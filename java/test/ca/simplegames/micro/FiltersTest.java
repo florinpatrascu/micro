@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,57 +32,57 @@ import javax.servlet.http.HttpServletResponse;
  * @since $Revision$ (created: 2013-01-16 8:54 PM)
  */
 public class FiltersTest {
-    Micro micro = MicroGenericTest.micro;
+  Micro micro = MicroGenericTest.micro;
 
-    @Test
-    public void testMicroIsLoaded() throws Exception {
-        Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
-    }
+  @Test
+  public void testMicroIsLoaded() throws Exception {
+    Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
+  }
 
 
-    @Test
-    public void testBeforeFilters() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.PATH_INFO, "/private/repositories/micro")
-                .with(Rack.REQUEST_METHOD, "GET");
+  @Test
+  public void testBeforeFilters() throws Exception {
+    Context<String> input = new MapContext<String>()
+        .with(Rack.PATH_INFO, "/private/repositories/micro")
+        .with(Rack.REQUEST_METHOD, "GET");
 
-        RackResponse response = micro.call(input);
-        expect200(response);
+    RackResponse response = micro.call(input);
+    expect200(response);
 
-        Assert.assertTrue("Expecting a set of user roles in the current input",
-                RackResponse.getBodyAsString(response).contains("userRoles"));
-    }
+    Assert.assertTrue("Expecting a set of user roles in the current input",
+        RackResponse.getBodyAsString(response).contains("userRoles"));
+  }
 
-    @Test
-    public void testAfterFilters() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.PATH_INFO, "/download/")
-                .with(Rack.REQUEST_METHOD, "GET");
+  @Test
+  public void testAfterFilters() throws Exception {
+    Context<String> input = new MapContext<String>()
+        .with(Rack.PATH_INFO, "/download/")
+        .with(Rack.REQUEST_METHOD, "GET");
 
-        RackResponse response = micro.call(input);
-        expect200(response);
+    RackResponse response = micro.call(input);
+    expect200(response);
 
-        Assert.assertTrue("Download activity must be logged",
-                ((MicroContext) input.getObject(Globals.CONTEXT))
-                        .get("downloadActivity").equals("logged"));
-    }
+    Assert.assertTrue("Download activity must be logged",
+        ((MicroContext) input.getObject(Globals.CONTEXT))
+            .get("downloadActivity").equals("logged"));
+  }
 
-    @Test
-    public void testPathLessFilters() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.PATH_INFO, "/index.html")
-                .with(Rack.REQUEST_METHOD, "GET");
+  @Test
+  public void testPathLessFilters() throws Exception {
+    Context<String> input = new MapContext<String>()
+        .with(Rack.PATH_INFO, "/index.html")
+        .with(Rack.REQUEST_METHOD, "GET");
 
-        RackResponse response = micro.call(input);
-        expect200(response);
+    RackResponse response = micro.call(input);
+    expect200(response);
 
-        Assert.assertTrue("There is no stickiness in this context, pathless filters failure",
-                ((MicroContext) input.getObject(Globals.CONTEXT))
-                        .get("sticky").equals("I am a sticky filter"));
-    }
+    Assert.assertTrue("There is no stickiness in this context, pathless filters failure",
+        ((MicroContext) input.getObject(Globals.CONTEXT))
+            .get("sticky").equals("I am a sticky filter"));
+  }
 
-    private void expect200(RackResponse response) {
-        Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
-                response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
-    }
+  private void expect200(RackResponse response) {
+    Assert.assertTrue(String.format("Expected a successful response status, we got: %d, instead",
+        response.getStatus()), response.getStatus() == HttpServletResponse.SC_OK);
+  }
 }

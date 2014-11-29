@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,56 +34,56 @@ import java.util.Collections;
  * @since $Revision$ (created: 13-02-11)
  */
 public class ViewsTest {
-    static MicroContext<String> context = new MicroContext<String>();
-    Micro micro = MicroGenericTest.micro;
+  static MicroContext<String> context = new MicroContext<String>();
+  Micro micro = MicroGenericTest.micro;
 
-    @Before
-    public void testMicroIsLoaded() throws Exception {
-        Assert.assertNotNull("The View suite requires the Micro environment.", micro);
-    }
+  @Before
+  public void testMicroIsLoaded() throws Exception {
+    Assert.assertNotNull("The View suite requires the Micro environment.", micro);
+  }
 
-    @Test
-    public void testWrappedControllers() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.REQUEST_METHOD, "GET")
-                .with(Rack.PATH_INFO, "/view_with_wrappers.html");
+  @Test
+  public void testWrappedControllers() throws Exception {
+    Context<String> input = new MapContext<String>()
+        .with(Rack.REQUEST_METHOD, "GET")
+        .with(Rack.PATH_INFO, "/view_with_wrappers.html");
 
-        RackResponse response = micro.call(input);
-        String body = RackResponse.getBodyAsString(response);
+    RackResponse response = micro.call(input);
+    String body = RackResponse.getBodyAsString(response);
 
-        Assert.assertTrue(body.contains("Before: true"));
-        Assert.assertTrue(body.contains("Wrapped with: love"));
-        Assert.assertTrue(body.contains("After: true"));
+    Assert.assertTrue(body.contains("Before: true"));
+    Assert.assertTrue(body.contains("Wrapped with: love"));
+    Assert.assertTrue(body.contains("After: true"));
 
-        input.with(Rack.PATH_INFO, "/view_with_wrappers.html")
-                .with(Rack.PARAMS, Collections.singletonMap("_why", new String[]{"o_O"}));
+    input.with(Rack.PATH_INFO, "/view_with_wrappers.html")
+        .with(Rack.PARAMS, Collections.singletonMap("_why", new String[]{"o_O"}));
 
-        response = micro.call(input);
-        body = RackResponse.getBodyAsString(response);
+    response = micro.call(input);
+    body = RackResponse.getBodyAsString(response);
 
-        Assert.assertTrue(body.contains("Before: true"));
-        Assert.assertTrue("Errare humanum est!",
-                body.contains("Errare humanum est, perseverare diabolicum!"));
-        Assert.assertTrue(!body.contains("Wrapped with: love"));
-        Assert.assertTrue(body.contains("After: true"));
-    }
+    Assert.assertTrue(body.contains("Before: true"));
+    Assert.assertTrue("Errare humanum est!",
+        body.contains("Errare humanum est, perseverare diabolicum!"));
+    Assert.assertTrue(!body.contains("Wrapped with: love"));
+    Assert.assertTrue(body.contains("After: true"));
+  }
 
-    /**
-     * evaluate and test a View that has BEFORE and AFTER filters wrapping around its controllers
-     */
-    @Test
-    public void testViewWithFilters() throws Exception {
-        Context<String> input = new MapContext<String>()
-                .with(Rack.REQUEST_METHOD, "GET")
-                .with(Rack.PATH_INFO, "/view_with_filters.html");
+  /**
+   * evaluate and test a View that has BEFORE and AFTER filters wrapping around its controllers
+   */
+  @Test
+  public void testViewWithFilters() throws Exception {
+    Context<String> input = new MapContext<String>()
+        .with(Rack.REQUEST_METHOD, "GET")
+        .with(Rack.PATH_INFO, "/view_with_filters.html");
 
-        RackResponse response = micro.call(input);
-        String body = RackResponse.getBodyAsString(response);
-        MicroContext context = (MicroContext) ((MapContext) input).get("context");
-        Assert.assertTrue("Invalid response", response.getStatus() == HttpServletResponse.SC_OK);
-        Assert.assertTrue("Couldn't evaluate the BEFORE filters",
-                body.contains("BEFORE: [filters/BeforeViewFilter1.bsh, filters/BeforeViewFilter2.bsh]"));
-        Assert.assertNotNull("Should receive some feedback from the AFTER filters",
-                context.get("afterFilters"));
-    }
+    RackResponse response = micro.call(input);
+    String body = RackResponse.getBodyAsString(response);
+    MicroContext context = (MicroContext) ((MapContext) input).get("context");
+    Assert.assertTrue("Invalid response", response.getStatus() == HttpServletResponse.SC_OK);
+    Assert.assertTrue("Couldn't evaluate the BEFORE filters",
+        body.contains("BEFORE: [filters/BeforeViewFilter1.bsh, filters/BeforeViewFilter2.bsh]"));
+    Assert.assertNotNull("Should receive some feedback from the AFTER filters",
+        context.get("afterFilters"));
+  }
 }

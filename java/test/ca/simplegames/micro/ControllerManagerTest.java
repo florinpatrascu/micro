@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,37 +32,37 @@ import org.junit.Test;
  * @since $Revision$ (created: 2013-03-28)
  */
 public class ControllerManagerTest {
-    Micro micro = MicroGenericTest.micro;
+  Micro micro = MicroGenericTest.micro;
 
-    @Test
-    public void testMicroIsLoaded() throws Exception {
-        Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
-        Assert.assertNotNull("The ControllerManager was not properly initialized.",
-                micro.getSite().getControllerManager());
+  @Test
+  public void testMicroIsLoaded() throws Exception {
+    Assert.assertNotNull("This suite requires to have a Micro environment loaded.", micro);
+    Assert.assertNotNull("The ControllerManager was not properly initialized.",
+        micro.getSite().getControllerManager());
 
-    }
+  }
 
-    /**
-     * try to execute a controller that cannot be found
-     */
-    @Test(expected = ControllerNotFoundException.class)
-    public void testMissingController() throws Exception {
-        MicroContext context = new MicroContext<String>();
-        Context<String> input = new MapContext<String>()
-                .with(Rack.REQUEST_METHOD, "GET")
-                .with(Rack.PATH_INFO, "/micro-logo.png");
+  /**
+   * try to execute a controller that cannot be found
+   */
+  @Test(expected = ControllerNotFoundException.class)
+  public void testMissingController() throws Exception {
+    MicroContext context = new MicroContext<String>();
+    Context<String> input = new MapContext<String>()
+        .with(Rack.REQUEST_METHOD, "GET")
+        .with(Rack.PATH_INFO, "/micro-logo.png");
 
-        ControllerManager cm = micro.getSite().getControllerManager();
-        cm.execute("allien.Controller", context);
-    }
+    ControllerManager cm = micro.getSite().getControllerManager();
+    cm.execute("allien.Controller", context);
+  }
 
-    /**
-     * try to execute a controller that will generate an internal exception
-     */
-    @Test(expected = ControllerException.class)
-    public void testExceptionalController() throws Exception {
+  /**
+   * try to execute a controller that will generate an internal exception
+   */
+  @Test(expected = ControllerException.class)
+  public void testExceptionalController() throws Exception {
 
-        ControllerManager cm = micro.getSite().getControllerManager();
-        cm.execute("DivideByZero.bsh", new MicroContext<String>());
-    }
+    ControllerManager cm = micro.getSite().getControllerManager();
+    cm.execute("DivideByZero.bsh", new MicroContext<String>());
+  }
 }

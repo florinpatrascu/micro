@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c)2013 Florin T.Pătraşcu
+  ~ Copyright (c)2014 Florin T.Pătraşcu
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,36 +15,36 @@
   -->
 
 <ehcache>
-    <diskStore path="java.io.tmpdir"/>
+  <diskStore path="java.io.tmpdir"/>
 
-    <defaultCache
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="10"
-            timeToLiveSeconds="20"
-            statistics="true"
-            />
+  <defaultCache
+      maxElementsInMemory="1000"
+      eternal="false"
+      overflowToDisk="false"
+      timeToIdleSeconds="10"
+      timeToLiveSeconds="20"
+      statistics="true"
+      />
 
-    <cache name="views"
-           maxElementsInMemory="500"
-           eternal="false"
-           timeToIdleSeconds="320"
-           timeToLiveSeconds="420"
-           overflowToDisk="false"
-           diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="60"
-           statistics="true"
-            />
+  <cache name="views"
+         maxElementsInMemory="500"
+         eternal="false"
+         timeToIdleSeconds="320"
+         timeToLiveSeconds="420"
+         overflowToDisk="false"
+         diskPersistent="false"
+         diskExpiryThreadIntervalSeconds="60"
+         statistics="true"
+      />
 
-    <cache name="controllers"
-           maxElementsInMemory="500"
-           eternal="false"
-           timeToIdleSeconds="320"
-           timeToLiveSeconds="420"
-           overflowToDisk="false"
-           diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="60"
-           statistics="true"
-            />
+  <cache name="controllers"
+         maxElementsInMemory="500"
+         eternal="false"
+         timeToIdleSeconds="320"
+         timeToLiveSeconds="420"
+         overflowToDisk="false"
+         diskPersistent="false"
+         diskExpiryThreadIntervalSeconds="60"
+         statistics="true"
+      />
 </ehcache>

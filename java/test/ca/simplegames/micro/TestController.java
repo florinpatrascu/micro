@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2013 Florin T.Pătraşcu
+ * Copyright (c)2014 Florin T.Pătraşcu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-01-12 2:21 PM)
  */
 public class TestController implements Controller {
-    protected static final Log log = LogFactory.getLog(TestController.class);
+  protected static final Log log = LogFactory.getLog(TestController.class);
 
-    @Override
-    public void execute(MicroContext context, Map configuration) throws ControllerException {
-        final String canonicalName = TestController.class.getCanonicalName();
-        context.put("class", canonicalName);
-        log.info("Executing: " + canonicalName);
-    }
+  @Override
+  public void execute(MicroContext context, Map configuration) throws ControllerException {
+    final String canonicalName = TestController.class.getCanonicalName();
+    context.put("class", canonicalName);
+    log.info("Executing: " + canonicalName);
+  }
 }
