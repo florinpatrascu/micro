@@ -1,0 +1,32 @@
+name: micro_app
+description: describe your web application
+
+repositories:
+  content:   {path: views/content, cache: views, default: true}
+  templates: {path: views/templates, cache: views}
+
+controllers: {path: controllers, cache: memCache}
+
+cache:
+  names: [memCache, views]
+  class: ca.simplegames.micro.cache.DefaultCache
+
+template_engines:
+  - engine:
+      name: velocity
+      class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
+      options:
+        resource_cache_enabled: true
+        resource_cache_interval: 15
+        global_macro_library: global_library.vm
+      default: true
+
+  - engine:
+      name: markdown
+      class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
+
+welcome_file: index.md
+mime_types:
+  .md: text/html; charset=utf8
+# possible values: production, test or development:
+# MICRO_ENV: development

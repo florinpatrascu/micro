@@ -1,0 +1,9 @@
+template: articles_template
+#controllers:
+#  - controller:
+#      name: test.bsh
+#      options: {}
+#
+#  - controller:
+#      name: test2.bsh
+#      options: {}

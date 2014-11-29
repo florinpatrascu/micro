@@ -1,0 +1,31 @@
+<ehcache>
+    <diskStore path="java.io.tmpdir"/>
+
+    <defaultCache
+            maxElementsInMemory="500"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="10"
+            timeToLiveSeconds="20"
+            />
+
+    <cache name="memCache"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="320"
+            timeToLiveSeconds="420"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="60"
+             />
+             
+    <cache name="views"
+            maxElementsInMemory="200"
+            eternal="false"
+            timeToIdleSeconds="320"
+            timeToLiveSeconds="420"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="60"
+             />
+</ehcache>

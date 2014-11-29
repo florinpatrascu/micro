@@ -1,0 +1,40 @@
+/**
+ * You're free to add application-wide styles to this file
+ */
+body {
+  margin: 2.1em;
+  font-weight: 300;
+}
+
+h1{
+  color: #325d72;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+footer{
+  color: #999;
+  font-size: 14px;
+  margin: 11px 0;
+  padding-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 660px;
+  border-top: 1px solid #ddd;
+}
+ 
+.micro-badge{
+  webkit-border-radius: 3px;
+  moz-border-radius: 3px;
+  border-radius: 3px;
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 11.844px;
+  font-weight: bold;
+  line-height: 14px;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+  white-space: nowrap;
+  vertical-align: baseline;
+  background-color: #999;
+} 
