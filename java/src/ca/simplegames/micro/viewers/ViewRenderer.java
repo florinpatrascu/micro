@@ -31,31 +31,41 @@ import java.util.Map;
  */
 public interface ViewRenderer {
 
-    /**
-     * Render the view.
-     *
-     * @param path       The path to the template
-     * @param repository the repository used for extracting the resource specified by path
-     * @param context    The RequestContext
-     * @param out        The Writer to write the rendered view
-     * @return the number of bytes rendered
-     * @throws ViewException
-     */
+  /**
+   * Render the view.
+   *
+   * @param path       The path to the template
+   * @param repository the repository used for extracting the resource specified by path
+   * @param context    The RequestContext
+   * @param out        The Writer to write the rendered view
+   * @return the number of bytes rendered
+   * @throws ViewException
+   */
 
-    public long render(String path, Repository repository, MicroContext context, Writer out)
-            throws FileNotFoundException, ViewException, ControllerException;
+  public long render(String path, Repository repository, MicroContext context, Writer out)
+      throws FileNotFoundException, ViewException, ControllerException;
 
-    /**
-     * Load the configuration for the view.
-     *
-     * @param site          the SiteContext instance
-     * @param configuration The configuration object
-     */
+  /**
+   * Load the configuration for the view.
+   *
+   * @param site          the SiteContext instance
+   * @param configuration The configuration object
+   */
 
-    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception;
+  public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception;
 
-    /**
-     * @return the name of the rendering engine
-     */
-    public String getName();
+  /**
+   * just evaluate a template content in the given context
+   *
+   * @param context The RequestContext
+   * @param text    a text that can be evaluated, by the current engine
+   * @return a String obtained from the evaluation
+   * @throws ViewException, as there are no Controllers executed in this minimalist scenario
+   */
+  public String evaluate(MicroContext context, String text) throws ViewException;
+
+  /**
+   * @return the name of the rendering engine
+   */
+  public String getName();
 }

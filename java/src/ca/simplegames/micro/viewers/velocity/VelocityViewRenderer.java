@@ -53,199 +53,211 @@ import java.util.Properties;
  */
 @SuppressWarnings("unchecked")
 public class VelocityViewRenderer implements ViewRenderer, LogChute {
-    private static final Logger log = LoggerFactory.getLogger(VelocityViewRenderer.class);
-    private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/classes/velocity.properties";
+  private static final Logger log = LoggerFactory.getLogger(VelocityViewRenderer.class);
+  private static final String DEFAULT_PROPERTIES_PATH = "WEB-INF/classes/velocity.properties";
 
-    // Velocity 1.x properties key names that can contains paths.
-    private static final String[] velocityKeys = {
-            "runtime.log", "file.resource.loader.path", "velocimacro.library"
-    };
-    public static final String MICRO_DEFAULT_VELOCITY_PROPERTIES = "ca/simplegames/micro/viewers/velocity/velocity.properties";
+  // Velocity 1.x properties key names that can contains paths.
+  private static final String[] velocityKeys = {
+      "runtime.log", "file.resource.loader.path", "velocimacro.library"
+  };
+  public static final String MICRO_DEFAULT_VELOCITY_PROPERTIES = "ca/simplegames/micro/viewers/velocity/velocity.properties";
 
-    private final VelocityEngine velocityEngine = new VelocityEngine();
-    private Properties velocityProperties = new Properties();
+  private final VelocityEngine velocityEngine = new VelocityEngine();
+  private Properties velocityProperties = new Properties();
 
-    private boolean resourceCacheEnabled = false;
-    private int resourceCacheInterval = 2;
-    private SiteContext site;
-    protected String name = "velocity";
+  private boolean resourceCacheEnabled = false;
+  private int resourceCacheInterval = 2;
+  private SiteContext site;
+  protected String name = "velocity";
 
-    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
-        setResourceCacheEnabled(StringUtils.defaultString(configuration.get("resource_cache_enabled"), "true"));
-        setResourceCacheInterval(StringUtils.defaultString(configuration.get("resource_cache_interval"), "20"));
-        this.site = site;
+  public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
+    setResourceCacheEnabled(StringUtils.defaultString(configuration.get("resource_cache_enabled"), "true"));
+    setResourceCacheInterval(StringUtils.defaultString(configuration.get("resource_cache_interval"), "20"));
+    this.site = site;
 
-        try {
-            File velocityPropertiesFile = ResourceUtils.getFile(new File(site.getApplicationPath(),
-                    StringUtils.defaultString(configuration.get("velocity_properties"),
-                            MICRO_DEFAULT_VELOCITY_PROPERTIES)).getAbsolutePath());
+    try {
+      File velocityPropertiesFile = ResourceUtils.getFile(new File(site.getApplicationPath(),
+          StringUtils.defaultString(configuration.get("velocity_properties"),
+              MICRO_DEFAULT_VELOCITY_PROPERTIES)).getAbsolutePath());
 
-            loadVelocityProperties(velocityPropertiesFile.exists() ?
-                    new java.io.FileInputStream(velocityPropertiesFile) : null);
+      loadVelocityProperties(velocityPropertiesFile.exists() ?
+          new java.io.FileInputStream(velocityPropertiesFile) : null);
 
-            Velocity.setProperty("micro.VM_global_library.vm.path",
-                    StringUtils.defaultString(configuration.get("global_macro_library"),
-                            Globals.DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH));
-            //Velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM, log );
-            init();
+      Velocity.setProperty("micro.VM_global_library.vm.path",
+          StringUtils.defaultString(configuration.get("global_macro_library"),
+              Globals.DEFAULT_VELOCITY_GLOBAL_LIBRARY_PATH));
+      //Velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM, log );
+      init();
 
-        } catch (IOException e) {
-            throw new Exception("IO error: " + e, e);
-        }
+    } catch (IOException e) {
+      throw new Exception("IO error: " + e, e);
+    }
+  }
+
+  public void init() throws Exception {
+    ExtendedProperties eprops = new ExtendedProperties();
+    eprops.putAll(velocityProperties);
+    eprops.addProperty(RuntimeConstants.RESOURCE_LOADER, "micro");
+
+    eprops.setProperty("micro.resource.loader.description", "Micro internal resource loader.");
+    eprops.setProperty("micro.resource.loader.class", "ca.simplegames.micro.viewers.velocity.MicroResourceLoader");
+    eprops.setProperty("runtime.log.logsystem.class", "ca.simplegames.micro.viewers.velocity.VelocityViewRenderer");
+    //eprops.setProperty("micro.resource.loader.repository", repository);
+
+    if (resourceCacheEnabled) {
+      eprops.setProperty("micro.resource.loader.cache", site.isProduction() ? "true" : "false");
+      eprops.setProperty("micro.resource.loader.modificationCheckInterval",
+          Integer.toString(getResourceCacheInterval()));
     }
 
-    public void init() throws Exception {
-        ExtendedProperties eprops = new ExtendedProperties();
-        eprops.putAll(velocityProperties);
-        eprops.addProperty(RuntimeConstants.RESOURCE_LOADER, "micro");
-
-        eprops.setProperty("micro.resource.loader.description", "Micro internal resource loader.");
-        eprops.setProperty("micro.resource.loader.class", "ca.simplegames.micro.viewers.velocity.MicroResourceLoader");
-        eprops.setProperty("runtime.log.logsystem.class", "ca.simplegames.micro.viewers.velocity.VelocityViewRenderer");
-        //eprops.setProperty("micro.resource.loader.repository", repository);
-
-        if (resourceCacheEnabled) {
-            eprops.setProperty("micro.resource.loader.cache", site.isProduction() ? "true" : "false");
-            eprops.setProperty("micro.resource.loader.modificationCheckInterval",
-                    Integer.toString(getResourceCacheInterval()));
-        }
-
-        // Apply properties to VelocityEngine.
-        velocityEngine.setExtendedProperties(eprops);
-        try {
-            velocityEngine.init();
-            velocityEngine.setApplicationAttribute(ServletContext.class.getName(), site.getServletContext());
-        } catch (Exception ex) {
-            log.error("Why does VelocityEngine throw a generic checked exception, after all?", ex);
-            throw new VelocityException(ex.getMessage());
-        }
-        //log.info("Resource loader: " + velocityEngine.getProperty(VelocityEngine.RESOURCE_LOADER));
-
+    // Apply properties to VelocityEngine.
+    velocityEngine.setExtendedProperties(eprops);
+    try {
+      velocityEngine.init();
+      velocityEngine.setApplicationAttribute(ServletContext.class.getName(), site.getServletContext());
+    } catch (Exception ex) {
+      log.error("Why does VelocityEngine throw a generic checked exception, after all?", ex);
+      throw new VelocityException(ex.getMessage());
     }
+    //log.info("Resource loader: " + velocityEngine.getProperty(VelocityEngine.RESOURCE_LOADER));
 
-    public long render(String path, Repository repository, MicroContext context, Writer out)
-            throws FileNotFoundException, ViewException, ControllerException {
+  }
 
-        StringWriter writer = new StringWriter();
-        VelocityViewContext viewContext = new VelocityViewContext(context);
-
-        try {
-            velocityEngine.mergeTemplate(repository.getPath() + File.separator + path, Globals.UTF8, viewContext, writer);
-            //Velocity.evaluate(viewContext, writer, path, repository.read(path));
-            return IO.copy(new StringReader(writer.toString()), out); // doing this just to compute the size of the result :(
-        } catch (ResourceNotFoundException e) {
-            throw new FileNotFoundException(String.format("%s not found.", path));
-
-        } catch (Exception e) { // ugly, todo: please refactor me
-            if (e instanceof FileNotFoundException || e.getCause() instanceof FileNotFoundException) {
-                throw new FileNotFoundException(e.getMessage());
-            } else if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
-                throw new RedirectException();
-            }
-
-            if (e.getCause() != null && e.getCause() instanceof ControllerException) {
-                throw new ControllerException(e.getMessage());
-            }
-            throw new ViewException(e.getMessage());
-        }
+  @Override
+  public String evaluate(MicroContext context, String text) throws ViewException {
+    try {
+      StringWriter writer = new StringWriter();
+      velocityEngine.evaluate(new VelocityViewContext(context), writer, "eval", text);
+      return IO.getString(new StringReader(writer.toString()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new ViewException(e.getMessage());
     }
+  }
 
-    /**
-     * load an initial set of Velocity properties
-     *
-     * @param in the input stream for the "velocity.properties" configuration file
-     * @throws IOException
-     */
-    private void loadVelocityProperties(InputStream in) throws IOException {
-        try {
-            if (in == null) {
-                in = ClassUtilities.getResourceAsStream(MICRO_DEFAULT_VELOCITY_PROPERTIES);
-            }
+  public long render(String path, Repository repository, MicroContext context, Writer out)
+      throws FileNotFoundException, ViewException, ControllerException {
 
-            velocityProperties.load(in);
-        } finally {
-            IO.close(in); // don't worry, it won't blow if in.null? :)
-        }
+    StringWriter writer = new StringWriter();
+    VelocityViewContext viewContext = new VelocityViewContext(context);
+
+    try {
+      velocityEngine.mergeTemplate(repository.getPath() + File.separator + path, Globals.UTF8, viewContext, writer);
+      //Velocity.evaluate(viewContext, writer, path, repository.read(path));
+      return IO.copy(new StringReader(writer.toString()), out); // doing this just to compute the size of the result :(
+    } catch (ResourceNotFoundException e) {
+      throw new FileNotFoundException(String.format("%s not found.", path));
+
+    } catch (Exception e) { // ugly, todo: please refactor me
+      if (e instanceof FileNotFoundException || e.getCause() instanceof FileNotFoundException) {
+        throw new FileNotFoundException(e.getMessage());
+      } else if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
+        throw new RedirectException();
+      }
+
+      if (e.getCause() != null && e.getCause() instanceof ControllerException) {
+        throw new ControllerException(e.getMessage());
+      }
+      throw new ViewException(e.getMessage());
     }
+  }
 
-    public boolean isResourceCacheEnabled() {
-        return resourceCacheEnabled;
-    }
+  /**
+   * load an initial set of Velocity properties
+   *
+   * @param in the input stream for the "velocity.properties" configuration file
+   * @throws IOException
+   */
+  private void loadVelocityProperties(InputStream in) throws IOException {
+    try {
+      if (in == null) {
+        in = ClassUtilities.getResourceAsStream(MICRO_DEFAULT_VELOCITY_PROPERTIES);
+      }
 
-    public void setResourceCacheEnabled(boolean resourceCacheEnabled) {
-        this.resourceCacheEnabled = resourceCacheEnabled;
+      velocityProperties.load(in);
+    } finally {
+      IO.close(in); // don't worry, it won't blow if in.null? :)
     }
+  }
 
-    public void setResourceCacheEnabled(String resourceCacheEnabled) {
-        setResourceCacheEnabled("true".equals(resourceCacheEnabled));
-    }
+  public boolean isResourceCacheEnabled() {
+    return resourceCacheEnabled;
+  }
 
-    public int getResourceCacheInterval() {
-        return resourceCacheInterval;
-    }
+  public void setResourceCacheEnabled(boolean resourceCacheEnabled) {
+    this.resourceCacheEnabled = resourceCacheEnabled;
+  }
 
-    public void setResourceCacheInterval(int resourceCacheInterval) {
-        this.resourceCacheInterval = resourceCacheInterval;
-    }
+  public void setResourceCacheEnabled(String resourceCacheEnabled) {
+    setResourceCacheEnabled("true".equals(resourceCacheEnabled));
+  }
 
-    public void setResourceCacheInterval(String resourceCacheInterval) {
-        if (resourceCacheInterval != null) {
-            setResourceCacheInterval(Integer.parseInt(resourceCacheInterval));
-        }
-    }
+  public int getResourceCacheInterval() {
+    return resourceCacheInterval;
+  }
 
-    @Override
-    public String getName() {
-        return name;
-    }
+  public void setResourceCacheInterval(int resourceCacheInterval) {
+    this.resourceCacheInterval = resourceCacheInterval;
+  }
 
-    @Override
-    public void init(RuntimeServices runtimeServices) throws Exception {
-        log.info("Initializing Micro Velocity Engine ...");
+  public void setResourceCacheInterval(String resourceCacheInterval) {
+    if (resourceCacheInterval != null) {
+      setResourceCacheInterval(Integer.parseInt(resourceCacheInterval));
     }
+  }
 
-    @Override
-    public void log(int level, String s) {
-        log(level, s, null);
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 
-    @Override
-    public void log(int level, String message, Throwable throwable) {
-        switch (level) {
-            case LogChute.DEBUG_ID:
-                log.debug(message);
-                break;
-            case LogChute.ERROR_ID:
-                log.error(message);
-                break;
-            case LogChute.INFO_ID:
-                log.info(message);
-                break;
-            case LogChute.TRACE_ID:
-                log.trace(message);
-                break;
-            case LogChute.WARN_ID:
-                log.warn(message);
-            default:
-                break;
-        }
-    }
+  @Override
+  public void init(RuntimeServices runtimeServices) throws Exception {
+    log.info("Initializing Micro Velocity Engine ...");
+  }
 
-    @Override
-    public boolean isLevelEnabled(int level) {
-        switch (level) {
-            case LogChute.DEBUG_ID:
-                return log.isDebugEnabled();
-            case LogChute.ERROR_ID:
-                return log.isErrorEnabled();
-            case LogChute.INFO_ID:
-                return log.isInfoEnabled();
-            case LogChute.TRACE_ID:
-                return log.isTraceEnabled();
-            case LogChute.WARN_ID:
-                return log.isWarnEnabled();
-            default:
-                return false;
-        }
+  @Override
+  public void log(int level, String s) {
+    log(level, s, null);
+  }
+
+  @Override
+  public void log(int level, String message, Throwable throwable) {
+    switch (level) {
+      case LogChute.DEBUG_ID:
+        log.debug(message);
+        break;
+      case LogChute.ERROR_ID:
+        log.error(message);
+        break;
+      case LogChute.INFO_ID:
+        log.info(message);
+        break;
+      case LogChute.TRACE_ID:
+        log.trace(message);
+        break;
+      case LogChute.WARN_ID:
+        log.warn(message);
+      default:
+        break;
     }
+  }
+
+  @Override
+  public boolean isLevelEnabled(int level) {
+    switch (level) {
+      case LogChute.DEBUG_ID:
+        return log.isDebugEnabled();
+      case LogChute.ERROR_ID:
+        return log.isErrorEnabled();
+      case LogChute.INFO_ID:
+        return log.isInfoEnabled();
+      case LogChute.TRACE_ID:
+        return log.isTraceEnabled();
+      case LogChute.WARN_ID:
+        return log.isWarnEnabled();
+      default:
+        return false;
+    }
+  }
 }

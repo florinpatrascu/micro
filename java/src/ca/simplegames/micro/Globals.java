@@ -85,4 +85,5 @@ public class Globals {
   public static final String CONFIGURATION = "configuration";
   public static final String MICRO_TEMPLATES_REPOSITORY_NAME = MICRO + "templates_repository_name";
   public static final String MICRO_DEFAULT_REPOSITORY_NAME = MICRO + "default_repository_name";
+  public static final String MICRO_TEMPLATE_ENGINES = "engines";
 }

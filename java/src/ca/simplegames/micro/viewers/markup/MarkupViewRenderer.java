@@ -57,6 +57,11 @@ public class MarkupViewRenderer implements ViewRenderer {
         }
         return 0;    }
 
+    @Override
+    public String evaluate(MicroContext context, String text) throws ViewException {
+        return pegDownProcessor.markdownToHtml(text);
+    }
+
     public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
     }
 

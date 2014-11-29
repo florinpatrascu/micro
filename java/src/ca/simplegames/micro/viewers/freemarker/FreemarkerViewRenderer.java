@@ -40,47 +40,52 @@ import java.util.Map;
  * @since $Revision$ (created: 2013-01-13 1:48 PM)
  */
 public class FreemarkerViewRenderer implements ViewRenderer {
-    private static final Logger log = LoggerFactory.getLogger(FreemarkerViewRenderer.class);
-    protected String name = "freemarker";
+  private static final Logger log = LoggerFactory.getLogger(FreemarkerViewRenderer.class);
+  protected String name = "freemarker";
 
-    @Override
-    public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
+  @Override
+  public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
+  }
+
+  @Override
+  public long render(String path, Repository repository, MicroContext context, Writer out)
+      throws FileNotFoundException, ViewException {
+
+    try {
+
+      Configuration fmConfig = new Configuration();
+      fmConfig.setTemplateLoader(new MicroTemplateLoader(repository));
+      fmConfig.setLocalizedLookup(false);
+      fmConfig.setWhitespaceStripping(context.getSiteContext().isProduction());
+      // NOT! fmConfig.setClassForTemplateLoading(Micro.class, Globals.EMPTY_STRING);
+
+      StringWriter writer = new StringWriter();
+
+      Template template = fmConfig.getTemplate(path, Globals.UTF8);
+      template.process(context, out);
+
+      return IO.copy(new StringReader(writer.toString()), out);
+
+    } catch (TemplateException e) {
+      throw new ViewException(e.getMessage());
+    } catch (IOException e) {
+      throw new FileNotFoundException(String.format("%s not found.", path));
+    } catch (Exception e) {
+      if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
+        throw new RedirectException();
+      } else {
+        throw new ViewException(e.getMessage()); // generic??
+      }
     }
+  }
 
-    @Override
-    public long render(String path, Repository repository, MicroContext context, Writer out)
-            throws FileNotFoundException, ViewException {
+  @Override
+  public String evaluate(MicroContext context, String text) throws ViewException {
+    return "not yet implemented";
+  }
 
-        try {
-
-            Configuration fmConfig = new Configuration();
-            fmConfig.setTemplateLoader(new MicroTemplateLoader(repository));
-            fmConfig.setLocalizedLookup(false);
-            fmConfig.setWhitespaceStripping(context.getSiteContext().isProduction());
-            // NOT! fmConfig.setClassForTemplateLoading(Micro.class, Globals.EMPTY_STRING);
-
-            StringWriter writer = new StringWriter();
-
-            Template template = fmConfig.getTemplate(path, Globals.UTF8);
-            template.process(context, out);
-
-            return IO.copy(new StringReader(writer.toString()), out);
-
-        } catch (TemplateException e) {
-            throw new ViewException(e.getMessage());
-        } catch (IOException e) {
-            throw new FileNotFoundException(String.format("%s not found.", path));
-        } catch (Exception e) {
-            if (e instanceof RedirectException || e.getCause() instanceof RedirectException) {
-                throw new RedirectException();
-            }else{
-                throw new ViewException(e.getMessage()); // generic??
-            }
-        }
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 }

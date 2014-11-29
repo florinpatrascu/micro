@@ -25,6 +25,7 @@ import ca.simplegames.micro.utils.ClassUtils;
 import ca.simplegames.micro.utils.CollectionUtils;
 import ca.simplegames.micro.utils.ParamsFactory;
 import ca.simplegames.micro.utils.PathUtilities;
+import ca.simplegames.micro.viewers.TemplateEngineWrapper;
 import ca.simplegames.micro.viewers.ViewException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.lang3.StringUtils;
@@ -147,6 +148,7 @@ public class Micro {
 
     input.with(Globals.CONTEXT, context); // mostly for helping the testing effort
 
+    context.with(Globals.MICRO_TEMPLATE_ENGINES, new TemplateEngineWrapper(context));
     for (Repository repository : site.getRepositoryManager().getRepositories()) {
       context.with(repository.getName(), repository.getRepositoryWrapper(context));
     }
