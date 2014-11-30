@@ -1,0 +1,5 @@
+controllers:
+  - controller:
+      name: DefaultTemplate.bsh
+      options:
+        foo: bar
