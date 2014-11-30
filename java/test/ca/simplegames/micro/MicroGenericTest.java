@@ -16,6 +16,7 @@
 
 package ca.simplegames.micro;
 
+import ca.simplegames.micro.viewers.ViewRenderer;
 import org.apache.bsf.BSFEngine;
 import org.jrack.Context;
 import org.jrack.Rack;
@@ -188,6 +189,14 @@ public class MicroGenericTest {
     RackResponse response = micro.call(input);
     Assert.assertTrue(RackResponse.getBodyAsString(response)
         .contains("<h3>Markdown</h3><p>This is a simple markdown document</p>"));
+  }
+
+  @Test
+  public void markdownContextEval() throws Exception{
+    ViewRenderer markdown = micro.getSite().getTemplateEnginesManager().getEngine("markdown");
+    MicroContext context = new MicroContext<String>();
+    Assert.assertTrue("Not the expected Markdown result",
+        markdown.evaluate(context, "**Test**").equals("<p><strong>Test</strong></p>"));
   }
 
   @Test
