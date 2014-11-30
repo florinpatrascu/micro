@@ -31,6 +31,10 @@ template_engines:
       name: markdown
       class: ca.simplegames.micro.viewers.markup.MarkupViewRenderer
 
+  - engine:
+      name: freemarker
+      class: ca.simplegames.micro.viewers.freemarker.FreemarkerViewRenderer
+
 MICRO_ENV: test
 LEGACY: true
 

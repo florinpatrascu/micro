@@ -22,11 +22,13 @@ import ca.simplegames.micro.RedirectException;
 import ca.simplegames.micro.SiteContext;
 import ca.simplegames.micro.repositories.Repository;
 import ca.simplegames.micro.utils.IO;
+import ca.simplegames.micro.utils.StringUtils;
 import ca.simplegames.micro.viewers.ViewException;
 import ca.simplegames.micro.viewers.ViewRenderer;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,9 @@ import java.util.Map;
  */
 public class FreemarkerViewRenderer implements ViewRenderer {
   private static final Logger log = LoggerFactory.getLogger(FreemarkerViewRenderer.class);
+  private static final String ADHOC = "adhoc"; // a reusable Template generic template name, for internal use
   protected String name = "freemarker";
+  private Version fmVersion = Configuration.VERSION_2_3_21;
 
   @Override
   public void loadConfiguration(SiteContext site, Map<String, Object> configuration) throws Exception {
@@ -53,7 +57,8 @@ public class FreemarkerViewRenderer implements ViewRenderer {
 
     try {
 
-      Configuration fmConfig = new Configuration();
+      // todo: get the FM config version from the micro-config.yml config file
+      Configuration fmConfig = new Configuration(fmVersion);
       fmConfig.setTemplateLoader(new MicroTemplateLoader(repository));
       fmConfig.setLocalizedLookup(false);
       fmConfig.setWhitespaceStripping(context.getSiteContext().isProduction());
@@ -81,7 +86,16 @@ public class FreemarkerViewRenderer implements ViewRenderer {
 
   @Override
   public String evaluate(MicroContext context, String text) throws ViewException {
-    return "not yet implemented";
+    Configuration fmConfig = new Configuration(fmVersion);
+    try {
+      StringWriter writer = new StringWriter();
+      Template template = new Template(ADHOC, text, fmConfig);
+      template.process(context, writer);
+      return IO.getString(new StringReader(writer.toString()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new ViewException(e.getMessage());
+    }
   }
 
   @Override

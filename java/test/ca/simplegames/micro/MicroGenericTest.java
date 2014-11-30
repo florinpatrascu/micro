@@ -192,11 +192,30 @@ public class MicroGenericTest {
   }
 
   @Test
-  public void markdownContextEval() throws Exception{
+  public void markdownContextEval() throws Exception {
     ViewRenderer markdown = micro.getSite().getTemplateEnginesManager().getEngine("markdown");
     MicroContext context = new MicroContext<String>();
     Assert.assertTrue("Not the expected Markdown result",
         markdown.evaluate(context, "**Test**").equals("<p><strong>Test</strong></p>"));
+  }
+
+  @Test
+  public void velocityContextEval() throws Exception {
+    ViewRenderer velocity = micro.getSite().getTemplateEnginesManager().getEngine("velocity");
+    MicroContext context = new MicroContext<String>();
+    Assert.assertTrue("Not the expected Velocity result",
+        velocity.evaluate((MicroContext) context.with("foo", "Bar"), "Foo is ${foo}")
+            .equals("Foo is Bar"));
+  }
+
+  @Test
+  public void freemarkerContextEval() throws Exception {
+    ViewRenderer freemarker = micro.getSite().getTemplateEnginesManager().getEngine("freemarker");
+    MicroContext context = new MicroContext<String>();
+    Assert.assertTrue("Not the expected Freemarker result",
+        freemarker.evaluate((MicroContext) context.with("foo", "Bar"),
+            "<#if $foo??>no Foo?<#else>Foo is ${foo}</#if>")
+            .equals("Foo is Bar"));
   }
 
   @Test
@@ -228,6 +247,7 @@ public class MicroGenericTest {
 
   /**
    * testing if the optional shutdown Controller is properly executed *when* available
+   *
    * @throws Exception
    */
   @Test
