@@ -13,7 +13,7 @@ This is a very basic web application using the Micro MVC framework. It is a cust
 
  - check if Micro is installed properly; see the [docs](http://micro-docs.simplegames.ca/), for more details.
  - quickly check if Micro was built and it can be used:
-    `$ micro -v`; you should see something like this: `Micro 0.1.2`
+    `$ micro -v`; you should see something like this: `Micro x.y.z`
  - start this web application:
     `$ micro start` or
     `$ ./run.sh`
@@ -29,5 +29,5 @@ Simply press `CTRL-C` in the console where the application was started.
 ### Now It's Your Turn
 Customize it and build the next most awesome web application using Micro!
 
-Good luck,  
+Good luck,
 µ

@@ -12,7 +12,7 @@ h1{
   font-size: 24px;
 }
 
-footer{
+.footer{
   color: #999;
   font-size: 14px;
   margin: 11px 0;
@@ -22,7 +22,7 @@ footer{
   max-width: 660px;
   border-top: 1px solid #ddd;
 }
- 
+
 .micro-badge{
   webkit-border-radius: 3px;
   moz-border-radius: 3px;
@@ -37,4 +37,4 @@ footer{
   white-space: nowrap;
   vertical-align: baseline;
   background-color: #999;
-} 
+}
