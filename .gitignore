@@ -11,3 +11,4 @@ micro.iml
 *.tmproj
 logs/
 *.log
+target

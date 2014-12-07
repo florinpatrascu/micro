@@ -38,17 +38,18 @@ import java.util.Collections;
  * @since <pre>Jan 1, 2013</pre>
  */
 public class MicroGenericTest {
+  private static final String RESOURCES_FOLDER = "src/test/resources";
   public static final String MICRO_IS_SHUTTING_DOWN = "micro_is_shutting_down";
   public static Micro micro;
 
 
   @BeforeClass
   public static void setup() throws Exception {
-    micro = new Micro("files", null, "../../lib");
+    micro = new Micro(RESOURCES_FOLDER, null, RESOURCES_FOLDER+"/WEB-INF/lib");
     Assert.assertNotNull(micro);
     Assert.assertNotNull("Micro 'site' initialization failed", micro.getSite().getWebInfPath());
     Assert.assertTrue("Micro is not pointing to the correct test web app",
-        micro.getSite().getWebInfPath().getAbsolutePath().contains("files/WEB-INF"));
+        micro.getSite().getWebInfPath().getAbsolutePath().contains(RESOURCES_FOLDER+"/WEB-INF"));
     Assert.assertTrue("Micro test web app is not properly defined",
         micro.getSite().getWebInfPath().exists());
   }
