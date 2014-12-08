@@ -12,7 +12,18 @@ Micro can be downloaded from Github and you will need just a few commands to mak
 Build the framework:
 
         $ cd micro
-        $ ant dist
+        $ mvn clean install test -Dtest=MicroGenericTest
+or:
+
+        $ mvn clean install -DskipTests=true  # to skip the tests
+
+You can also check out the javadoc. Run:
+
+    $ mvn javadoc:javadoc
+
+The result is put in `/target/site/apidocs`
+
+—————-—————-———-✂︎  work in progress  vvvvvvvvvvvvvvvvvvv
 
 Add the framework installation folder to your current path and define the `MICRO_HOME` environment variable. For OSX, this means editing your `~/.profile` file and adding the following:
 
@@ -51,6 +62,8 @@ and you can visit your web application by pointing your browser to: [http://loca
 We hope you'll enjoy writing web applications with **Micro**.
 
 Thank you!
+
+—————-—————-———-✂︎  work in progress   ^^^^^^^^^^^^^^^
 
 ### Documentation
 The documentation is a work in progress and can be found here: [micro-docs.simplegames.ca](http://micro-docs.simplegames.ca). It is hosted at Heroku, using Micro itself for publishing. You can fork the documentation site and send pull requests. This is the Github repo for the docs: [micro-docs](https://github.com/florinpatrascu/micro-docs)

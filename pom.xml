@@ -32,7 +32,7 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:git:ssh@github.com:florinpatrascu/micro.git</connection>
+    <connection>scm:git:git@github.com:florinpatrascu/micro.git</connection>
     <developerConnection>scm:git:ssh@github.com:florinpatrascu/micro.git</developerConnection>
     <url>scm:git:git@github.com:florinpatrascu/micro.git</url>
   </scm>
@@ -51,7 +51,7 @@
       </roles>
       <timezone>-5</timezone>
       <properties>
-        <picUrl>https://pbs.twimg.com/profile_images/378800000580704489/e356f98722e0b7c0aebf90c79f62be65_400x400.jpeg</picUrl>
+        <picUrl>http://goo.gl/Sfd0Br</picUrl>
       </properties>
     </developer>
   </developers>
@@ -132,10 +132,12 @@
       <artifactId>parboiled-core</artifactId>
       <version>1.1.4</version>
     </dependency>
+    <!-- JUNIT DEPENDENCY FOR TESTING -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
@@ -223,6 +225,29 @@
           <target>1.6</target>
           <optimize>true</optimize>
           <debug>true</debug>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <!-- run the simple example embedded in the distribution: mvn exec:exec-->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>-Xms512m</argument>
+            <argument>-Xmx512m</argument>
+            <argument>-XX:NewRatio=3</argument>
+            <argument>-XX:+PrintGCTimeStamps</argument>
+            <argument>-XX:+PrintGCDetails</argument>
+            <argument>-Xloggc:gc.log</argument>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>ca.simplegames.micro.WebServer</argument>
+            <argument>./examples/misc</argument>
+            <argument>8080</argument>
+          </arguments>
         </configuration>
       </plugin>
 
