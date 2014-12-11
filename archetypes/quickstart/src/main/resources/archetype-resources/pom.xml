@@ -45,7 +45,7 @@
   <dependencies>
     <dependency>
       <groupId>ca.simplegames.micro</groupId>
-      <artifactId>micro</artifactId>
+      <artifactId>micro-core</artifactId>
       <version>${micro.version}</version>
     </dependency>
 
