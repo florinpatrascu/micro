@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c)2014 Florin T.Pătraşcu
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>3.0.4</maven>
+  </prerequisites>
+
+  <groupId>ca.simplegames.micro</groupId>
+  <artifactId>micro-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>0.2.2</version>
+  <name>Micro Project</name>
+  <description>Micro is a Java open source component web application framework</description>
+  <url>http://micro.simplegames.ca</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:florinpatrascu/micro.git</connection>
+    <developerConnection>scm:git:ssh@github.com:florinpatrascu/micro.git</developerConnection>
+    <url>scm:git:git@github.com:florinpatrascu/micro.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>florin</id>
+      <name>Florin T.PATRASCU</name>
+      <email>florin.patrascu@gmail.com</email>
+      <url>https://twitter.com/florin</url>
+      <organization>Simplegames, CANADA</organization>
+      <organizationUrl>http://simplegames.ca</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-5</timezone>
+      <properties>
+        <picUrl>http://goo.gl/Sfd0Br</picUrl>
+      </properties>
+    </developer>
+  </developers>
+
+  <properties>
+    <jetty.version>6.1.26</jetty.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <github.global.server>github</github.global.server>
+  </properties>
+
+  <modules>
+    <module>micro-core</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.github</groupId>
+      <artifactId>site-maven-plugin</artifactId>
+      <version>0.10</version>
+    </dependency>
+  </dependencies>
+
+  <distributionManagement>
+    <repository>
+      <id>internal.repo</id>
+      <name>Temporary Staging Repository</name>
+      <url>file://${project.build.directory}/mvn-repo</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <resources>
+      <resource>
+        <filtering>false</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <filtering>false</filtering>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+          <optimize>true</optimize>
+          <encoding>UTF-8</encoding>
+          <debug>true</debug>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.10</version>
+        <configuration>
+          <message>Maven artifacts for ${project.version}</message>
+          <noJekyll>true</noJekyll>
+          <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+          <branch>refs/heads/mvn-repo</branch>
+          <includes>
+            <include>**/*</include>
+          </includes>
+          <repositoryName>micro</repositoryName>
+          <repositoryOwner>florinpatrascu</repositoryOwner>
+        </configuration>
+
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>deploy</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
