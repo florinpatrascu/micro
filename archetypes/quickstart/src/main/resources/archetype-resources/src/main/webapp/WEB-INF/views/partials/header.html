@@ -1,1 +1,11 @@
-<h2><img src="${request.ContextPath}/images/micro-logo.png"></h2>
+<div class="header"><img src="${request.ContextPath}/images/micro-logo.png">
+  <div class="top-menu">
+
+    #if ($request.Uri == "/about" || $request.Uri.toString().contains("hello"))
+      <a href="${request.ContextPath}/index.html">Back</a>
+    #else
+      <a href="${request.ContextPath}/about">About</a>
+    #end
+  </div>
+</div>
+

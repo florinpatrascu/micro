@@ -13,7 +13,7 @@ Installation:
     cd archetypes/quickstart
     mvn install
 
-### Usage
+### Usage from command line
 
     mvn archetype:generate \
       -DarchetypeGroupId=ca.simplegames.micro\
@@ -22,21 +22,16 @@ Installation:
       -DgroupId=com.mycompany \
       -DartifactId=myproject
 
-See: http://maven.apache.org/archetype/maven-archetype-plugin/plugin-info.html, for more details
+### Launching the generated application using the embedded Jetty web server
 
+    cd myproject
+    mvn compile install exec:java
 
-### Launching Generated Application Using the embedded Jetty web server
+    #or: mvn exec:java, if you already built the project and you only need to restart the webapp
 
-    >cd myproject
-    >mvn jetty:run
-
-    Browse to http://localhost:8080/
+Browse to http://localhost:8080/
 
 ### Using IDEA
 
-Open IntelliJ. Choose File/Import/Existing Project and point it to myproject directory
+Open IntelliJ. Choose File/Import/Existing Project and point it to `myproject` directory
 
-### Notes
-
-    keytool -selfcert -alias micro -genkey -keystore keystore -keyalg RSA  \
-     -validity 3650 -storepass microsecret -keypass microsecret -dname "CN=simplegames.ca"

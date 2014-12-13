@@ -28,7 +28,7 @@
   #literal()
 
   <name>quickstart</name>
-  <description></description>
+  <description>A Micro webapp</description>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -230,6 +230,26 @@
           <encoding>UTF-8</encoding>
           <showWarnings>true</showWarnings>
           <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>ca.simplegames.micro.WebServer</mainClass>
+          <arguments>
+            <argument>${project.build.directory}/${project.build.finalName}</argument>
+            <argument>8080</argument>
+          </arguments>
         </configuration>
       </plugin>
     </plugins>

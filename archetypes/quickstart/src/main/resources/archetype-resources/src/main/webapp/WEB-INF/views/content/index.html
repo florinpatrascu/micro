@@ -1,8 +1,37 @@
+<h1>#i18N("hi")</h1>
 <p>
-  I am here: $path
+  This request: <span class="micro-badge">${request.ContextPath}${path}</span>, is loaded from here: <br>
+  - <span class="micro-badge">${content.Repository.Path}${path}</span>
 </p>
 
 <p>
-  #i18Nx("hello" [${hello.Name}])
+  And these are two different pages:
+  <ul>
+    <li><a href="${request.ContextPath}/hello-bsh.html">hello-bsh.html</a>, using a Beanshel controller</li>
+    <li><a href="${request.ContextPath}/hello-java.html">hello-java.html</a>, using a Java controller</li>
+  </ul>
 </p>
 
+
+<h2>REST support?</h2>
+<p>
+  Of course. Check the <span class="micro-badge">WEB-INF/config/routes.yml</span>, for more route examples or to add yours. The <b>routes.yml</b> file is monitored by Micro's RouteManager and the changes are available right away without needing to restart the app; this is only happening if <i>MICRO_ENV</i> is: <b>development</b>.
+</p>
+<p>
+  Use <b>curl</b> and run the following command line:
+  <pre>
+    curl http://localhost:8080/echo/John
+  </pre>
+or see this browser session and follow the next link:
+  <pre>
+    - route: <a href="${request.ContextPath}echo/John">/echo/{name}</a>
+  </pre>
+</p>
+
+Learn more about the REST support: <a href="http://micro-docs.simplegames.ca/routing.md">Micro and REST</a>
+
+<p>Oh, and one more thing: <a href="http://micro-docs.simplegames.ca/internationalization.md">Internationalization (I18n)</a><br>
+  Change the title of this page to <a href="${request.ContextPath}/index.html?locale=fr">French</a>, or back to <a href="${request.ContextPath}/index.html?locale=en">English.</a>
+</p>
+
+<p>Have fun!</p>

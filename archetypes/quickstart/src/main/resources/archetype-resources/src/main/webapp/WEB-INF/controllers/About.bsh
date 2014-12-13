@@ -1,0 +1,11 @@
+import org.jrack.RackResponseUtils;
+import ca.simplegames.micro.Globals;
+import org.apache.commons.lang3.StringUtils;
+
+aboutContent=context.get("partials").get("markdown", "about.md");
+githubStyle = "<div class=\"github container\">"+aboutContent+"</div>";
+context.put("yield", githubStyle);
+defaultTemplate = context.get("templates").get("default.html");
+
+context.setRackResponse(RackResponseUtils.standardHtml(defaultTemplate));
+context.halt();

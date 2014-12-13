@@ -16,18 +16,17 @@
 #  controller:
 #    name: test/MD.bsh
 
-- route: /system/test
+- route: /about
   method: get
-
   controller:
-    name: demo/Demo.bsh
-    options: {foo: bar}
+    name: About.bsh
 
-  view:
-    repository: content
-    path: system/demo.json
-
-- route: /hello/{name}
+- route: /echo/{name}
   method: get, post, head
   controller:
-    name: test/Hello.bsh
+    name: Echo.bsh
+
+- route: /echo/{name}
+  method: get, post, head
+  controller:
+    name: Echo.bsh
