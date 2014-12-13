@@ -64,7 +64,7 @@ and you can visit your web application by pointing your browser to: [http://loca
 
 We hope Micro will help you develop web applications while increasing the fun quotient of programming as well.
 
-Have fun!
+Have fun!  
 µ
 
 ### Documentation
