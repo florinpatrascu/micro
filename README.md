@@ -42,6 +42,18 @@ Open IntelliJ. Choose `File/Import/Existing Project` and point it to `myproject`
 
 And simply follow the dialog prompted by IntelliJ :)
 
+#### Maven depedency
+
+```` xml
+  <dependencies>
+    <dependency>
+      <groupId>ca.simplegames.micro</groupId>
+      <artifactId>micro-core</artifactId>
+      <version>0.2.2</version>
+    </dependency>
+  </dependencies>
+````
+
 ### Start your web application from command line
 Launching the generated application using the embedded Jetty web server is very easy:
 
