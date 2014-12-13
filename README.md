@@ -15,7 +15,7 @@ Build it:
 
     cd micro
     mvn clean install test -Dtest=MicroGenericTest
-    # or: 
+    # or:
     mvn clean install -DskipTests=true  # to skip the tests
 
 #### Creating a new Micro web application
@@ -38,7 +38,7 @@ Open IntelliJ. Choose `File/Import/Existing Project` and point it to `myproject`
 
 - `File/New Project`
 - select `Create from archetype` and click the `Add Archetype` button
-- choose `ca.simplegames.micro:micro-quickstart` from the list 
+- choose `ca.simplegames.micro:micro-quickstart` from the list
 
 And simply follow the dialog prompted by IntelliJ :)
 
@@ -48,9 +48,7 @@ Launching the generated application using the embedded Jetty web server is very 
     cd myproject
     mvn compile install exec:java
 
-    #or: mvn exec:java, if you already built the project and you only need to restart the webapp
-
-
+    #or: mvn exec:java
 You can also easily start your web application from IntelliJ.
 
 
@@ -66,7 +64,7 @@ and you can visit your web application by pointing your browser to: [http://loca
 
 We hope Micro will help you develop web applications while increasing the fun quotient of programming as well.
 
-Have fun!  
+Have fun!
 µ
 
 ### Documentation
