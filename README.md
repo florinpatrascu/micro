@@ -88,9 +88,6 @@ We use the [GitHub issue tracker](https://github.com/florinpatrascu/micro/issues
   - to all our **contributors** and **supporters**. Cheers!
 
 <hr>
-<sub>*Notes:*</sub>
-
-<sup>1</sup> - deploying applications from the command line not yet finalized.
 
 ### License
 
