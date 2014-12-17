@@ -2,6 +2,8 @@
 
 Micro's archetypes directory is a collection of Apache Maven project archetypes designed for the (µ)Micro framework.
 
+ - `quickstart`; archetype to build a small Micro web application having two "Hello" demo Controllers, and using two different Template Engines that can be used side by side for rendering the dynamic content; Velocity and Markdown.
+ - `bare`; archetype to build a minimalist Micro web application
 
 ### Requirements
 To install and use these archetypes [Apache Maven](http://maven.apache.org) needs to be present.
@@ -11,6 +13,8 @@ To install and use these archetypes [Apache Maven](http://maven.apache.org) need
 Installation:
 
     cd archetypes/quickstart
+    # or:
+    # cd archetypes/bare
     mvn install
 
 ### Usage from command line
@@ -18,6 +22,15 @@ Installation:
     mvn archetype:generate \
       -DarchetypeGroupId=ca.simplegames.micro\
       -DarchetypeArtifactId=micro-quickstart \
+      -DarchetypeVersion=0.2.2 \
+      -DgroupId=com.mycompany \
+      -DartifactId=myproject
+
+or:
+
+    mvn archetype:generate \
+      -DarchetypeGroupId=ca.simplegames.micro\
+      -DarchetypeArtifactId=bare \
       -DarchetypeVersion=0.2.2 \
       -DgroupId=com.mycompany \
       -DartifactId=myproject

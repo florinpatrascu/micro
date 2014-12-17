@@ -1,0 +1,29 @@
+name: sample
+description: Sample Micro webapp
+
+repositories:
+  content: {path: views/content, cache: memCache, config: config, default: true}
+  partials: {path: views/partials, cache: partials, config: config}
+  templates: {path: views/templates, config: config, cache: memCache}
+
+controllers: {path: controllers, cache: controllers}
+
+cache:
+  names: [memCache, partials, views, controllers]
+  class: ca.simplegames.micro.cache.DefaultCache
+
+template_engines:
+  - engine:
+      name: velocity
+      class: ca.simplegames.micro.viewers.velocity.VelocityViewRenderer
+      options:
+        resource_cache_enabled: true
+        resource_cache_interval: 15
+        global_macro_library: global_library.vm
+      default: true
+
+# optional mime types to overwrite the default.
+mime_types:
+  .md: text/html; charset=utf8
+
+# MICRO_ENV: production
