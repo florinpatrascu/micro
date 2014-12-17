@@ -2,7 +2,7 @@
 
 **Micro**, for short: **(μ)** or **[Mu](http://en.wikipedia.org/wiki/Mu_\(letter\))**, is a modular Model View Controller framework ([MVC Pull](http://en.wikipedia.org/wiki/Web_application_framework#Push-based_vs._pull-based)) for rapid web development. Flexible and powerful at the same time, Micro lets you choose your tools from a decently sized pool of well known products:
 
- - [Velocity](http://micro-docs.simplegames.ca/views/engines.md#Velocity), [Markdown](http://micro-docs.simplegames.ca/views/engines.md#Markdown) [Freemarker](http://micro-docs.simplegames.ca/views/engines.md#Freemarker), [Mustache (java)](http://micro-docs.simplegames.ca/views/engines.md#Mustache), [Stringtemplate](http://micro-docs.simplegames.ca/views/engines.md#StringTemplate); for designing the dynamic content of your web pages.
+ - [Velocity](http://micro-docs.simplegames.ca/views/engines.md#Velocity), [Markdown](http://micro-docs.simplegames.ca/views/engines.md#Markdown), [Freemarker](http://micro-docs.simplegames.ca/views/engines.md#Freemarker), [Mustache (java)](http://micro-docs.simplegames.ca/views/engines.md#Mustache), [Stringtemplate](http://micro-docs.simplegames.ca/views/engines.md#StringTemplate); for designing the dynamic content of your web pages.
  - [Beanshell](http://www.beanshell.org/), server side [Javascript(Rhino)](http://www.mozilla.org/rhino/), [JRuby](http://jruby.org/) and [more](http://commons.apache.org/bsf/); for prototyping controllers before converting them to Java classes, if need be.
 
 #### Using Micro
@@ -76,7 +76,7 @@ and you can visit your web application by pointing your browser to: [http://loca
 
 We hope Micro will help you develop web applications while increasing the fun quotient of programming as well.
 
-Have fun!  
+Have fun!
 µ
 
 ### Documentation
