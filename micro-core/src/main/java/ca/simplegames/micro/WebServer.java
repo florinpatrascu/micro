@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Micro as a web server using embedded Jetty.
@@ -47,7 +48,7 @@ public class WebServer {
    * @param args expecting the path to the Micro web app and optionally a port number
    */
   public static void main(String[] args) throws Exception {
-
+    long starts = System.currentTimeMillis();
     if (args != null && args.length > 0) {
       // Set: org.eclipse.jetty.LEVEL to DEBUG
 
@@ -68,14 +69,16 @@ public class WebServer {
         Server server = new Server(new QueuedThreadPool(DEFAULT_MAX_THREADS));
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
-        connector.setIdleTimeout(1000 * 60 * 60);
-        connector.setSoLingerTime(-1);
 
         if (new File("jetty.xml").exists()) {
           XmlConfiguration configuration = new XmlConfiguration(new FileInputStream("jetty.xml"));
           configuration.configure(server);
-          log.info("jetty config detected ...");
+          log.info(String.format("jetty %s config detected and loaded ...", Server.getVersion()));
+        }else{
+          connector.setIdleTimeout(1000 * 60 * 60);
+          connector.setSoLingerTime(-1);
         }
+
         server.setConnectors(new Connector[]{connector});
         WebAppContext webApp = new WebAppContext(path, "/");
 
@@ -85,7 +88,11 @@ public class WebServer {
 
         server.setHandler(webApp);
         server.start();
+        long ends = System.currentTimeMillis();
+        log.info(String.format("Micro started after: %d second(s).",
+            TimeUnit.SECONDS.convert(ends - starts,TimeUnit.MILLISECONDS))); ;
         server.join();
+
       } catch (Exception e) {
         e.printStackTrace();
       }
