@@ -101,7 +101,7 @@ We use the [GitHub issue tracker](https://github.com/florinpatrascu/micro/issues
 
 ### License
 
-    Copyright (c) 2012-2014 Florin T.Pătraşcu
+    Copyright (c) 2012-2015 Florin T.Pătraşcu
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
