@@ -1,36 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 
-<Configure id="Server" class="org.mortbay.jetty.Server">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
   <!-- =========================================================== -->
   <!-- Server Thread Pool                                          -->
   <!-- =========================================================== -->
-  <Set name="ThreadPool">
-
-    <New class="org.mortbay.thread.QueuedThreadPool">
-      <Set name="minThreads">250</Set>
-      <Set name="maxThreads">310</Set>
-      <Set name="lowThreads">25</Set>
-    </New>
-  </Set>
+  <Get name="ThreadPool">
+    <Set name="minThreads" type="int">10</Set>
+    <Set name="maxThreads" type="int">200</Set>
+    <Set name="idleTimeout" type="int">60000</Set>
+    <Set name="detailedDump">false</Set>
+  </Get>
 
   <!-- =========================================================== -->
   <!-- extra options                                               -->
   <!-- =========================================================== -->
   <Set name="stopAtShutdown">true</Set>
-  <Set name="sendServerVersion">true</Set>
-  <Set name="sendDateHeader">true</Set>
-  <Set name="gracefulShutdown">500</Set>
-
+  <!--
+  see: http://www.eclipse.org/jetty/documentation/current/reference-section.html#jetty-xml-syntax, for more customization options
+  -->
   <!-- =========================================================== -->
   <!-- Set handler Collection Structure                            -->
   <!-- ===========================================================
   <Set name="handler">
-      <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
+      <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
           <Set name="handlers">
-              <Array type="org.mortbay.jetty.Handler">
+              <Array type="org.eclipse.jetty.server.Handler">
                   <Item>
-                      <New id="RequestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
+                    <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler"/>
                   </Item>
               </Array>
           </Set>
@@ -39,42 +36,26 @@
   -->
 
   <!-- =============================================================== -->
-  <!-- Configure the stderr Log                                        -->
-  <!-- ===============================================================
-  <New id="ServerLogName" class="java.io.PrintStream">
-    <Arg>
-      <New class="org.mortbay.util.RolloverFileOutputStream">
-        <Arg>WEB-INF/logs/yyyy_mm_dd.stderrout.log</Arg>
-        <Arg type="boolean">true</Arg>
-        <Arg type="int">90</Arg>
-        <Arg><Call class="java.util.TimeZone" name="getTimeZone"><Arg>GMT-5</Arg></Call></Arg>
-        <Get id="ServerLogName" name="datedFilename"/>
-      </New>
-    </Arg>
-  </New>
+  <!--
+       Configure the Request Log
+       http://www.eclipse.org/jetty/documentation/current/configuring-jetty-request-logs.html
   -->
-
-  <!-- =============================================================== -->
-  <!-- Configure the Request Log                                       -->
   <!-- ===============================================================
-  <Ref id="RequestLog">
-    <Set name="requestLog">
-      <New id="RequestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
-        <Set name="filename">./WEB-INF/logs/yyyy_mm_dd.request.log</Set>
-        <Set name="filenameDateFormat">yyyy_MM_dd</Set>
-        <Set name="retainDays">90</Set>
-        <Set name="append">true</Set>
-        <Set name="extended">true</Set>
-        <Set name="logServer">true</Set>
-        <Set name="logCookies">false</Set>
-        <Set name="LogTimeZone">GMT-5</Set>
-      </New>
-    </Set>
-  </Ref>
+    <Ref refid="RequestLog">
+      <Set name="requestLog">
+        <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
+          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Arg>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>
    -->
 
   <!-- customize your logging as you feel fit
-    <Call class="org.mortbay.log.Log" name="info"><Arg>Redirecting stderr/stdout to <Ref id="ServerLogName"/></Arg></Call>
+    <Call class="org.eclipse.jetty.util.log.Log" name="info"><Arg>Redirecting stderr/stdout to <Ref id="ServerLogName"/></Arg></Call>
     <Call class="java.lang.System" name="setErr"><Arg><Ref id="ServerLogName"/></Arg></Call>
     <Call class="java.lang.System" name="setOut"><Arg><Ref id="ServerLogName"/></Arg></Call>
   -->
