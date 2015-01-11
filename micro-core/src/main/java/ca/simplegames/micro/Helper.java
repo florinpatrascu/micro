@@ -26,6 +26,7 @@ import java.util.Map;
  */
 public abstract class Helper {
     protected Map<String, Object> options;
+    protected MicroContext context;
 
     /**
      * The Micro framework calls this method after the class was instantiated.
@@ -37,6 +38,7 @@ public abstract class Helper {
      */
     public Helper register(MicroContext context, Map<String, Object> options) throws Exception {
         this.options = options;
+        this.context = context;
         return this;
     }
 }
